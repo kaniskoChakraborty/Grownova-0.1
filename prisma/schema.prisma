@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  OWNER
+  ACCOUNTANT
+  OPS
+  EMPLOYEE
+}
+
+model Business {
+  id        String   @id @default(uuid())
+  name      String
+  industry  String?
+  phone     String?
+  email     String?
+  address   String?
+  city      String?
+  state     String?
+  country   String   @default("India")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[]
+  modules Module[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  businessId   String
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         UserRole @default(EMPLOYEE)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+model Module {
+  id         String   @id @default(uuid())
+  businessId String
+  key        String
+  name       String
+  enabled    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, key])
+  @@index([businessId])
+}

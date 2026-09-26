@@ -8,13 +8,13 @@ Built with **NestJS 11**, **TypeScript**, **Prisma 7** (PostgreSQL), **Redis** a
 
 ## Current Phase
 
-**Current Phase: Phase 2 — API Contracts & Authentication**
+**Current Phase: Phase 2 — API Contracts & Authentication (completed)**
 
 | Phase | Scope | Status |
 |-------|-------|--------|
 | Phase 0 | NestJS foundation, env config, health endpoint | ✅ Done |
 | Phase 1 | Prisma + PostgreSQL, Redis, initial migration, module skeletons | ✅ Done |
-| Phase 2 | API contracts (Zod), request validation, JWT auth, businesses API | 🚧 In progress |
+| Phase 2 | API contracts (Zod), request validation, JWT auth, businesses API | ✅ Done |
 
 > [!NOTE]
 > Business domain modules (CRM, Inventory, POS, Accounting, GST, HR, Payroll, etc.) and third-party integrations (WhatsApp, UPI, GSTN, ONDC, Tally, DigiLocker, Translation) are registered as **empty module skeletons**. Their logic will be built in later phases according to the GrowNova PDR.

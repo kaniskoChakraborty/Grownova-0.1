@@ -12,16 +12,15 @@ export const HeroLeft = ({
   return (
     <div className="flex flex-col justify-center max-w-[580px] z-20 py-4 lg:py-6 relative">
       
-      {/* Eyebrow: Crisp Luminous Capsule */}
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/85 backdrop-blur-md border border-[#C2831E]/35 shadow-xs mb-5 w-fit">
-        <span className="w-2 h-2 rounded-full bg-[#C2831E] shadow-[0_0_8px_#C2831E] animate-pulse"></span>
-        <span className="text-[11px] sm:text-[12px] uppercase tracking-[0.24em] font-extrabold text-[#A86E14] select-none">
+      {/* Eyebrow: Elegant tracked typography aligned with headline */}
+      <div className="flex items-center gap-2 mb-4 select-none">
+        <span className="text-[11.5px] sm:text-[12.5px] uppercase tracking-[0.24em] font-extrabold text-[#A86E14]">
           AN OPERATING SYSTEM FOR INDIAN BUSINESSES
         </span>
       </div>
 
       {/* Main Headline: Bold High-Contrast Editorial Typography */}
-      <h1 className="font-serif text-[48px] sm:text-[60px] md:text-[68px] lg:text-[74px] xl:text-[78px] leading-[1.03] tracking-[-0.015em] font-medium mb-6 select-none">
+      <h1 className="font-serif text-[48px] sm:text-[60px] md:text-[68px] lg:text-[74px] xl:text-[78px] leading-[1.03] tracking-[-0.02em] font-medium mb-6 select-none">
         <span className="text-[#0B1E36] block font-semibold drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
           Your business.
         </span>

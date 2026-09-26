@@ -61,7 +61,7 @@ export const LandingNav = ({
       <div className="hidden sm:flex items-center gap-3.5">
         {/* Sign in Button */}
         <button
-          onClick={onSignInClick || (() => navigate('/pricing'))}
+          onClick={onSignInClick || (() => navigate('/auth'))}
           className="rounded-full px-6 py-2.5 text-[14px] font-bold text-[#0B1E36] bg-white/80 hover:bg-white backdrop-blur-md border border-white shadow-xs transition-all duration-200 active:scale-95 focus:outline-none cursor-pointer"
         >
           Sign in
@@ -69,7 +69,7 @@ export const LandingNav = ({
 
         {/* Get Started Button */}
         <button
-          onClick={onGetStartedClick || (() => navigate('/product'))}
+          onClick={onGetStartedClick || (() => navigate('/auth'))}
           className="group relative rounded-full px-6 py-2.5 text-[14px] font-bold text-white gold-glow-btn flex items-center gap-2 transition-all duration-300 active:scale-95 focus:outline-none overflow-hidden cursor-pointer"
         >
           <span className="absolute inset-0 w-1/2 h-full bg-white/30 skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-700 pointer-events-none"></span>
@@ -115,7 +115,7 @@ export const LandingNav = ({
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                onSignInClick?.();
+                onSignInClick ? onSignInClick() : navigate('/auth');
               }}
               className="w-full py-3 rounded-full text-sm font-bold text-[#0B1E36] bg-white/90 border border-white text-center shadow-xs cursor-pointer"
             >
@@ -124,7 +124,7 @@ export const LandingNav = ({
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                onGetStartedClick?.();
+                onGetStartedClick ? onGetStartedClick() : navigate('/auth');
               }}
               className="w-full py-3 rounded-full text-sm font-bold text-white gold-glow-btn flex items-center justify-center gap-2 text-center cursor-pointer"
             >

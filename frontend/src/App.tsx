@@ -5,6 +5,7 @@ import { ProductPage } from './pages/ProductPage';
 import { SolutionsPage } from './pages/SolutionsPage';
 import { ResourcesPage } from './pages/ResourcesPage';
 import { PricingPage } from './pages/PricingPage';
+import { AuthPage } from './pages/AuthPage';
 
 // Auto-scroll to top on route change
 function ScrollToTop() {
@@ -23,6 +24,7 @@ export function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/auth" element={<AuthPage />} />
         <Route path="/product" element={<ProductPage />} />
         <Route path="/solutions" element={<SolutionsPage />} />
         <Route path="/resources" element={<ResourcesPage />} />

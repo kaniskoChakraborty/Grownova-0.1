@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LandingNav } from '../components/navigation/LandingNav';
 import { HeroLeft } from '../components/HeroLeft';
 import { VisionDashboard } from '../components/VisionDashboard';
@@ -6,6 +7,7 @@ import { ReferenceCompare } from '../components/ReferenceCompare';
 import { CheckCircle2, Sparkles } from 'lucide-react';
 
 export const LandingPage = () => {
+  const navigate = useNavigate();
   const [overlayOpacity, setOverlayOpacity] = useState(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -49,11 +51,11 @@ export const LandingPage = () => {
         <div className="absolute top-0 right-1/4 w-[600px] h-[500px] bg-gradient-to-br from-amber-200/40 via-amber-100/15 to-transparent rounded-full blur-3xl pointer-events-none mix-blend-screen" />
         <div className="absolute top-1/3 right-10 w-[500px] h-[400px] bg-gradient-to-l from-orange-200/25 via-yellow-100/20 to-transparent rounded-full blur-2xl pointer-events-none mix-blend-screen" />
         
-        {/* Luminous Ivory Backdrop specifically behind left marketing copy for maximum contrast and shine */}
-        <div className="absolute inset-y-0 left-0 w-full lg:w-[58%] bg-gradient-to-r from-[#FFFDF8]/96 via-[#FFFDF8]/88 to-transparent pointer-events-none" />
+        {/* Delicate Soft Light Veil behind left copy for high contrast text readability without washing out the heritage scene */}
+        <div className="absolute inset-y-0 left-0 w-full lg:w-[46%] bg-gradient-to-r from-white/65 via-white/30 to-transparent pointer-events-none" />
         
         {/* Soft top gradient */}
-        <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-[#FFFDF8]/80 to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-[#FFFDF8]/70 to-transparent pointer-events-none" />
 
         {/* Bottom subtle desk shading */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0B1E36]/15 via-transparent to-transparent pointer-events-none" />
@@ -79,26 +81,26 @@ export const LandingPage = () => {
       {/* 3. SHARED TOP NAVIGATION WITH CLIENT-SIDE ROUTING */}
       {/* ============================================================== */}
       <LandingNav
-        onGetStartedClick={() => triggerToast('GrowNova onboarding initiated. Welcome!')}
-        onSignInClick={() => triggerToast('Opening secure business login...')}
+        onGetStartedClick={() => navigate('/auth?mode=signup')}
+        onSignInClick={() => navigate('/auth?mode=signin')}
       />
 
       {/* ============================================================== */}
       {/* 4. MAIN HERO SECTION (LEFT COPY + RIGHT VISIONOS DASHBOARD) */}
       {/* ============================================================== */}
-      <main className="relative z-10 w-full flex-1 flex items-center px-4 sm:px-8 md:px-12 lg:px-16 py-6 md:py-10 max-w-[1720px] mx-auto">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 xl:gap-10 items-center">
+      <main className="relative z-10 w-full flex-1 flex items-center px-4 sm:px-6 md:px-10 lg:px-12 py-4 md:py-6 max-w-[1720px] mx-auto">
+        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8 xl:gap-12">
           
           {/* LEFT COLUMN: MARKETING COPY & CTAS */}
-          <div className="lg:col-span-5 xl:col-span-5 flex justify-center lg:justify-start">
+          <div className="w-full lg:w-[38%] xl:w-[35%] flex-shrink-0 flex justify-center lg:justify-start">
             <HeroLeft
-              onStartClick={() => triggerToast('Launching GrowNova Workspace Setup...')}
-              onExploreClick={() => triggerToast('Starting interactive product tour...')}
+              onStartClick={() => navigate('/auth?mode=signup')}
+              onExploreClick={() => navigate('/product')}
             />
           </div>
 
           {/* RIGHT COLUMN: VISIONOS LIQUID GLASS DASHBOARD */}
-          <div className="lg:col-span-7 xl:col-span-7 flex justify-center lg:justify-end items-center relative">
+          <div className="w-full lg:w-[62%] xl:w-[65%] flex justify-center lg:justify-end items-center relative min-w-0">
             <div 
               className="w-full flex justify-center lg:justify-end transition-transform duration-300 ease-out"
               style={{

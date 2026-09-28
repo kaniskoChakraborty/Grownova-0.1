@@ -12,6 +12,10 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
+import { Roles } from './decorators/roles.decorator';
+import { UserRole } from '../../generated/prisma/client';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -42,5 +46,16 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   getMe(@Request() request: any) {
     return request.user;
+  }
+
+  @Get('rbac-owner-test')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER)
+  rbacOwnerTest(@Request() request: any) {
+    return {
+      message: 'RBAC is working',
+      user: request.user,
+    };
   }
 }

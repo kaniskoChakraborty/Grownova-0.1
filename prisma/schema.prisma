@@ -24,6 +24,7 @@ model Business {
   city      String?
   state     String?
   country   String   @default("India")
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -8,13 +8,15 @@ Built with **NestJS 11**, **TypeScript**, **Prisma 7** (PostgreSQL), **Redis** a
 
 ## Current Phase
 
-**Current Phase: Phase 2 — API Contracts & Authentication (completed)**
+**Current Phase: Phase 4 — RBAC & Multi-Tenancy (completed)**
 
 | Phase | Scope | Status |
 |-------|-------|--------|
 | Phase 0 | NestJS foundation, env config, health endpoint | ✅ Done |
 | Phase 1 | Prisma + PostgreSQL, Redis, initial migration, module skeletons | ✅ Done |
 | Phase 2 | API contracts (Zod), request validation, JWT auth, businesses API | ✅ Done |
+| Phase 3 | Refresh tokens (Redis-backed), logout | ✅ Done |
+| Phase 4 | Role-based access control (`RolesGuard`), tenant-scoped business API, business update/deactivate/delete | ✅ Done |
 
 > [!NOTE]
 > Business domain modules (CRM, Inventory, POS, Accounting, GST, HR, Payroll, etc.) and third-party integrations (WhatsApp, UPI, GSTN, ONDC, Tally, DigiLocker, Translation) are registered as **empty module skeletons**. Their logic will be built in later phases according to the GrowNova PDR.
@@ -29,7 +31,7 @@ Built with **NestJS 11**, **TypeScript**, **Prisma 7** (PostgreSQL), **Redis** a
 | Language | TypeScript 5 |
 | Database | PostgreSQL via Prisma 7 (`@prisma/adapter-pg`) |
 | Cache | Redis via `ioredis` |
-| Auth | Passport JWT, `bcrypt` password hashing |
+| Auth | Passport JWT (access + refresh tokens), `bcrypt` password hashing, role-based guards |
 | Validation | `class-validator` (global `ValidationPipe`) |
 | API contracts | Zod schemas in `src/common/contracts` |
 | API docs | Swagger (`@nestjs/swagger`) at `/docs` |
@@ -77,8 +79,8 @@ cp .env.example .env
 | `REDIS_PORT` | Redis port | `6379` |
 | `JWT_ACCESS_SECRET` | Secret used to sign/verify access tokens | dev fallback (set this!) |
 | `JWT_ACCESS_EXPIRES_IN` | Access token lifetime | `15m` |
-| `JWT_REFRESH_SECRET` | Secret for refresh tokens (reserved) | dev fallback |
-| `JWT_REFRESH_EXPIRES_IN` | Refresh token lifetime (reserved) | `7d` |
+| `JWT_REFRESH_SECRET` | Secret used to sign/verify refresh tokens | dev fallback (set this!) |
+| `JWT_REFRESH_EXPIRES_IN` | Refresh token lifetime | `7d` |
 
 Example `.env`:
 
@@ -95,7 +97,7 @@ JWT_REFRESH_EXPIRES_IN=7d
 ```
 
 > [!IMPORTANT]
-> Always set `JWT_ACCESS_SECRET` explicitly. Never commit `.env` files containing real credentials.
+> Always set `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` explicitly. Never commit `.env` files containing real credentials.
 
 ---
 
@@ -121,7 +123,7 @@ npx prisma studio
 
 | Model | Purpose |
 |-------|---------|
-| `Business` | A tenant (MSME) — name, industry, contact, location, country (default `India`) |
+| `Business` | A tenant (MSME) — name, industry, contact, location, country (default `India`), `isActive` flag (default `true`) |
 | `User` | Belongs to a business; unique email, bcrypt password hash, role, active flag |
 | `Module` | Per-business feature toggle, unique on `(businessId, key)` |
 
@@ -175,27 +177,46 @@ curl -i http://localhost:3000/health
 
 ### Businesses
 
+All business endpoints require a **Bearer JWT** and are **scoped to the caller's tenant**: a user can only see and modify the business matching the `businessId` in their token. Requests for any other business ID return `404 Not Found`.
+
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| `POST` | `/businesses` | — | Create a business |
-| `GET` | `/businesses` | — | List businesses (newest first) |
-| `GET` | `/businesses/:id` | — | Get a business by ID |
+| `POST` | `/businesses` | Bearer JWT | Create a business |
+| `GET` | `/businesses` | Bearer JWT | List businesses (returns only the caller's business) |
+| `GET` | `/businesses/:id` | Bearer JWT | Get the caller's business by ID |
+| `PATCH` | `/businesses/:id` | Bearer JWT | Update the caller's business (partial) |
+| `PATCH` | `/businesses/:id/deactivate` | Bearer JWT | Soft-deactivate the caller's business (`isActive = false`) |
+| `DELETE` | `/businesses/:id` | Bearer JWT | Permanently delete the caller's business |
 
 ```bash
 curl -X POST http://localhost:3000/businesses \
+  -H "Authorization: Bearer <jwt>" \
   -H "Content-Type: application/json" \
   -d '{"name":"Sharma Textiles","industry":"Textiles","city":"Surat","state":"Gujarat"}'
 ```
 
-Fields: `name` (required), `industry`, `phone`, `email`, `address`, `city`, `state`, `country` (optional).
+```bash
+curl -X PATCH http://localhost:3000/businesses/<business-uuid> \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"phone":"+91 98765 43210"}'
+```
+
+Fields: `name` (required on create), `industry`, `phone`, `email`, `address`, `city`, `state`, `country` (optional). All fields are optional on update.
+
+> [!NOTE]
+> Because `POST /businesses` now requires a JWT and signup requires an existing `businessId`, the first business and owner must currently be seeded directly in the database (e.g. via `npx prisma studio`). A public onboarding flow is planned.
 
 ### Auth
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | `POST` | `/auth/signup` | — | Register a user under an existing business |
-| `POST` | `/auth/login` | — | Log in and receive a JWT access token |
+| `POST` | `/auth/login` | — | Log in and receive an access token and a refresh token |
+| `POST` | `/auth/refresh` | — | Exchange a valid refresh token for a new access token |
+| `POST` | `/auth/logout` | Bearer JWT | Revoke the user's refresh token |
 | `GET` | `/auth/me` | Bearer JWT | Return the authenticated user |
+| `GET` | `/auth/rbac-owner-test` | Bearer JWT, role `OWNER` | Test endpoint to verify RBAC |
 
 **Sign up** — `businessId` must be the UUID of an existing business; password must be at least 8 characters.
 
@@ -216,6 +237,7 @@ curl -X POST http://localhost:3000/auth/login \
 ```json
 {
   "accessToken": "<jwt>",
+  "refreshToken": "<refresh-jwt>",
   "user": {
     "id": "…",
     "email": "owner@example.com",
@@ -233,6 +255,54 @@ curl http://localhost:3000/auth/me -H "Authorization: Bearer <jwt>"
 ```
 
 The JWT payload contains `sub` (user ID), `email`, `role` and `businessId`.
+
+**Refresh access token**
+
+```bash
+curl -X POST http://localhost:3000/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{"refreshToken":"<refresh-jwt>"}'
+# {"accessToken":"<new-jwt>"}
+```
+
+**Log out**
+
+```bash
+curl -X POST http://localhost:3000/auth/logout -H "Authorization: Bearer <jwt>"
+# {"message":"Logged out successfully"}
+```
+
+#### Token lifecycle
+
+- Access tokens are signed with `JWT_ACCESS_SECRET` and expire after `JWT_ACCESS_EXPIRES_IN` (default `15m`).
+- Refresh tokens are signed with `JWT_REFRESH_SECRET` and expire after `JWT_REFRESH_EXPIRES_IN` (default `7d`).
+- On login, the refresh token is stored in Redis under `refresh_token:<userId>`. Only the most recent token is valid, so logging in again invalidates the previous refresh token.
+- `/auth/refresh` accepts a token only if it verifies **and** matches the one stored in Redis.
+- `/auth/logout` deletes the stored refresh token. Already issued access tokens stay valid until they expire.
+
+---
+
+## Role-Based Access Control
+
+Roles come from the `UserRole` enum (`OWNER`, `ACCOUNTANT`, `OPS`, `EMPLOYEE`) and are embedded in the JWT. To restrict a route, combine `JwtAuthGuard`, `RolesGuard` and the `@Roles()` decorator:
+
+```ts
+@Get('owner-only')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.OWNER)
+ownerOnly(@Request() req) { ... }
+```
+
+- Routes without `@Roles()` allow any authenticated user.
+- A user whose role is not listed gets `403 Forbidden` (`Insufficient permissions`).
+- `GET /auth/rbac-owner-test` is a ready-made endpoint for checking that RBAC works.
+
+> [!NOTE]
+> New users sign up with the `EMPLOYEE` role by default. To test owner-only routes, update the user's role to `OWNER` in the database.
+
+## Multi-Tenancy
+
+Each `Business` is a tenant. Every authenticated request carries the user's `businessId` in the JWT, and services filter data by it. For businesses, the requested `:id` must equal the caller's `businessId`, otherwise the API returns `404 Not Found`. That way the response doesn't reveal whether another tenant exists.
 
 ---
 
@@ -270,8 +340,8 @@ backend/
     ├── health/                # GET /health
     ├── prisma/                # PrismaService (pg adapter)
     ├── redis/                 # RedisService (ioredis)
-    ├── auth/                  # Signup, login, JWT strategy/guard, roles decorator
-    ├── businesses/            # Businesses CRUD
+    ├── auth/                  # Signup, login, refresh, logout, JWT strategy/guard, RolesGuard, @Roles()
+    ├── businesses/            # Tenant-scoped businesses CRUD + deactivate
     ├── users/                 # (skeleton)
     ├── onboarding/            # (skeleton)
     ├── crm/  inventory/  pos/  accounting/  gst/
@@ -287,9 +357,9 @@ backend/
 
 ## Roadmap
 
-- Refresh tokens and logout (Redis-backed)
-- Role-based access guard using the `@Roles()` decorator
-- Protect business endpoints and scope data per `businessId`
+- Public onboarding flow (create business + owner in one step)
+- Apply `@Roles()` restrictions to business mutations (e.g. owner-only delete/deactivate)
+- Refresh token rotation and TTL on Redis keys
 - Register `ApiResponseInterceptor` globally and add a global exception filter
 - Implement onboarding and domain modules (CRM, Inventory, POS, Accounting/GST, HR/Payroll, …)
 - Integrations: WhatsApp, UPI, GSTN, ONDC, Tally, DigiLocker, Translation

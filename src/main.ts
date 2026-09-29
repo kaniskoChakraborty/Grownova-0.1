@@ -1,26 +1,33 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { ApiResponseInterceptor } from './common/interceptors/api-response.interceptor';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AuditInterceptor } from './audit/audit.interceptor';
 import { AppModule } from './app.module';
+
+import { ApiResponseInterceptor } from './common/interceptors/api-response.interceptor';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create(AppModule);				
+
+  const app = await NestFactory.create(AppModule);
+
+  // Global validation
   app.useGlobalPipes(
-  new ValidationPipe({
-    whitelist: true,
-    transform: true,
-    forbidNonWhitelisted: true,
-  }),
-);
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
   const configService = app.get(ConfigService);
 
   const port = configService.get<number>('PORT') || 3000;
   const nodeEnv =
     configService.get<string>('NODE_ENV') || 'development';
 
+  // Swagger
   const swaggerConfig = new DocumentBuilder()
     .setTitle('GrowNova API')
     .setDescription(

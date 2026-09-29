@@ -62,3 +62,23 @@ model Module {
   @@unique([businessId, key])
   @@index([businessId])
 }
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  businessId   String
+  actorId      String?
+  action       String
+  entity       String
+  entityId     String?
+  metadata     Json?
+  ipAddress    String?
+  userAgent    String?
+  previousHash String?
+  hash         String
+  createdAt    DateTime @default(now())
+
+  @@index([businessId])
+  @@index([actorId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+}

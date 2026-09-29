@@ -1,3 +1,6 @@
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HealthModule } from './health/health.module';
@@ -31,7 +34,7 @@ import { OndcModule } from './integerations/ondc/ondc.module';
 import { TallyModule } from './integerations/tally/tally.module';
 import { TranslationModule } from './integerations/translation/translation.module';
 import configuration from './config/configuration';
-
+import { ApiResponseInterceptor } from './common/interceptors/api-response.interceptor';
 
 @Module({
   imports: [
@@ -39,7 +42,13 @@ import configuration from './config/configuration';
   isGlobal: true,
   load: [configuration],
   envFilePath: '.env',
-}),		
+}),
+    ThrottlerModule.forRoot([
+  {
+    ttl: 60000,
+    limit: 60,
+  },
+]),		
     HealthModule,
     RedisModule,
     PrismaModule,
@@ -70,6 +79,13 @@ import configuration from './config/configuration';
     OndcModule,
     TallyModule,
     TranslationModule,
+  ],
+  providers: [
+    ApiResponseInterceptor,
+    {
+  provide: APP_GUARD,
+  useClass: ThrottlerGuard,
+},
   ],
 })
 export class AppModule {}

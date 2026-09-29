@@ -38,12 +38,14 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async logout(@Request() request: any) {
     return this.authService.logout(request.user.id);
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   getMe(@Request() request: any) {
     return request.user;
   }

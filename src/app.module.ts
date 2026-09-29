@@ -26,8 +26,8 @@ import { GrowaiModule } from './growai/growai.module';
 import { AuditModule } from './audit/audit.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { JobsModule } from './jobs/jobs.module';
-import { DigilockerModule } from './integerations/digilocker/digilocker.module';
-import { WhatsappModule } from './integerations/whatsapp/whatsapp.module';
+import { DigilockerModule } from './integrations/digilocker/digilocker.module';
+import { WhatsAppModule } from './integrations/whatsapp/whatsapp.module';
 import { GstnModule } from './integerations/gstn/gstn.module';
 import { UpiModule } from './integerations/upi/upi.module';
 import { OndcModule } from './integerations/ondc/ondc.module';
@@ -73,7 +73,7 @@ import { ApiResponseInterceptor } from './common/interceptors/api-response.inter
     NotificationsModule,
     JobsModule,
     DigilockerModule,
-    WhatsappModule,
+    WhatsAppModule,
     GstnModule,
     UpiModule,
     OndcModule,

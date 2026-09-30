@@ -7,10 +7,6 @@ import {
   KycDocumentType,
 } from '../../common/contracts';
 
-/**
- * Consent/KYC adapter contract. Swap MockDigilockerAdapter for a real
- * DigiLocker client in DigilockerModule without touching callers.
- */
 export abstract class DigilockerAdapter {
   abstract requestConsent(
     businessId: string,
@@ -28,15 +24,18 @@ const CONSENT_TTL_MS = 15 * 60 * 1000;
 const MOCK_DOCUMENT_NUMBERS: Record<KycDocumentType, string> = {
   AADHAAR: 'XXXX-XXXX-1234',
   PAN: 'XXXXX1234X',
-  GSTIN: '07XXXXX1234X1Z5',
+  GSTIN: '07XXXXXX1234X1Z5',
 };
 
 @Injectable()
 export class MockDigilockerAdapter extends DigilockerAdapter {
-  // In-memory only: consents are lost on restart (mock behaviour).
   private readonly consents = new Map<
     string,
-    { businessId: string; documentType: KycDocumentType; expiresAt: Date }
+    {
+      businessId: string;
+      documentType: KycDocumentType;
+      expiresAt: Date;
+    }
   >();
 
   async requestConsent(
@@ -46,7 +45,11 @@ export class MockDigilockerAdapter extends DigilockerAdapter {
     const consentId = randomUUID();
     const expiresAt = new Date(Date.now() + CONSENT_TTL_MS);
 
-    this.consents.set(consentId, { businessId, documentType, expiresAt });
+    this.consents.set(consentId, {
+      businessId,
+      documentType,
+      expiresAt,
+    });
 
     return {
       consentId,
@@ -77,7 +80,13 @@ export class MockDigilockerAdapter extends DigilockerAdapter {
       consentId,
       verified: true,
       documentType: consent.documentType,
-      maskedDocumentNumber: MOCK_DOCUMENT_NUMBERS[consent.documentType],
+      maskedDocumentNumber:
+        MOCK_DOCUMENT_NUMBERS[consent.documentType],
+      kyc: {
+        name: 'GrowNova Demo Business',
+        address: 'New Delhi, India',
+        pan: 'XXXXX1234X',
+      },
       provider: 'digilocker-mock',
       verifiedAt: new Date().toISOString(),
     };

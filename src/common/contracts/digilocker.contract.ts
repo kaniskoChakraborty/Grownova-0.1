@@ -31,6 +31,11 @@ export const DigilockerKycResponseSchema = z.object({
   verified: z.boolean(),
   documentType: z.enum(KYC_DOCUMENT_TYPES),
   maskedDocumentNumber: z.string(),
+  kyc: z.object({
+    name: z.string(),
+    address: z.string(),
+    pan: z.string(),
+  }),
   provider: z.enum(['digilocker-mock']),
   verifiedAt: z.string(),
 });

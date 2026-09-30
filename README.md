@@ -2,39 +2,45 @@
 
 Backend API for **GrowNova OS**, an AI-first, vernacular, one-tap business OS for Indian MSMEs.
 
-Built with **NestJS 11**, **TypeScript**, **Prisma 7** (PostgreSQL), **Redis** and **JWT** authentication.
+Built with **NestJS 11**, **TypeScript 5**, **Prisma 7** (PostgreSQL), **Redis**, and **JWT** authentication.
 
 ---
 
 ## Current Phase
 
-**Current Phase: Phase 4 — RBAC & Multi-Tenancy (completed)**
+**Current Phase: Phase 7 — Data Migration (completed)**
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| Phase 0 | NestJS foundation, env config, health endpoint | ✅ Done |
-| Phase 1 | Prisma + PostgreSQL, Redis, initial migration, module skeletons | ✅ Done |
-| Phase 2 | API contracts (Zod), request validation, JWT auth, businesses API | ✅ Done |
-| Phase 3 | Refresh tokens (Redis-backed), logout | ✅ Done |
-| Phase 4 | Role-based access control (`RolesGuard`), tenant-scoped business API, business update/deactivate/delete | ✅ Done |
+| **Phase 0** | NestJS 11 foundation, environment config, health check endpoint | ✅ Done |
+| **Phase 1** | Prisma + PostgreSQL, Redis, initial schema migration, module skeletons | ✅ Done |
+| **Phase 2** | Shared Zod API contracts, global `ValidationPipe`, JWT authentication, businesses API | ✅ Done |
+| **Phase 3** | Refresh tokens (Redis-backed session management), session revocation / logout | ✅ Done |
+| **Phase 4** | Role-based access control (`RolesGuard`), tenant-scoped business API, business update/deactivate/delete | ✅ Done |
+| **Phase 5** | Audit logging with SHA-256 cryptographic hash chaining, tamper detection, global exception filter, rate limiting (`ThrottlerGuard`), database seeding (`prisma/seed.ts`) | ✅ Done |
+| **Phase 6** | Owner onboarding flow with industry UI presets, DigiLocker consent/KYC mock adapter, WhatsApp conversational intake contract | ✅ Done |
+| **Phase 7** | Legacy data migration engine for Indian MSMEs: Excel (`.xlsx`, `.xls`) and Tally XML (`.xml`) parsers with normalized schema extraction | ✅ Done |
 
 > [!NOTE]
-> Business domain modules (CRM, Inventory, POS, Accounting, GST, HR, Payroll, etc.) and third-party integrations (WhatsApp, UPI, GSTN, ONDC, Tally, DigiLocker, Translation) are registered as **empty module skeletons**. Their logic will be built in later phases according to the GrowNova PDR.
+> Future phases will expand domain logic (CRM, Inventory, POS, Accounting, GST, HR, Payroll, etc.) and connect external production APIs (live DigiLocker, WhatsApp Business API, GSTN, UPI, ONDC) according to the GrowNova Product Requirements.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | NestJS 11 (Express) |
-| Language | TypeScript 5 |
-| Database | PostgreSQL via Prisma 7 (`@prisma/adapter-pg`) |
-| Cache | Redis via `ioredis` |
-| Auth | Passport JWT (access + refresh tokens), `bcrypt` password hashing, role-based guards |
-| Validation | `class-validator` (global `ValidationPipe`) |
-| API contracts | Zod schemas in `src/common/contracts` |
-| API docs | Swagger (`@nestjs/swagger`) at `/docs` |
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Framework** | NestJS 11 (Express) | Modular backend architecture |
+| **Language** | TypeScript 5 | Type-safe enterprise development |
+| **Database & ORM** | PostgreSQL via Prisma 7 (`@prisma/adapter-pg`) | Primary relational data store |
+| **Cache & Sessions** | Redis via `ioredis` | Refresh token store & fast caching |
+| **Auth & Security** | Passport JWT, `bcrypt`, custom `@Roles()` decorator & `RolesGuard` | Dual-token authentication & tenant RBAC |
+| **Audit Ledger** | SHA-256 Cryptographic Hash Chaining | Tamper-evident, immutable audit trail for tenant actions |
+| **Rate Limiting** | `@nestjs/throttler` (`ThrottlerGuard`) | API flood protection (default 60 req/min) |
+| **Data Migration** | `xlsx`, `fast-xml-parser`, `multer` | Multi-format ingestion of legacy Excel & Tally ERP data |
+| **Validation** | `class-validator`, `class-transformer` | Global request payload validation |
+| **API Contracts** | Zod schemas in `src/common/contracts` | Shared contract definitions between frontend & backend |
+| **API Documentation** | Swagger (`@nestjs/swagger`) | Interactive OpenAPI docs with JWT & file upload support |
 
 ---
 
@@ -42,14 +48,21 @@ Built with **NestJS 11**, **TypeScript**, **Prisma 7** (PostgreSQL), **Redis** a
 
 - **Node.js**: `v20+` or `v22+` (LTS recommended)
 - **npm**: `v10+`
-- **PostgreSQL**: a reachable database (local, Docker, or Prisma Postgres)
+- **PostgreSQL**: a reachable database instance (local, Docker, or managed)
 - **Redis**: a running instance (default `127.0.0.1:6379`)
 
-Quick start for PostgreSQL and Redis with Docker:
+### Quick Start with Docker
 
 ```bash
-docker run -d --name grownova-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=grownova -p 5432:5432 postgres:16
-docker run -d --name grownova-redis -p 6379:6379 redis:7
+# PostgreSQL 16
+docker run -d --name grownova-postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=grownova \
+  -p 5432:5432 postgres:16
+
+# Redis 7
+docker run -d --name grownova-redis \
+  -p 6379:6379 redis:7
 ```
 
 ---
@@ -64,7 +77,7 @@ npm install
 
 ## Environment Setup
 
-Copy the example environment file and fill in the values:
+Copy `.env.example` to `.env` and configure your credentials:
 
 ```bash
 cp .env.example .env
@@ -72,7 +85,7 @@ cp .env.example .env
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `NODE_ENV` | Application environment | `development` |
+| `NODE_ENV` | Application environment (`development`, `production`, `test`) | `development` |
 | `PORT` | HTTP port for the API server | `3000` |
 | `DATABASE_URL` | PostgreSQL connection string | — (required) |
 | `REDIS_HOST` | Redis host | `127.0.0.1` |
@@ -90,69 +103,85 @@ PORT=3000
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/grownova?schema=public"
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
-JWT_ACCESS_SECRET=change-me
+JWT_ACCESS_SECRET=your-secure-access-secret-key-min-32-chars
 JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_SECRET=change-me-too
+JWT_REFRESH_SECRET=your-secure-refresh-secret-key-min-32-chars
 JWT_REFRESH_EXPIRES_IN=7d
 ```
 
 > [!IMPORTANT]
-> Always set `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` explicitly. Never commit `.env` files containing real credentials.
+> Always set `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` explicitly in staging and production. Never commit `.env` files to git.
 
 ---
 
-## Database Setup (Prisma)
+## Database Setup & Migrations
 
-Prisma is configured through `prisma7.config.ts`, which reads `DATABASE_URL` from `.env`. The Prisma client is generated into `generated/prisma` (git-ignored).
+Prisma is configured via `prisma7.config.ts`, which reads `DATABASE_URL` from `.env`. The generated Prisma client resides in `generated/prisma` (git-ignored).
 
 ```bash
-# Generate the Prisma client
+# 1. Generate the Prisma client
 npx prisma generate
 
-# Apply migrations to your database
-npx prisma migrate dev          # development
-npx prisma migrate deploy       # production / CI
+# 2. Apply database migrations
+npx prisma migrate dev          # Development
+npx prisma migrate deploy       # Production / CI
 
-# Optional: browse data
+# 3. Seed demo data (Business, all 4 user roles, modules, initial audit logs)
+npx prisma db seed
+
+# 4. (Optional) Open Prisma Studio UI to inspect tables
 npx prisma studio
 ```
-
-> If the CLI does not pick up the config automatically, pass it explicitly: `npx prisma generate --config prisma7.config.ts`.
 
 ### Data Model
 
 | Model | Purpose |
 |-------|---------|
-| `Business` | A tenant (MSME) — name, industry, contact, location, country (default `India`), `isActive` flag (default `true`) |
-| `User` | Belongs to a business; unique email, bcrypt password hash, role, active flag |
-| `Module` | Per-business feature toggle, unique on `(businessId, key)` |
+| `Business` | Tenant (MSME) — name, industry, contact phone, email, address, city, state, country (default `India`), `isActive` status flag |
+| `User` | Belongs to a tenant business; unique email, bcrypt-hashed password, role (`UserRole`), `isActive` status flag |
+| `Module` | Per-business enabled feature toggle flags, unique on `(businessId, key)` |
+| `AuditLog` | Cryptographic SHA-256 chained audit records — tracks tenant action, actor, entity, entity ID, request metadata, IP, user-agent, `previousHash`, and `hash` |
 
-`UserRole` enum: `OWNER`, `ACCOUNTANT`, `OPS`, `EMPLOYEE` (default).
+#### User Roles (`UserRole` Enum)
+
+- `OWNER` — Full administrative control over the MSME tenant and onboarding
+- `ACCOUNTANT` — Access to accounting, invoices, tax, and GST reporting
+- `OPS` — Operations, warehouse, inventory, and order fulfillment
+- `EMPLOYEE` — Default user role for standard POS, retail billing, and basic tasks
+
+#### Seed Accounts (`npx prisma db seed`)
+
+All seeded demo accounts share the password: `TestPassword123`
+
+- **Owner**: `taksh.demo@grownova.in`
+- **Accountant**: `accountant@grownova.local`
+- **Operations**: `ops@grownova.local`
+- **Employee**: `test@grownova.local`
 
 ---
 
 ## Running the App
 
 ```bash
-npm run start:dev     # development with file watching
-npm run start         # without watch mode
-npm run start:debug   # debug + watch
-```
+# Development mode with hot-reload
+npm run start:dev
 
-Build and run in production:
+# Standard run
+npm run start
 
-```bash
-npm run build         # compiles to dist/
+# Debug mode
+npm run start:debug
+
+# Production build and run
+npm run build
 npm run start:prod
 ```
-
-On startup the app connects to PostgreSQL and pings Redis, so both must be reachable.
 
 ---
 
 ## API Documentation
 
-Interactive Swagger docs (with Bearer auth support) are available at:
+Interactive Swagger OpenAPI docs (with Bearer authentication and binary file upload support) are available at:
 
 ```
 http://localhost:3000/docs
@@ -162,101 +191,73 @@ http://localhost:3000/docs
 
 ## API Endpoints
 
-All request bodies are validated with a global `ValidationPipe` (`whitelist`, `transform`, `forbidNonWhitelisted`) — unknown fields are rejected with `400 Bad Request`.
+All requests are validated by a global `ValidationPipe` (`whitelist`, `transform`, `forbidNonWhitelisted`). Rate limiting is enforced globally at **60 requests per minute** per IP via `ThrottlerGuard`.
 
-### Health
+### 1. Health
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| `GET` | `/health` | — | Liveness check |
+| `GET` | `/health` | None | API liveness & health check |
 
 ```bash
 curl -i http://localhost:3000/health
 # {"status":"ok","service":"grownova-api"}
 ```
 
-### Businesses
+---
 
-All business endpoints require a **Bearer JWT** and are **scoped to the caller's tenant**: a user can only see and modify the business matching the `businessId` in their token. Requests for any other business ID return `404 Not Found`.
+### 2. Authentication (`/auth`)
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `POST` | `/businesses` | Bearer JWT | Create a business |
-| `GET` | `/businesses` | Bearer JWT | List businesses (returns only the caller's business) |
-| `GET` | `/businesses/:id` | Bearer JWT | Get the caller's business by ID |
-| `PATCH` | `/businesses/:id` | Bearer JWT | Update the caller's business (partial) |
-| `PATCH` | `/businesses/:id/deactivate` | Bearer JWT | Soft-deactivate the caller's business (`isActive = false`) |
-| `DELETE` | `/businesses/:id` | Bearer JWT | Permanently delete the caller's business |
+| Method | Path | Auth | Roles | Description |
+|--------|------|------|-------|-------------|
+| `POST` | `/auth/signup` | None | — | Register a user under an existing business |
+| `POST` | `/auth/login` | None | — | Authenticate with email/password; returns access token & refresh token |
+| `POST` | `/auth/refresh` | None | — | Exchange a valid refresh token for a new access token |
+| `POST` | `/auth/logout` | Bearer JWT | Any | Invalidate the refresh token in Redis |
+| `GET` | `/auth/me` | Bearer JWT | Any | Fetch profile of currently authenticated user |
+| `GET` | `/auth/rbac-owner-test` | Bearer JWT | `OWNER` | Verify role-based access control guard |
 
-```bash
-curl -X POST http://localhost:3000/businesses \
-  -H "Authorization: Bearer <jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Sharma Textiles","industry":"Textiles","city":"Surat","state":"Gujarat"}'
-```
-
-```bash
-curl -X PATCH http://localhost:3000/businesses/<business-uuid> \
-  -H "Authorization: Bearer <jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{"phone":"+91 98765 43210"}'
-```
-
-Fields: `name` (required on create), `industry`, `phone`, `email`, `address`, `city`, `state`, `country` (optional). All fields are optional on update.
-
-> [!NOTE]
-> Because `POST /businesses` now requires a JWT and signup requires an existing `businessId`, the first business and owner must currently be seeded directly in the database (e.g. via `npx prisma studio`). A public onboarding flow is planned.
-
-### Auth
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `POST` | `/auth/signup` | — | Register a user under an existing business |
-| `POST` | `/auth/login` | — | Log in and receive an access token and a refresh token |
-| `POST` | `/auth/refresh` | — | Exchange a valid refresh token for a new access token |
-| `POST` | `/auth/logout` | Bearer JWT | Revoke the user's refresh token |
-| `GET` | `/auth/me` | Bearer JWT | Return the authenticated user |
-| `GET` | `/auth/rbac-owner-test` | Bearer JWT, role `OWNER` | Test endpoint to verify RBAC |
-
-**Sign up** — `businessId` must be the UUID of an existing business; password must be at least 8 characters.
+#### Sign Up
 
 ```bash
 curl -X POST http://localhost:3000/auth/signup \
   -H "Content-Type: application/json" \
-  -d '{"email":"owner@example.com","password":"password123","name":"Asha","businessId":"<business-uuid>"}'
+  -d '{
+    "email": "user@example.com",
+    "password": "StrongPassword123",
+    "name": "Taksh",
+    "businessId": "550e8400-e29b-41d4-a716-446655440000"
+  }'
 ```
 
-**Log in**
+#### Log In
 
 ```bash
 curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"owner@example.com","password":"password123"}'
+  -d '{
+    "email": "taksh.demo@grownova.in",
+    "password": "TestPassword123"
+  }'
 ```
+
+Response:
 
 ```json
 {
-  "accessToken": "<jwt>",
-  "refreshToken": "<refresh-jwt>",
+  "accessToken": "eyJhbGciOi...",
+  "refreshToken": "eyJhbGciOi...",
   "user": {
-    "id": "…",
-    "email": "owner@example.com",
-    "name": "Asha",
-    "role": "EMPLOYEE",
-    "businessId": "…"
+    "id": "...",
+    "email": "taksh.demo@grownova.in",
+    "name": "Taksh Demo",
+    "role": "OWNER",
+    "businessId": "550e8400-e29b-41d4-a716-446655440000"
   }
 }
 ```
 
-**Current user**
-
-```bash
-curl http://localhost:3000/auth/me -H "Authorization: Bearer <jwt>"
-```
-
-The JWT payload contains `sub` (user ID), `email`, `role` and `businessId`.
-
-**Refresh access token**
+#### Refresh Access Token
 
 ```bash
 curl -X POST http://localhost:3000/auth/refresh \
@@ -265,55 +266,328 @@ curl -X POST http://localhost:3000/auth/refresh \
 # {"accessToken":"<new-jwt>"}
 ```
 
-**Log out**
+#### Log Out
 
 ```bash
-curl -X POST http://localhost:3000/auth/logout -H "Authorization: Bearer <jwt>"
+curl -X POST http://localhost:3000/auth/logout \
+  -H "Authorization: Bearer <jwt>"
 # {"message":"Logged out successfully"}
 ```
 
-#### Token lifecycle
-
-- Access tokens are signed with `JWT_ACCESS_SECRET` and expire after `JWT_ACCESS_EXPIRES_IN` (default `15m`).
-- Refresh tokens are signed with `JWT_REFRESH_SECRET` and expire after `JWT_REFRESH_EXPIRES_IN` (default `7d`).
-- On login, the refresh token is stored in Redis under `refresh_token:<userId>`. Only the most recent token is valid, so logging in again invalidates the previous refresh token.
-- `/auth/refresh` accepts a token only if it verifies **and** matches the one stored in Redis.
-- `/auth/logout` deletes the stored refresh token. Already issued access tokens stay valid until they expire.
-
 ---
 
-## Role-Based Access Control
+### 3. Businesses (`/businesses`)
 
-Roles come from the `UserRole` enum (`OWNER`, `ACCOUNTANT`, `OPS`, `EMPLOYEE`) and are embedded in the JWT. To restrict a route, combine `JwtAuthGuard`, `RolesGuard` and the `@Roles()` decorator:
+All business endpoints require a Bearer JWT and enforce strict multi-tenant isolation: requests can only view or modify the business matching the caller's JWT `businessId`. Any cross-tenant access returns `404 Not Found`.
 
-```ts
-@Get('owner-only')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.OWNER)
-ownerOnly(@Request() req) { ... }
+| Method | Path | Auth | Roles | Description |
+|--------|------|------|-------|-------------|
+| `POST` | `/businesses` | Bearer JWT | Any | Create a new business profile |
+| `GET` | `/businesses` | Bearer JWT | Any | List business profile for the caller's tenant |
+| `GET` | `/businesses/:id` | Bearer JWT | Any | Get tenant business details by ID |
+| `PATCH` | `/businesses/:id` | Bearer JWT | Any | Partially update tenant business details |
+| `PATCH` | `/businesses/:id/deactivate` | Bearer JWT | Any | Soft-deactivate the business (`isActive = false`) |
+| `DELETE` | `/businesses/:id` | Bearer JWT | Any | Permanently delete the tenant business |
+
+```bash
+curl -X PATCH http://localhost:3000/businesses/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"phone":"+91-9876543210","city":"Surat","state":"Gujarat"}'
 ```
 
-- Routes without `@Roles()` allow any authenticated user.
-- A user whose role is not listed gets `403 Forbidden` (`Insufficient permissions`).
-- `GET /auth/rbac-owner-test` is a ready-made endpoint for checking that RBAC works.
+---
 
-> [!NOTE]
-> New users sign up with the `EMPLOYEE` role by default. To test owner-only routes, update the user's role to `OWNER` in the database.
+### 4. Audit & Reliability (`/audit`)
 
-## Multi-Tenancy
+Phase 5 introduced an immutable, tamper-evident audit ledger using SHA-256 hash chaining. Write operations (`POST`, `PATCH`, `DELETE`) on tenant resources are automatically intercepted by `AuditInterceptor`.
 
-Each `Business` is a tenant. Every authenticated request carries the user's `businessId` in the JWT, and services filter data by it. For businesses, the requested `:id` must equal the caller's `businessId`, otherwise the API returns `404 Not Found`. That way the response doesn't reveal whether another tenant exists.
+| Method | Path | Auth | Roles | Description |
+|--------|------|------|-------|-------------|
+| `POST` | `/audit/test` | Bearer JWT | Any | Append a manual test audit record for the tenant |
+| `GET` | `/audit/integrity` | Bearer JWT | Any | Cryptographically verify the SHA-256 hash chain |
+
+#### Hash Chain Verification
+
+Each log entry hashes its own payload together with the `previousHash` from the prior record. If any past database record is modified, inserted, or deleted, the hash sequence breaks:
+
+```bash
+curl http://localhost:3000/audit/integrity \
+  -H "Authorization: Bearer <jwt>"
+```
+
+Response (Valid chain):
+
+```json
+{
+  "valid": true,
+  "checked": 12,
+  "brokenAt": null,
+  "reason": null
+}
+```
+
+Response (Tampered database record detected):
+
+```json
+{
+  "valid": false,
+  "checked": 12,
+  "brokenAt": "e0b96879-...",
+  "reason": "Hash mismatch"
+}
+```
+
+#### Global Error Envelope (`HttpExceptionFilter`)
+
+Uncaught exceptions or validation errors are formatted uniformly:
+
+```json
+{
+  "success": false,
+  "error": {
+    "statusCode": 400,
+    "message": ["industry must be one of the following values: retail, manufacturing, services, food_beverage, wholesale, other"],
+    "error": "Bad Request"
+  },
+  "timestamp": "2026-10-01T02:30:00.000Z",
+  "path": "/onboarding"
+}
+```
 
 ---
 
-## API Contracts
+### 5. Onboarding (`/onboarding`)
 
-Shared request/response shapes live in `src/common/contracts` as **Zod** schemas with inferred TypeScript types, so the frontend and backend agree on payloads:
+Phase 6 introduced the owner-guided onboarding flow. When an MSME owner completes profile setup, the system automatically computes and assigns the appropriate industry-specific UI preset:
 
-- `auth/auth.contract.ts` — `SignupRequest`, `SignupResponse`, `LoginRequest`, `LoginResponse`
-- `business.contract.ts` — `CreateBusinessRequest`, `CreateBusinessResponse`, …
+| Industry | Assigned UI Preset |
+|----------|-------------------|
+| `retail`, `wholesale`, `food_beverage` | `retail` |
+| `manufacturing` | `manufacturing` |
+| `services` | `services` |
+| `other` | `general` |
 
-An `ApiResponseInterceptor` (`src/common/interceptors`) is available to wrap responses as `{ success, data, timestamp }`; it is not yet registered globally.
+| Method | Path | Auth | Roles | Description |
+|--------|------|------|-------|-------------|
+| `POST` | `/onboarding` | Bearer JWT | `OWNER` | Complete onboarding & configure tenant UI preset |
+
+```bash
+curl -X POST http://localhost:3000/onboarding \
+  -H "Authorization: Bearer <owner-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Shree Ganesh Textiles",
+    "industry": "retail",
+    "phone": "+91-9876543210",
+    "email": "ganesh@textiles.in",
+    "address": "Ring Road Market",
+    "city": "Surat",
+    "state": "Gujarat",
+    "country": "India"
+  }'
+```
+
+Response:
+
+```json
+{
+  "onboardingCompleted": true,
+  "channel": "web",
+  "uiPreset": "retail",
+  "business": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "Shree Ganesh Textiles",
+    "industry": "retail",
+    "phone": "+91-9876543210",
+    "email": "ganesh@textiles.in",
+    "address": "Ring Road Market",
+    "city": "Surat",
+    "state": "Gujarat",
+    "country": "India"
+  }
+}
+```
+
+---
+
+### 6. Integrations (`/integrations`)
+
+#### DigiLocker KYC & Consent (`/integrations/digilocker`)
+
+Provides mock consent and verification flows for Indian identity documents (`AADHAAR`, `PAN`, `GSTIN`).
+
+| Method | Path | Auth | Roles | Description |
+|--------|------|------|-------|-------------|
+| `POST` | `/integrations/digilocker/consent` | Bearer JWT | `OWNER` | Generate a mock DigiLocker consent ticket |
+| `POST` | `/integrations/digilocker/kyc` | Bearer JWT | `OWNER` | Verify consent ID and retrieve verified KYC profile |
+
+**Request Consent**:
+
+```bash
+curl -X POST http://localhost:3000/integrations/digilocker/consent \
+  -H "Authorization: Bearer <owner-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"documentType":"GSTIN"}'
+```
+
+Response:
+
+```json
+{
+  "consentId": "a910f9bd-3f3c-4cf2-831e-4581f21db597",
+  "status": "GRANTED",
+  "documentType": "GSTIN",
+  "provider": "digilocker-mock",
+  "expiresAt": "2026-10-01T03:30:00.000Z"
+}
+```
+
+**Verify KYC**:
+
+```bash
+curl -X POST http://localhost:3000/integrations/digilocker/kyc \
+  -H "Authorization: Bearer <owner-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"consentId":"a910f9bd-3f3c-4cf2-831e-4581f21db597"}'
+```
+
+Response:
+
+```json
+{
+  "consentId": "a910f9bd-3f3c-4cf2-831e-4581f21db597",
+  "verified": true,
+  "documentType": "GSTIN",
+  "maskedDocumentNumber": "27AAAAA0000A1Z5",
+  "kyc": {
+    "name": "Verified MSME Business",
+    "address": "Verified Business Address, India",
+    "pan": "ABCDE1234F"
+  },
+  "provider": "digilocker-mock",
+  "verifiedAt": "2026-10-01T02:30:00.000Z"
+}
+```
+
+#### WhatsApp Conversational Intake (`/integrations/whatsapp`)
+
+Captures incoming MSME business leads and conversational onboarding details through WhatsApp.
+
+| Method | Path | Auth | Roles | Description |
+|--------|------|------|-------|-------------|
+| `POST` | `/integrations/whatsapp/intake` | Bearer JWT | `OWNER` | Intake and map incoming WhatsApp business details |
+
+```bash
+curl -X POST http://localhost:3000/integrations/whatsapp/intake \
+  -H "Authorization: Bearer <owner-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "+919876543210",
+    "businessName": "Balaji Electronics",
+    "senderName": "Ramesh Patel",
+    "industry": "retail",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "message": "Interested in setting up POS and inventory sync"
+  }'
+```
+
+---
+
+### 7. Data Migration Engine (`/migration`)
+
+Phase 7 delivered a universal legacy migration engine tailored for Indian MSMEs transitioning from spreadsheets or desktop accounting software (Tally ERP 9 / Tally Prime) to GrowNova OS.
+
+| Method | Path | Auth | Roles | Description |
+|--------|------|------|-------|-------------|
+| `POST` | `/migration/upload` | Bearer JWT | Any | Upload `.xlsx`, `.xls`, or `.xml` file to parse into normalized records |
+
+#### Supported Formats & Parsers
+
+1. **Excel Spreadsheets (`.xlsx`, `.xls`)**:
+   - Parses multi-sheet workbooks using `xlsx`
+   - Maps each sheet to an entity category (e.g. Products, Customers, Vendors)
+   - Preserves typed rows, column keys, and empty cell defaults
+2. **Tally XML Exports (`.xml`)**:
+   - Parses complex, nested Tally XML hierarchies using `fast-xml-parser`
+   - Flattens master records, ledgers, vouchers, and inventory items into normalized entity dictionaries
+   - Handles XML attributes, numeric conversion, and whitespace trimming
+
+#### Sample Upload Request
+
+```bash
+curl -X POST http://localhost:3000/migration/upload \
+  -H "Authorization: Bearer <jwt>" \
+  -F "file=@test-data/products.xlsx"
+```
+
+Response:
+
+```json
+{
+  "source": "excel",
+  "totalRecords": 25,
+  "records": [
+    {
+      "source": "excel",
+      "entity": "Sheet1",
+      "data": {
+        "Product Name": "Cotton Kurti Blue",
+        "SKU": "CK-BLU-M",
+        "Price": 899,
+        "Stock": 45,
+        "GST Rate": "5%"
+      }
+    }
+  ]
+}
+```
+
+Tally XML Upload:
+
+```bash
+curl -X POST http://localhost:3000/migration/upload \
+  -H "Authorization: Bearer <jwt>" \
+  -F "file=@test-data/tally-sample.xml"
+```
+
+Response:
+
+```json
+{
+  "source": "tally_xml",
+  "totalRecords": 3,
+  "records": [
+    {
+      "source": "tally_xml",
+      "entity": "LEDGER",
+      "data": {
+        "NAME": "Cash Account",
+        "PARENT": "Cash-in-Hand",
+        "OPENINGBALANCE": 15000
+      }
+    }
+  ]
+}
+```
+
+Ready-to-use sample files are available under `test-data/`:
+- `test-data/products.xlsx` — Multi-row product catalog
+- `test-data/tally-sample.xml` — Tally ERP XML master export
+- `test-data/invalid.txt` — Negative test fixture for file type validation
+
+---
+
+## API Contracts (Zod)
+
+Shared request/response contracts reside in `src/common/contracts` and `src/migration/contracts`. They export Zod schemas and inferred TypeScript types:
+
+- `src/common/contracts/auth/auth.contract.ts` — `SignupRequest`, `SignupResponse`, `LoginRequest`, `LoginResponse`
+- `src/common/contracts/business.contract.ts` — `CreateBusinessRequest`, `CreateBusinessResponse`, `UpdateBusinessRequest`
+- `src/common/contracts/onboarding.contract.ts` — `OnboardingRequest`, `OnboardingResponse`, `WhatsAppIntakeRequest`, `INDUSTRY_UI_PRESET`
+- `src/common/contracts/digilocker.contract.ts` — `DigilockerConsentRequest`, `DigilockerConsentResponse`, `DigilockerKycRequest`, `DigilockerKycResponse`
+- `src/migration/contracts/migration.contract.ts` — `MigrationSource`, `NormalizedMigrationRecord`, `NormalizedMigrationResult`
 
 ---
 
@@ -324,43 +598,62 @@ backend/
 ├── .env.example
 ├── nest-cli.json
 ├── package.json
-├── prisma7.config.ts          # Prisma CLI config (schema, migrations, DATABASE_URL)
+├── prisma7.config.ts                  # Prisma CLI config (migrations, seed config, DATABASE_URL)
 ├── prisma/
-│   ├── schema.prisma          # Business, User, Module models + UserRole enum
+│   ├── schema.prisma                  # Business, User, Module, AuditLog models + UserRole enum
+│   ├── seed.ts                        # Database seeding script (demo business, users, roles)
 │   └── migrations/
-├── generated/prisma/          # Generated Prisma client (git-ignored)
+├── generated/prisma/                  # Generated Prisma client (git-ignored)
+├── test-data/                         # Sample datasets for migration testing
+│   ├── products.xlsx                  # Sample Excel inventory file
+│   ├── tally-sample.xml               # Sample Tally XML export
+│   └── invalid.txt                    # Invalid file test fixture
 └── src/
-    ├── main.ts                # Bootstrap, ValidationPipe, Swagger
-    ├── app.module.ts          # Root module
+    ├── main.ts                        # Application bootstrap, Swagger, global pipes & filters
+    ├── app.module.ts                  # Root application module with Throttler & Interceptors
     ├── config/
-    │   └── configuration.ts   # Typed env config (port, redis, jwt)
+    │   └── configuration.ts           # Typed environment configuration
     ├── common/
-    │   ├── contracts/         # Zod API contracts
-    │   └── interceptors/      # ApiResponseInterceptor
-    ├── health/                # GET /health
-    ├── prisma/                # PrismaService (pg adapter)
-    ├── redis/                 # RedisService (ioredis)
-    ├── auth/                  # Signup, login, refresh, logout, JWT strategy/guard, RolesGuard, @Roles()
-    ├── businesses/            # Tenant-scoped businesses CRUD + deactivate
-    ├── users/                 # (skeleton)
-    ├── onboarding/            # (skeleton)
-    ├── crm/  inventory/  pos/  accounting/  gst/
-    ├── hr/  payroll/  production/  marketing/  support/
+    │   ├── contracts/                 # Shared Zod API contracts
+    │   ├── filters/
+    │   │   └── http-exception.filter.ts # Unified global error response filter
+    │   └── interceptors/
+    │       └── api-response.interceptor.ts # API response envelope interceptor
+    ├── health/                        # GET /health liveness check
+    ├── prisma/                        # PrismaService (PostgreSQL adapter)
+    ├── redis/                         # RedisService (ioredis client)
+    ├── auth/                          # Signup, login, refresh, logout, JWT strategy & RolesGuard
+    ├── businesses/                    # Tenant-scoped business CRUD & deactivation
+    ├── audit/                         # SHA-256 hash-chained audit logging & integrity verification
+    ├── onboarding/                    # Owner onboarding & industry UI preset assignment
+    ├── integrations/                  # External service adapters & intake
+    │   ├── digilocker/                # DigiLocker consent & mock KYC verification
+    │   └── whatsapp/                  # WhatsApp conversational intake & messaging
+    ├── migration/                     # Data migration engine (Excel & Tally XML parsers)
+    │   ├── contracts/                 # Migration contract types
+    │   └── parsers/                   # ExcelParser & TallyParser implementations
+    ├── users/                         # User management (skeleton)
+    ├── crm/  inventory/  pos/         # MSME domain modules (skeletons)
+    ├── accounting/  gst/
+    ├── hr/  payroll/  production/
+    ├── marketing/  support/
     ├── dashboard/  collaboration/  growai/
-    ├── audit/  notifications/  jobs/          # (skeletons)
-    └── integerations/         # (skeletons)
-        ├── whatsapp/  upi/  gstn/  ondc/
-        └── tally/  digilocker/  translation/
+    ├── notifications/  jobs/
+    └── integerations/                 # Secondary third-party adapter stubs (UPI, GSTN, ONDC, Tally)
 ```
 
 ---
 
 ## Roadmap
 
-- Public onboarding flow (create business + owner in one step)
-- Apply `@Roles()` restrictions to business mutations (e.g. owner-only delete/deactivate)
-- Refresh token rotation and TTL on Redis keys
-- Register `ApiResponseInterceptor` globally and add a global exception filter
-- Implement onboarding and domain modules (CRM, Inventory, POS, Accounting/GST, HR/Payroll, …)
-- Integrations: WhatsApp, UPI, GSTN, ONDC, Tally, DigiLocker, Translation
-- Test setup (Jest) and CI
+- [x] **Phase 0**: NestJS foundation & health endpoint
+- [x] **Phase 1**: Prisma 7, PostgreSQL, Redis, initial migrations
+- [x] **Phase 2**: Zod API contracts, global validation, JWT auth, business API
+- [x] **Phase 3**: Redis-backed refresh token rotation & session revocation
+- [x] **Phase 4**: Role-Based Access Control (`OWNER`, `ACCOUNTANT`, `OPS`, `EMPLOYEE`) & multi-tenancy
+- [x] **Phase 5**: Cryptographic SHA-256 audit ledger, tamper verification, rate limiting, DB seeding
+- [x] **Phase 6**: MSME onboarding flow, DigiLocker KYC mock adapter, WhatsApp intake
+- [x] **Phase 7**: Legacy data migration engine for Excel (`.xlsx`) and Tally XML (`.xml`)
+- [ ] **Phase 8**: Next.js 15 Web Frontend integration with dynamic UI presets (`retail`, `manufacturing`, `services`)
+- [ ] **Phase 9**: Full domain module logic (Inventory catalog sync, POS billing, GST invoicing)
+- [ ] **Phase 10**: Live third-party integrations (Official WhatsApp Business API, Sandbox GSTN e-Invoice/e-Way, Sandbox ONDC Beckn protocol)

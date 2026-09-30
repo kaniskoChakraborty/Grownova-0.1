@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ENVELOPE>
+  <BODY>
+    <DATA>
+      <LEDGER>
+        <NAME>Sales Account</NAME>
+        <PARENT>Sales Accounts</PARENT>
+        <OPENINGBALANCE>0</OPENINGBALANCE>
+      </LEDGER>
+
+      <LEDGER>
+        <NAME>Cash</NAME>
+        <PARENT>Cash-in-Hand</PARENT>
+        <OPENINGBALANCE>50000</OPENINGBALANCE>
+      </LEDGER>
+
+      <LEDGER>
+        <NAME>ABC Suppliers</NAME>
+        <PARENT>Sundry Creditors</PARENT>
+        <OPENINGBALANCE>-25000</OPENINGBALANCE>
+      </LEDGER>
+    </DATA>
+  </BODY>
+</ENVELOPE>

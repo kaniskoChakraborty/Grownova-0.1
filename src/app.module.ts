@@ -1,3 +1,4 @@
+import { MigrationModule } from './migration/migration.module';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -78,6 +79,7 @@ import { ApiResponseInterceptor } from './common/interceptors/api-response.inter
     UpiModule,
     OndcModule,
     TallyModule,
+    MigrationModule,
     TranslationModule,
   ],
   providers: [

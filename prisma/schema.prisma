@@ -15,6 +15,7 @@ enum UserRole {
 }
 
 model Business {
+  leads     Lead[]
   id        String   @id @default(uuid())
   name      String
   industry  String?
@@ -81,4 +82,34 @@ model AuditLog {
   @@index([actorId])
   @@index([entity, entityId])
   @@index([createdAt])
+}
+
+enum LeadSource {
+  MANUAL
+  WHATSAPP
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  WON
+  LOST
+}
+
+model Lead {
+  id         String     @id @default(uuid())
+  businessId String
+  business   Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name       String?
+  phone      String?
+  email      String?
+  source     LeadSource @default(MANUAL)
+  status     LeadStatus @default(NEW)
+  rawMessage String?
+  notes      String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([businessId, status])
 }

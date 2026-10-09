@@ -1,4 +1,12 @@
 import { Module } from '@nestjs/common';
+import { PrismaModule } from '../prisma/prisma.module';
+import { LeadsController } from './leads.controller';
+import { LeadsService } from './leads.service';
 
-@Module({})
+@Module({
+  imports: [PrismaModule],
+  controllers: [LeadsController],
+  providers: [LeadsService],
+  exports: [LeadsService], // the WhatsApp webhook (step 2) creates leads through this
+})
 export class CrmModule {}

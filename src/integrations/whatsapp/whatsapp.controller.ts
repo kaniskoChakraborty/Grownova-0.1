@@ -13,6 +13,7 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { UserRole } from '../../../generated/prisma/client';
 import { WhatsAppService } from './whatsapp.service';
 import { WhatsAppIntakeDto } from './dto/whatsapp-intake.dto';
+import { WhatsAppWebhookDto } from './dto/whatsapp-webhook.dto';
 
 @ApiBearerAuth()
 @Controller('integrations/whatsapp')
@@ -29,5 +30,13 @@ export class WhatsAppController {
     @Body() dto: WhatsAppIntakeDto,
   ) {
     return this.whatsappService.intake(request.user.businessId, dto);
+  }
+
+  @Post('webhook')
+  async webhook(
+    @Request() request: any,
+    @Body() dto: WhatsAppWebhookDto,
+  ) {
+    return this.whatsappService.webhook(request.user.businessId, dto);
   }
 }

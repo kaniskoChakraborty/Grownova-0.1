@@ -108,6 +108,8 @@ model Lead {
   status     LeadStatus @default(NEW)
   rawMessage String?
   notes      String?
+  score      Int?
+  enrichment Json?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 

@@ -6,6 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { STATUS_CODES } from 'http';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -25,7 +26,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         : null;
 
     let message: string | string[] = 'Internal server error';
-    let error = 'Internal Server Error';
+    // Default label follows the status (401 -> "Unauthorized"), not a fixed 500 text.
+    let error = STATUS_CODES[status] ?? 'Error';
 
     if (typeof exceptionResponse === 'string') {
       message = exceptionResponse;

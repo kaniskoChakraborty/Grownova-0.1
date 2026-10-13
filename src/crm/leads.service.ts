@@ -85,6 +85,13 @@ export class LeadsService {
     return this.changeStage(lead, to, actorId);
   }
 
+  // A fully paid invoice wins the lead from any open stage, skipping the one-step rule. WON/LOST leads stay put.
+  async winFromPayment(businessId: string, id: string, actorId: string) {
+    const lead = await this.findOne(businessId, id);
+    if (lead.status === LeadStatus.WON || lead.status === LeadStatus.LOST) return lead;
+    return this.changeStage(lead, LeadStatus.WON, actorId);
+  }
+
   async history(businessId: string, id: string) {
     await this.findOne(businessId, id);
     return this.prisma.leadStageEvent.findMany({

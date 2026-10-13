@@ -3,6 +3,7 @@ import { LeadSource, LeadStatus, Prisma } from '../../generated/prisma/client';
 import { GrowaiService } from '../growai/growai.service';
 import { scoreLead } from '../growai/growai.rules';
 import { PrismaService } from '../prisma/prisma.service';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { CreateLeadDto, UpdateLeadDto } from './dto/lead.dto';
 import { ParsedLead } from './lead-parser';
 import { canMove, NEXT_STAGES, nextStage, shouldAutoQualify } from './pipeline';
@@ -12,15 +13,18 @@ export class LeadsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly growai: GrowaiService,
+    private readonly realtime: RealtimeGateway,
   ) {}
 
-  create(businessId: string, dto: CreateLeadDto) {
+  async create(businessId: string, dto: CreateLeadDto) {
     if (!dto.name && !dto.phone) {
       throw new BadRequestException('A lead needs at least a name or a phone number');
     }
     // Fields picked explicitly so a client can never set businessId/source via the body.
     const { name, phone, email, notes } = dto;
-    return this.prisma.lead.create({ data: { businessId, name, phone, email, notes } });
+    const lead = await this.prisma.lead.create({ data: { businessId, name, phone, email, notes } });
+    this.realtime.emitToBusiness(businessId, 'lead.created', lead);
+    return lead;
   }
 
   // Same sender again -> update that lead instead of creating a duplicate.
@@ -34,9 +38,11 @@ export class LeadsService {
         data: { rawMessage, name: existing.name ?? name, email: existing.email ?? email },
       });
     }
-    return this.prisma.lead.create({
+    const created = await this.prisma.lead.create({
       data: { businessId, name, phone, email, rawMessage, source: LeadSource.WHATSAPP },
     });
+    this.realtime.emitToBusiness(businessId, 'lead.created', created);
+    return created;
   }
 
   findAll(businessId: string, status?: LeadStatus) {
@@ -87,7 +93,7 @@ export class LeadsService {
   // Every stage change goes through here so the lead and its history can't disagree.
   // actorId null = the system moved it (auto-qualify).
   private async changeStage(
-    lead: { id: string; status: LeadStatus },
+    lead: { id: string; businessId: string; status: LeadStatus },
     to: LeadStatus,
     actorId: string | null,
     data: Prisma.LeadUpdateInput = {},
@@ -98,6 +104,12 @@ export class LeadsService {
         data: { leadId: lead.id, fromStatus: lead.status, toStatus: to, actorId },
       }),
     ]);
+    this.realtime.emitToBusiness(lead.businessId, 'lead.stage_changed', {
+      lead: updated,
+      fromStatus: lead.status,
+      toStatus: to,
+      actorId,
+    });
     return updated;
   }
 

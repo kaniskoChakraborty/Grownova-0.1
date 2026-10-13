@@ -5,6 +5,7 @@ import { scoreLead } from '../growai/growai.rules';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLeadDto, UpdateLeadDto } from './dto/lead.dto';
 import { ParsedLead } from './lead-parser';
+import { canMove, NEXT_STAGES } from './pipeline';
 
 @Injectable()
 export class LeadsService {
@@ -53,9 +54,22 @@ export class LeadsService {
   }
 
   async update(businessId: string, id: string, dto: UpdateLeadDto) {
-    await this.findOne(businessId, id); // tenant check before writing
+    const lead = await this.findOne(businessId, id); // tenant check before writing
     const { name, phone, email, notes, status } = dto;
+    if (status && status !== lead.status) this.assertCanMove(lead.status, status);
     return this.prisma.lead.update({ where: { id }, data: { name, phone, email, notes, status } });
+  }
+
+  async move(businessId: string, id: string, to: LeadStatus) {
+    const lead = await this.findOne(businessId, id);
+    this.assertCanMove(lead.status, to);
+    return this.prisma.lead.update({ where: { id }, data: { status: to } });
+  }
+
+  private assertCanMove(from: LeadStatus, to: LeadStatus) {
+    if (canMove(from, to)) return;
+    const allowed = NEXT_STAGES[from].join(', ') || 'none (final stage)';
+    throw new BadRequestException(`Cannot move lead from ${from} to ${to}. Allowed: ${allowed}`);
   }
 
   async enrich(businessId: string, id: string) {

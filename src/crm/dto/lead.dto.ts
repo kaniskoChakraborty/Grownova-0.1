@@ -1,4 +1,4 @@
-import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { LeadStatus } from '../../../generated/prisma/client';
 import { IsEmail, IsEnum, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
@@ -31,4 +31,10 @@ export class ListLeadsQuery {
   @ApiPropertyOptional({ enum: LeadStatus })
   @IsOptional() @IsEnum(LeadStatus)
   status?: LeadStatus;
+}
+
+export class MoveLeadDto {
+  @ApiProperty({ enum: LeadStatus, example: 'CONTACTED', description: 'Target stage. Allowed: NEW->CONTACTED->QUALIFIED->WON, or any open stage -> LOST' })
+  @IsEnum(LeadStatus)
+  status!: LeadStatus;
 }

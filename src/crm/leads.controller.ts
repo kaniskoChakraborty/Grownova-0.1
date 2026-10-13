@@ -4,7 +4,7 @@ import { UserRole } from '../../generated/prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CreateLeadDto, ListLeadsQuery, UpdateLeadDto } from './dto/lead.dto';
+import { CreateLeadDto, ListLeadsQuery, MoveLeadDto, UpdateLeadDto } from './dto/lead.dto';
 import { LeadResponseDto } from './dto/lead-response.dto';
 import { LeadsService } from './leads.service';
 
@@ -46,6 +46,13 @@ export class LeadsController {
   @ApiOkResponse({ type: LeadResponseDto })
   update(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: UpdateLeadDto) {
     return this.leads.update(req.user.businessId, id, dto);
+  }
+
+  @Patch(':id/stage')
+  @Roles(...WRITERS)
+  @ApiOkResponse({ type: LeadResponseDto, description: 'Move the lead to another pipeline stage' })
+  move(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: MoveLeadDto) {
+    return this.leads.move(req.user.businessId, id, dto.status);
   }
 
   @Post(':id/enrich')

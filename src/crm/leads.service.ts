@@ -53,24 +53,52 @@ export class LeadsService {
     return lead;
   }
 
-  async update(businessId: string, id: string, dto: UpdateLeadDto) {
+  async update(businessId: string, id: string, dto: UpdateLeadDto, actorId: string) {
     const lead = await this.findOne(businessId, id); // tenant check before writing
     const { name, phone, email, notes, status } = dto;
-    if (status && status !== lead.status) this.assertCanMove(lead.status, status);
-    return this.prisma.lead.update({ where: { id }, data: { name, phone, email, notes, status } });
+    const data = { name, phone, email, notes };
+    if (!status || status === lead.status) return this.prisma.lead.update({ where: { id }, data });
+    this.assertCanMove(lead.status, status);
+    return this.changeStage(lead, status, actorId, data);
   }
 
-  async move(businessId: string, id: string, to: LeadStatus) {
+  async move(businessId: string, id: string, to: LeadStatus, actorId: string) {
     const lead = await this.findOne(businessId, id);
     this.assertCanMove(lead.status, to);
-    return this.prisma.lead.update({ where: { id }, data: { status: to } });
+    return this.changeStage(lead, to, actorId);
   }
 
-  async advance(businessId: string, id: string) {
+  async advance(businessId: string, id: string, actorId: string) {
     const lead = await this.findOne(businessId, id);
     const to = nextStage(lead.status);
     if (!to) throw new BadRequestException(`Lead is ${lead.status}, which is a final stage`);
-    return this.prisma.lead.update({ where: { id }, data: { status: to } });
+    return this.changeStage(lead, to, actorId);
+  }
+
+  async history(businessId: string, id: string) {
+    await this.findOne(businessId, id);
+    return this.prisma.leadStageEvent.findMany({
+      where: { leadId: id },
+      orderBy: { createdAt: 'asc' },
+      include: { actor: { select: { id: true, name: true } } },
+    });
+  }
+
+  // Every stage change goes through here so the lead and its history can't disagree.
+  // actorId null = the system moved it (auto-qualify).
+  private async changeStage(
+    lead: { id: string; status: LeadStatus },
+    to: LeadStatus,
+    actorId: string | null,
+    data: Prisma.LeadUpdateInput = {},
+  ) {
+    const [updated] = await this.prisma.$transaction([
+      this.prisma.lead.update({ where: { id: lead.id }, data: { ...data, status: to } }),
+      this.prisma.leadStageEvent.create({
+        data: { leadId: lead.id, fromStatus: lead.status, toStatus: to, actorId },
+      }),
+    ]);
+    return updated;
   }
 
   private assertCanMove(from: LeadStatus, to: LeadStatus) {
@@ -85,13 +113,8 @@ export class LeadsService {
     if (!text) throw new BadRequestException('Lead has no message or notes to enrich');
     const enrichment = await this.growai.enrichLead(text, lead.name);
     const score = scoreLead(enrichment.intent, text, lead);
-    return this.prisma.lead.update({
-      where: { id },
-      data: {
-        enrichment: enrichment as Prisma.InputJsonValue,
-        score,
-        ...(shouldAutoQualify(lead.status, score) && { status: LeadStatus.QUALIFIED }),
-      },
-    });
+    const data = { enrichment: enrichment as Prisma.InputJsonValue, score };
+    if (shouldAutoQualify(lead.status, score)) return this.changeStage(lead, LeadStatus.QUALIFIED, null, data);
+    return this.prisma.lead.update({ where: { id }, data });
   }
 }

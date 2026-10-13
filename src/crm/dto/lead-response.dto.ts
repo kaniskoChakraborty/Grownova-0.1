@@ -28,3 +28,18 @@ export class LeadResponseDto {
   @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;
   @ApiProperty({ type: String, format: 'date-time' }) updatedAt!: Date;
 }
+
+class StageActorDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() name!: string;
+}
+
+export class LeadStageEventDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() leadId!: string;
+  @ApiProperty({ enum: LeadStatus }) fromStatus!: LeadStatus;
+  @ApiProperty({ enum: LeadStatus }) toStatus!: LeadStatus;
+  @ApiPropertyOptional({ type: String, nullable: true }) actorId!: string | null;
+  @ApiPropertyOptional({ type: StageActorDto, nullable: true, description: 'null = moved automatically' }) actor!: StageActorDto | null;
+  @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;
+}

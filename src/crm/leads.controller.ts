@@ -5,10 +5,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateLeadDto, ListLeadsQuery, MoveLeadDto, UpdateLeadDto } from './dto/lead.dto';
-import { LeadResponseDto } from './dto/lead-response.dto';
+import { LeadResponseDto, LeadStageEventDto } from './dto/lead-response.dto';
 import { LeadsService } from './leads.service';
 
-type AuthedRequest = { user: { businessId: string } }; // set by JwtStrategy.validate()
+type AuthedRequest = { user: { id: string; businessId: string } }; // set by JwtStrategy.validate()
 
 const ALL = [UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.OPS, UserRole.EMPLOYEE];
 const WRITERS = [UserRole.OWNER, UserRole.OPS, UserRole.EMPLOYEE];
@@ -41,25 +41,32 @@ export class LeadsController {
     return this.leads.findOne(req.user.businessId, id);
   }
 
+  @Get(':id/history')
+  @Roles(...ALL)
+  @ApiOkResponse({ type: [LeadStageEventDto], description: 'Stage changes, oldest first. actor is null when the system moved the lead (auto-qualify).' })
+  history(@Req() req: AuthedRequest, @Param('id') id: string) {
+    return this.leads.history(req.user.businessId, id);
+  }
+
   @Patch(':id')
   @Roles(...WRITERS)
   @ApiOkResponse({ type: LeadResponseDto })
   update(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: UpdateLeadDto) {
-    return this.leads.update(req.user.businessId, id, dto);
+    return this.leads.update(req.user.businessId, id, dto, req.user.id);
   }
 
   @Patch(':id/stage')
   @Roles(...WRITERS)
   @ApiOkResponse({ type: LeadResponseDto, description: 'Move the lead to another pipeline stage' })
   move(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: MoveLeadDto) {
-    return this.leads.move(req.user.businessId, id, dto.status);
+    return this.leads.move(req.user.businessId, id, dto.status, req.user.id);
   }
 
   @Post(':id/advance')
   @Roles(...WRITERS)
   @ApiCreatedResponse({ type: LeadResponseDto, description: 'Move the lead to the next stage: NEW -> CONTACTED -> QUALIFIED -> WON. No body.' })
   advance(@Req() req: AuthedRequest, @Param('id') id: string) {
-    return this.leads.advance(req.user.businessId, id);
+    return this.leads.advance(req.user.businessId, id, req.user.id);
   }
 
   @Post(':id/enrich')

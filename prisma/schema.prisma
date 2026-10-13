@@ -46,6 +46,8 @@ model User {
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
+  leadStageEvents LeadStageEvent[]
+
   @@index([businessId])
 }
 
@@ -113,5 +115,21 @@ model Lead {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 
+  stageEvents LeadStageEvent[]
+
   @@index([businessId, status])
+}
+
+/// One row per pipeline stage change. actorId is null when the system moved the lead (auto-qualify).
+model LeadStageEvent {
+  id         String     @id @default(uuid())
+  leadId     String
+  lead       Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  fromStatus LeadStatus
+  toStatus   LeadStatus
+  actorId    String?
+  actor      User?      @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt  DateTime   @default(now())
+
+  @@index([leadId, createdAt])
 }

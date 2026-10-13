@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { LeadStatus } from '../../../generated/prisma/client';
-import { IsEmail, IsEnum, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+import { IsDateString, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 // source, rawMessage and businessId are deliberately NOT client-settable.
 export class CreateLeadDto {
@@ -37,4 +37,14 @@ export class MoveLeadDto {
   @ApiProperty({ enum: LeadStatus, example: 'CONTACTED', description: 'Target stage. Allowed: NEW->CONTACTED->QUALIFIED->WON, or any open stage -> LOST' })
   @IsEnum(LeadStatus)
   status!: LeadStatus;
+}
+
+export class CreateReminderDto {
+  @ApiProperty({ example: 'Call back about the 50 boxes order' })
+  @IsString() @IsNotEmpty() @MaxLength(500)
+  note!: string;
+
+  @ApiProperty({ example: '2026-10-14T10:00:00+05:30', description: 'When to fire. A past time fires straight away.' })
+  @IsDateString()
+  dueAt!: string;
 }

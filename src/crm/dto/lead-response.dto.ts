@@ -43,3 +43,14 @@ export class LeadStageEventDto {
   @ApiPropertyOptional({ type: StageActorDto, nullable: true, description: 'null = moved automatically' }) actor!: StageActorDto | null;
   @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;
 }
+
+export class LeadReminderDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() leadId!: string;
+  @ApiProperty() note!: string;
+  @ApiProperty({ type: String, format: 'date-time' }) dueAt!: Date;
+  @ApiProperty({ enum: ['PENDING', 'SENT'] }) status!: string;
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true }) sentAt!: Date | null;
+  @ApiPropertyOptional({ type: String, nullable: true }) createdById!: string | null;
+  @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;
+}

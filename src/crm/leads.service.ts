@@ -1,12 +1,15 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Queue } from 'bullmq';
 import { LeadSource, LeadStatus, Prisma } from '../../generated/prisma/client';
 import { GrowaiService } from '../growai/growai.service';
 import { scoreLead } from '../growai/growai.rules';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
-import { CreateLeadDto, UpdateLeadDto } from './dto/lead.dto';
+import { CreateLeadDto, CreateReminderDto, UpdateLeadDto } from './dto/lead.dto';
 import { ParsedLead } from './lead-parser';
 import { canMove, NEXT_STAGES, nextStage, shouldAutoQualify } from './pipeline';
+import { REMINDERS_QUEUE } from './reminders.processor';
 
 @Injectable()
 export class LeadsService {
@@ -14,6 +17,7 @@ export class LeadsService {
     private readonly prisma: PrismaService,
     private readonly growai: GrowaiService,
     private readonly realtime: RealtimeGateway,
+    @InjectQueue(REMINDERS_QUEUE) private readonly reminderQueue: Queue,
   ) {}
 
   async create(businessId: string, dto: CreateLeadDto) {
@@ -88,6 +92,26 @@ export class LeadsService {
       orderBy: { createdAt: 'asc' },
       include: { actor: { select: { id: true, name: true } } },
     });
+  }
+
+  async addReminder(businessId: string, id: string, dto: CreateReminderDto, actorId: string) {
+    await this.findOne(businessId, id);
+    const dueAt = new Date(dto.dueAt);
+    const reminder = await this.prisma.leadReminder.create({
+      data: { leadId: id, note: dto.note, dueAt, createdById: actorId },
+    });
+    // jobId = reminder id, so the same reminder can never be queued twice.
+    await this.reminderQueue.add(
+      'send',
+      { reminderId: reminder.id },
+      { jobId: reminder.id, delay: Math.max(0, dueAt.getTime() - Date.now()), attempts: 3, removeOnComplete: true },
+    );
+    return reminder;
+  }
+
+  async reminders(businessId: string, id: string) {
+    await this.findOne(businessId, id);
+    return this.prisma.leadReminder.findMany({ where: { leadId: id }, orderBy: { dueAt: 'asc' } });
   }
 
   // Every stage change goes through here so the lead and its history can't disagree.

@@ -116,6 +116,7 @@ model Lead {
   updatedAt  DateTime   @updatedAt
 
   stageEvents LeadStageEvent[]
+  reminders   LeadReminder[]
 
   @@index([businessId, status])
 }
@@ -132,4 +133,24 @@ model LeadStageEvent {
   createdAt  DateTime   @default(now())
 
   @@index([leadId, createdAt])
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+}
+
+/// Follow-up reminder on a lead. A BullMQ delayed job fires it at dueAt.
+model LeadReminder {
+  id          String         @id @default(uuid())
+  leadId      String
+  lead        Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  note        String
+  dueAt       DateTime
+  status      ReminderStatus @default(PENDING)
+  sentAt      DateTime?
+  createdById String?
+  createdAt   DateTime       @default(now())
+
+  @@index([leadId, dueAt])
 }

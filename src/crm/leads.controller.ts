@@ -4,8 +4,8 @@ import { UserRole } from '../../generated/prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CreateLeadDto, ListLeadsQuery, MoveLeadDto, UpdateLeadDto } from './dto/lead.dto';
-import { LeadResponseDto, LeadStageEventDto } from './dto/lead-response.dto';
+import { CreateLeadDto, CreateReminderDto, ListLeadsQuery, MoveLeadDto, UpdateLeadDto } from './dto/lead.dto';
+import { LeadReminderDto, LeadResponseDto, LeadStageEventDto } from './dto/lead-response.dto';
 import { LeadsService } from './leads.service';
 
 type AuthedRequest = { user: { id: string; businessId: string } }; // set by JwtStrategy.validate()
@@ -46,6 +46,20 @@ export class LeadsController {
   @ApiOkResponse({ type: [LeadStageEventDto], description: 'Stage changes, oldest first. actor is null when the system moved the lead (auto-qualify).' })
   history(@Req() req: AuthedRequest, @Param('id') id: string) {
     return this.leads.history(req.user.businessId, id);
+  }
+
+  @Get(':id/reminders')
+  @Roles(...ALL)
+  @ApiOkResponse({ type: [LeadReminderDto], description: 'Reminders on this lead, soonest first' })
+  reminders(@Req() req: AuthedRequest, @Param('id') id: string) {
+    return this.leads.reminders(req.user.businessId, id);
+  }
+
+  @Post(':id/reminders')
+  @Roles(...WRITERS)
+  @ApiCreatedResponse({ type: LeadReminderDto, description: 'Schedule a follow-up. At dueAt it is marked SENT and a lead.reminder_due live event fires.' })
+  addReminder(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: CreateReminderDto) {
+    return this.leads.addReminder(req.user.businessId, id, dto, req.user.id);
   }
 
   @Patch(':id')

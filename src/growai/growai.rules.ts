@@ -19,10 +19,12 @@ const INTENT_RULES: [LeadIntent, RegExp][] = [
   ['ORDER', /\b(order|buy|purchase|book|need|want|chahiye|bhejo|send)\b/i],
 ];
 
+const QUANTITY = /\b\d+\s*(pcs|pieces|boxes|box|kg|units|nos|packets|cartons)\b/i;
+
 export function ruleBasedEnrichment(text: string, name?: string | null): Draft {
   const intent = INTENT_RULES.find(([, re]) => re.test(text))?.[0] ?? 'GENERAL';
   const tags = [intent.toLowerCase().replace('_', '-')];
-  if (/\b\d+\s*(pcs|pieces|boxes|box|kg|units|nos|packets|cartons)\b/i.test(text)) tags.push('has-quantity');
+  if (QUANTITY.test(text)) tags.push('has-quantity');
   if (/\b(hai|kitna|kitne|chahiye|mera|bhai|ji|bhejo)\b/i.test(text)) tags.push('hinglish');
   const snippet = text.length > 120 ? `${text.slice(0, 117)}...` : text;
   return { summary: `${name || 'Unknown contact'} (${intent.replace('_', ' ').toLowerCase()}): ${snippet}`, intent, tags };
@@ -38,4 +40,22 @@ export function parseLlmEnrichment(reply: string): Draft | null {
   } catch {
     return null;
   }
+}
+
+const INTENT_POINTS: Record<LeadIntent, number> = { ORDER: 40, PRICE_ENQUIRY: 30, SUPPORT: 10, GENERAL: 5 };
+
+/** Lead score 0-100: buying intent, a stated quantity, and how reachable the contact is. */
+// ponytail: fixed weights; tune from WON/LOST outcomes once there is real pipeline data.
+export function scoreLead(
+  intent: LeadIntent,
+  text: string,
+  contact: { name?: string | null; phone?: string | null; email?: string | null },
+): number {
+  const score =
+    INTENT_POINTS[intent] +
+    (QUANTITY.test(text) ? 20 : 0) +
+    (contact.phone ? 15 : 0) +
+    (contact.email ? 10 : 0) +
+    (contact.name ? 10 : 0);
+  return Math.min(score, 100);
 }

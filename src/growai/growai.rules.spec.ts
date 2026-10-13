@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import { strict as assert } from 'node:assert';
-import { parseLlmEnrichment, ruleBasedEnrichment } from './growai.rules';
+import { parseLlmEnrichment, ruleBasedEnrichment, scoreLead } from './growai.rules';
 
 describe('ruleBasedEnrichment', () => {
   it('detects a price enquiry with a quantity', () => {
@@ -33,5 +33,13 @@ describe('parseLlmEnrichment', () => {
   it('rejects unknown intents and non-JSON', () => {
     assert.equal(parseLlmEnrichment('{"summary":"x","intent":"HACKED"}'), null);
     assert.equal(parseLlmEnrichment('not json'), null);
+  });
+});
+
+describe('scoreLead', () => {
+  it('ranks a reachable order with a quantity above a bare hello', () => {
+    const contact = { name: 'Ramesh', phone: '+919876543210', email: 'r@x.in' };
+    assert.equal(scoreLead('ORDER', 'Need 10 pcs', contact), 95);
+    assert.equal(scoreLead('GENERAL', 'Hello', {}), 5);
   });
 });

@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { LeadSource, LeadStatus, Prisma } from '../../generated/prisma/client';
 import { GrowaiService } from '../growai/growai.service';
+import { scoreLead } from '../growai/growai.rules';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLeadDto, UpdateLeadDto } from './dto/lead.dto';
 import { ParsedLead } from './lead-parser';
@@ -64,7 +65,10 @@ export class LeadsService {
     const enrichment = await this.growai.enrichLead(text, lead.name);
     return this.prisma.lead.update({
       where: { id },
-      data: { enrichment: enrichment as Prisma.InputJsonValue },
+      data: {
+        enrichment: enrichment as Prisma.InputJsonValue,
+        score: scoreLead(enrichment.intent, text, lead),
+      },
     });
   }
 }

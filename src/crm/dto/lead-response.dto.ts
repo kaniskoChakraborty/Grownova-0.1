@@ -10,7 +10,7 @@ export class LeadEnrichmentDto {
   @ApiProperty({ type: String, format: 'date-time' }) enrichedAt!: string;
 }
 
-/** FE/BE contract for a lead. `status` is the pipeline stage; `score` is set by GrowAI scoring (Phase 9). */
+/** FE/BE contract for a lead. `status` is the pipeline stage; `score` is set when the lead is enriched. */
 export class LeadResponseDto {
   @ApiProperty() id!: string;
   @ApiProperty() businessId!: string;
@@ -20,7 +20,7 @@ export class LeadResponseDto {
   @ApiProperty({ enum: LeadSource }) source!: LeadSource;
   @ApiProperty({ enum: LeadStatus, description: 'Pipeline stage: NEW -> CONTACTED -> QUALIFIED -> WON / LOST' })
   status!: LeadStatus;
-  @ApiPropertyOptional({ type: Number, nullable: true, minimum: 0, maximum: 100, description: 'Lead score 0-100 (Phase 9)' })
+  @ApiPropertyOptional({ type: Number, nullable: true, minimum: 0, maximum: 100, description: 'Lead score 0-100, set by POST /crm/leads/:id/enrich; null until then' })
   score!: number | null;
   @ApiPropertyOptional({ type: String, nullable: true }) rawMessage!: string | null;
   @ApiPropertyOptional({ type: String, nullable: true }) notes!: string | null;

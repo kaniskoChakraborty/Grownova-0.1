@@ -5,7 +5,7 @@ import { scoreLead } from '../growai/growai.rules';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLeadDto, UpdateLeadDto } from './dto/lead.dto';
 import { ParsedLead } from './lead-parser';
-import { canMove, NEXT_STAGES } from './pipeline';
+import { canMove, NEXT_STAGES, nextStage, shouldAutoQualify } from './pipeline';
 
 @Injectable()
 export class LeadsService {
@@ -66,6 +66,13 @@ export class LeadsService {
     return this.prisma.lead.update({ where: { id }, data: { status: to } });
   }
 
+  async advance(businessId: string, id: string) {
+    const lead = await this.findOne(businessId, id);
+    const to = nextStage(lead.status);
+    if (!to) throw new BadRequestException(`Lead is ${lead.status}, which is a final stage`);
+    return this.prisma.lead.update({ where: { id }, data: { status: to } });
+  }
+
   private assertCanMove(from: LeadStatus, to: LeadStatus) {
     if (canMove(from, to)) return;
     const allowed = NEXT_STAGES[from].join(', ') || 'none (final stage)';
@@ -77,11 +84,13 @@ export class LeadsService {
     const text = lead.rawMessage ?? lead.notes;
     if (!text) throw new BadRequestException('Lead has no message or notes to enrich');
     const enrichment = await this.growai.enrichLead(text, lead.name);
+    const score = scoreLead(enrichment.intent, text, lead);
     return this.prisma.lead.update({
       where: { id },
       data: {
         enrichment: enrichment as Prisma.InputJsonValue,
-        score: scoreLead(enrichment.intent, text, lead),
+        score,
+        ...(shouldAutoQualify(lead.status, score) && { status: LeadStatus.QUALIFIED }),
       },
     });
   }

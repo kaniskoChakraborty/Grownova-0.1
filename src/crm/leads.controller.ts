@@ -55,9 +55,16 @@ export class LeadsController {
     return this.leads.move(req.user.businessId, id, dto.status);
   }
 
+  @Post(':id/advance')
+  @Roles(...WRITERS)
+  @ApiCreatedResponse({ type: LeadResponseDto, description: 'Move the lead to the next stage: NEW -> CONTACTED -> QUALIFIED -> WON. No body.' })
+  advance(@Req() req: AuthedRequest, @Param('id') id: string) {
+    return this.leads.advance(req.user.businessId, id);
+  }
+
   @Post(':id/enrich')
   @Roles(...WRITERS)
-  @ApiCreatedResponse({ type: LeadResponseDto, description: 'GrowAI enrichment: LLM if configured, otherwise rules' })
+  @ApiCreatedResponse({ type: LeadResponseDto, description: 'GrowAI enrichment (LLM if configured, otherwise rules). Sets score; score 70+ moves a NEW/CONTACTED lead to QUALIFIED.' })
   enrich(@Req() req: AuthedRequest, @Param('id') id: string) {
     return this.leads.enrich(req.user.businessId, id);
   }

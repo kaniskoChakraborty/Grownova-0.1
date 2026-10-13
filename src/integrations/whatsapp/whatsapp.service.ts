@@ -22,7 +22,7 @@ export class WhatsAppService {
       city: dto.city,
       state: dto.state,
       country: dto.country,
-    });
+    }, 'whatsapp');
   }
 
   // Phase 8: inbound WhatsApp message -> parsed CRM lead.

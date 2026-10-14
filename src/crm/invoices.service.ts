@@ -3,6 +3,7 @@ import { InvoiceStatus } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInvoiceDto, ListInvoicesQuery, RecordPaymentDto } from './dto/invoice.dto';
 import { LeadsService } from './leads.service';
+import { mockIrn } from './irn';
 
 const DEFAULT_CREDIT_DAYS = 30;
 const DETAIL = {
@@ -64,5 +65,15 @@ export class InvoicesService {
     });
     if (paid) await this.leads.winFromPayment(businessId, invoice.leadId, actorId);
     return this.findOne(businessId, id);
+  }
+
+  // Registers the invoice with the (mock) GST portal. Asking again returns the IRN already issued.
+  async generateIrn(businessId: string, id: string) {
+    const invoice = await this.findOne(businessId, id);
+    if (invoice.irn) return invoice;
+    const business = await this.prisma.business.findUniqueOrThrow({ where: { id: businessId }, select: { gstin: true } });
+    if (!business.gstin) throw new BadRequestException('Add your GSTIN to the business (PATCH /businesses/:id) before generating an IRN');
+    const { irn, ackNo } = mockIrn(business.gstin, invoice.number, invoice.createdAt);
+    return this.prisma.invoice.update({ where: { id }, data: { irn, ackNo, ackDate: new Date() }, include: DETAIL });
   }
 }

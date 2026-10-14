@@ -61,6 +61,9 @@ export class InvoiceResponseDto {
   @ApiProperty({ type: String, example: '10000' }) amountPaid!: string;
   @ApiProperty({ enum: InvoiceStatus }) status!: InvoiceStatus;
   @ApiProperty({ type: String, format: 'date-time' }) dueDate!: Date;
+  @ApiPropertyOptional({ type: String, nullable: true, description: 'GST e-invoice reference, set by POST /crm/invoices/:id/irn' }) irn!: string | null;
+  @ApiPropertyOptional({ type: String, nullable: true, example: '112610000123456' }) ackNo!: string | null;
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true }) ackDate!: Date | null;
   @ApiProperty({ type: InvoiceLeadDto }) lead!: InvoiceLeadDto;
   @ApiProperty({ type: [InvoicePaymentDto] }) payments!: InvoicePaymentDto[];
   @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;

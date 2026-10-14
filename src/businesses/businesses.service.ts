@@ -74,6 +74,7 @@ export class BusinessesService {
     city?: string;
     state?: string;
     country?: string;
+    gstin?: string;
   },
 ) {
   if (id !== businessId) {

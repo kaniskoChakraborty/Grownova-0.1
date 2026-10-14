@@ -46,4 +46,11 @@ export class InvoicesController {
   recordPayment(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: RecordPaymentDto) {
     return this.invoices.recordPayment(req.user.businessId, id, dto, req.user.id);
   }
+
+  @Post(':id/irn')
+  @Roles(...MONEY)
+  @ApiCreatedResponse({ type: InvoiceResponseDto, description: 'Mock e-invoice registration. Needs the business GSTIN. Calling it again returns the same IRN.' })
+  generateIrn(@Req() req: AuthedRequest, @Param('id') id: string) {
+    return this.invoices.generateIrn(req.user.businessId, id);
+  }
 }

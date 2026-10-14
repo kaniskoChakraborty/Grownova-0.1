@@ -25,6 +25,7 @@ model Business {
   address   String?
   city      String?
   state     String?
+  gstin     String?
   country   String   @default("India")
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -182,6 +183,9 @@ model Invoice {
   amountPaid Decimal        @default(0) @db.Decimal(12, 2)
   status     InvoiceStatus  @default(UNPAID)
   dueDate    DateTime
+  irn        String?        @unique // e-invoice reference from the GST portal (mocked for now)
+  ackNo      String?
+  ackDate    DateTime?
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
 

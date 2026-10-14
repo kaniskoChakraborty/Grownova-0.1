@@ -4,7 +4,7 @@ import { UserRole } from '../../generated/prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { AgeingResponseDto, CreateInvoiceDto, InvoiceResponseDto, ListInvoicesQuery, RecordPaymentDto } from './dto/invoice.dto';
+import { AgeingResponseDto, CancelInvoiceDto, CreateInvoiceDto, InvoiceResponseDto, ListInvoicesQuery, RecordPaymentDto } from './dto/invoice.dto';
 import { InvoicesService } from './invoices.service';
 
 type AuthedRequest = { user: { id: string; businessId: string } };
@@ -59,5 +59,12 @@ export class InvoicesController {
   @ApiCreatedResponse({ type: InvoiceResponseDto, description: 'Mock e-invoice registration. Needs the business GSTIN. Calling it again returns the same IRN.' })
   generateIrn(@Req() req: AuthedRequest, @Param('id') id: string) {
     return this.invoices.generateIrn(req.user.businessId, id);
+  }
+
+  @Post(':id/cancel')
+  @Roles(...MONEY)
+  @ApiCreatedResponse({ type: InvoiceResponseDto, description: 'Cancel an unpaid invoice. Its number stays used. Blocked once payments exist or the IRN is over 24 hours old.' })
+  cancel(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: CancelInvoiceDto) {
+    return this.invoices.cancel(req.user.businessId, id, dto.reason);
   }
 }

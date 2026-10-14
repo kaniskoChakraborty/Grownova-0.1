@@ -17,6 +17,7 @@ enum UserRole {
 model Business {
   leads     Lead[]
   invoices  Invoice[]
+  invoiceCounters InvoiceCounter[]
   id        String   @id @default(uuid())
   name      String
   industry  String?
@@ -162,6 +163,7 @@ enum InvoiceStatus {
   UNPAID
   PARTIALLY_PAID
   PAID
+  CANCELLED
 }
 
 enum PaymentMethod {
@@ -186,6 +188,8 @@ model Invoice {
   irn        String?        @unique // e-invoice reference from the GST portal (mocked for now)
   ackNo      String?
   ackDate    DateTime?
+  cancelledAt  DateTime?
+  cancelReason String?
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
 
@@ -207,4 +211,14 @@ model InvoicePayment {
   paidAt       DateTime      @default(now())
 
   @@index([invoiceId])
+}
+
+// Next invoice serial per business per financial year (GST wants a fresh series each April).
+model InvoiceCounter {
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  fy         String // e.g. "2026-27"
+  last       Int      @default(0)
+
+  @@id([businessId, fy])
 }

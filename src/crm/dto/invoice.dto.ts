@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { InvoiceStatus, LeadStatus, PaymentMethod } from '../../../generated/prisma/client';
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Max, MaxLength } from 'class-validator';
+import { IsDateString, IsEnum, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Length, Max, MaxLength } from 'class-validator';
 
 const MAX_AMOUNT = 9_999_999_999.99; // Decimal(12,2)
 
@@ -32,6 +32,12 @@ export class RecordPaymentDto {
   reference?: string;
 }
 
+export class CancelInvoiceDto {
+  @ApiProperty({ example: 'Customer cancelled the order' })
+  @IsString() @Length(3, 200)
+  reason!: string;
+}
+
 export class ListInvoicesQuery {
   @ApiPropertyOptional() @IsOptional() @IsUUID() leadId?: string;
   @ApiPropertyOptional({ enum: InvoiceStatus }) @IsOptional() @IsEnum(InvoiceStatus) status?: InvoiceStatus;
@@ -55,7 +61,7 @@ class InvoiceLeadDto {
 /** Money fields are decimal strings (e.g. "25000.5") so no precision is lost in JSON. */
 export class InvoiceResponseDto {
   @ApiProperty() id!: string;
-  @ApiProperty({ example: 'INV-0001' }) number!: string;
+  @ApiProperty({ example: 'INV/2026-27/0001' }) number!: string;
   @ApiProperty() leadId!: string;
   @ApiProperty({ type: String, example: '25000' }) total!: string;
   @ApiProperty({ type: String, example: '10000' }) amountPaid!: string;
@@ -64,6 +70,8 @@ export class InvoiceResponseDto {
   @ApiPropertyOptional({ type: String, nullable: true, description: 'GST e-invoice reference, set by POST /crm/invoices/:id/irn' }) irn!: string | null;
   @ApiPropertyOptional({ type: String, nullable: true, example: '112610000123456' }) ackNo!: string | null;
   @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true }) ackDate!: Date | null;
+  @ApiPropertyOptional({ type: String, format: 'date-time', nullable: true }) cancelledAt!: Date | null;
+  @ApiPropertyOptional({ type: String, nullable: true }) cancelReason!: string | null;
   @ApiProperty({ type: InvoiceLeadDto }) lead!: InvoiceLeadDto;
   @ApiProperty({ type: [InvoicePaymentDto] }) payments!: InvoicePaymentDto[];
   @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;

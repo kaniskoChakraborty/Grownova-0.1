@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateInvoiceDto, ListInvoicesQuery, RecordPaymentDto } from './dto/invoice.dto';
 import { LeadsService } from './leads.service';
 import { mockIrn } from './irn';
+import { debtorAgeing } from './ageing';
 
 const DEFAULT_CREDIT_DAYS = 30;
 const DETAIL = {
@@ -75,5 +76,13 @@ export class InvoicesService {
     if (!business.gstin) throw new BadRequestException('Add your GSTIN to the business (PATCH /businesses/:id) before generating an IRN');
     const { irn, ackNo } = mockIrn(business.gstin, invoice.number, invoice.createdAt);
     return this.prisma.invoice.update({ where: { id }, data: { irn, ackNo, ackDate: new Date() }, include: DETAIL });
+  }
+
+  async ageing(businessId: string) {
+    const open = await this.prisma.invoice.findMany({
+      where: { businessId, status: { in: [InvoiceStatus.UNPAID, InvoiceStatus.PARTIALLY_PAID] } },
+      select: { leadId: true, total: true, amountPaid: true, dueDate: true, lead: { select: { name: true } } },
+    });
+    return debtorAgeing(open);
   }
 }

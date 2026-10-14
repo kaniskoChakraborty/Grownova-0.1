@@ -68,3 +68,27 @@ export class InvoiceResponseDto {
   @ApiProperty({ type: [InvoicePaymentDto] }) payments!: InvoicePaymentDto[];
   @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;
 }
+
+class AgeingBucketsDto {
+  @ApiProperty({ example: '25000' }) notDue!: string;
+  @ApiProperty({ example: '10000' }) d1_30!: string;
+  @ApiProperty({ example: '0' }) d31_60!: string;
+  @ApiProperty({ example: '0' }) d61_90!: string;
+  @ApiProperty({ example: '5000' }) d90Plus!: string;
+}
+
+class DebtorDto {
+  @ApiProperty() leadId!: string;
+  @ApiPropertyOptional({ type: String, nullable: true }) name!: string | null;
+  @ApiProperty({ example: '15000' }) outstanding!: string;
+  @ApiProperty({ example: 2 }) invoices!: number;
+  @ApiProperty({ example: 43, description: 'Days past due of the oldest unpaid invoice, 0 if nothing is late' }) maxDaysOverdue!: number;
+  @ApiProperty({ type: AgeingBucketsDto }) buckets!: AgeingBucketsDto;
+}
+
+export class AgeingResponseDto {
+  @ApiProperty({ type: String, format: 'date-time' }) asOf!: string;
+  @ApiProperty({ example: '40000' }) totalOutstanding!: string;
+  @ApiProperty({ type: AgeingBucketsDto }) buckets!: AgeingBucketsDto;
+  @ApiProperty({ type: [DebtorDto], description: 'Most overdue first' }) debtors!: DebtorDto[];
+}

@@ -4,7 +4,7 @@ import { UserRole } from '../../generated/prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CreateInvoiceDto, InvoiceResponseDto, ListInvoicesQuery, RecordPaymentDto } from './dto/invoice.dto';
+import { AgeingResponseDto, CreateInvoiceDto, InvoiceResponseDto, ListInvoicesQuery, RecordPaymentDto } from './dto/invoice.dto';
 import { InvoicesService } from './invoices.service';
 
 type AuthedRequest = { user: { id: string; businessId: string } };
@@ -31,6 +31,13 @@ export class InvoicesController {
   @ApiOkResponse({ type: [InvoiceResponseDto] })
   findAll(@Req() req: AuthedRequest, @Query() query: ListInvoicesQuery) {
     return this.invoices.findAll(req.user.businessId, query);
+  }
+
+  @Get('ageing')
+  @Roles(...MONEY)
+  @ApiOkResponse({ type: AgeingResponseDto, description: 'What customers still owe, by days past the due date (not due, 1-30, 31-60, 61-90, 90+).' })
+  ageing(@Req() req: AuthedRequest) {
+    return this.invoices.ageing(req.user.businessId);
   }
 
   @Get(':id')

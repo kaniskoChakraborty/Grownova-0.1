@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateLeadDto, CreateReminderDto, ListLeadsQuery, MoveLeadDto, UpdateLeadDto } from './dto/lead.dto';
-import { LeadReminderDto, LeadResponseDto, LeadStageEventDto } from './dto/lead-response.dto';
+import { ChurnRiskDto, LeadReminderDto, LeadResponseDto, LeadStageEventDto } from './dto/lead-response.dto';
 import { LeadsService } from './leads.service';
 
 type AuthedRequest = { user: { id: string; businessId: string } }; // set by JwtStrategy.validate()
@@ -32,6 +32,13 @@ export class LeadsController {
   @ApiOkResponse({ type: [LeadResponseDto] })
   findAll(@Req() req: AuthedRequest, @Query() query: ListLeadsQuery) {
     return this.leads.findAll(req.user.businessId, query.status);
+  }
+
+  @Get('churn-risk')
+  @Roles(...ALL)
+  @ApiOkResponse({ type: [ChurnRiskDto], description: 'Won customers with no new invoice or lead update for 90+ days (180+ is HIGH), quietest first.' })
+  churnRisk(@Req() req: AuthedRequest) {
+    return this.leads.churnRisks(req.user.businessId);
   }
 
   @Get(':id')

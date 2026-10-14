@@ -10,6 +10,7 @@ import { CreateLeadDto, CreateReminderDto, UpdateLeadDto } from './dto/lead.dto'
 import { ParsedLead } from './lead-parser';
 import { canMove, NEXT_STAGES, nextStage, shouldAutoQualify } from './pipeline';
 import { REMINDERS_QUEUE } from './reminders.processor';
+import { churnRisk } from './churn';
 
 @Injectable()
 export class LeadsService {
@@ -159,5 +160,21 @@ export class LeadsService {
     const data = { enrichment: enrichment as Prisma.InputJsonValue, score };
     if (shouldAutoQualify(lead.status, score)) return this.changeStage(lead, LeadStatus.QUALIFIED, null, data);
     return this.prisma.lead.update({ where: { id }, data });
+  }
+
+  // Won customers who have gone quiet: no new invoice and no change to the lead for 90+ days.
+  async churnRisks(businessId: string, now = new Date()) {
+    const customers = await this.prisma.lead.findMany({
+      where: { businessId, status: LeadStatus.WON },
+      select: { id: true, name: true, phone: true, updatedAt: true, invoices: { select: { createdAt: true }, orderBy: { createdAt: 'desc' }, take: 1 } },
+    });
+    return customers
+      .map((c) => {
+        const lastActivityAt = new Date(Math.max(c.updatedAt.getTime(), c.invoices[0]?.createdAt.getTime() ?? 0));
+        const daysQuiet = Math.floor((now.getTime() - lastActivityAt.getTime()) / 86_400_000);
+        return { leadId: c.id, name: c.name, phone: c.phone, lastActivityAt, daysQuiet, risk: churnRisk(daysQuiet) };
+      })
+      .filter((c) => c.risk)
+      .sort((a, b) => b.daysQuiet - a.daysQuiet);
   }
 }

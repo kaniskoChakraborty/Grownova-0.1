@@ -54,3 +54,12 @@ export class LeadReminderDto {
   @ApiPropertyOptional({ type: String, nullable: true }) createdById!: string | null;
   @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;
 }
+
+export class ChurnRiskDto {
+  @ApiProperty() leadId!: string;
+  @ApiPropertyOptional({ type: String, nullable: true }) name!: string | null;
+  @ApiPropertyOptional({ type: String, nullable: true }) phone!: string | null;
+  @ApiProperty({ type: String, format: 'date-time', description: 'Latest invoice or lead update' }) lastActivityAt!: Date;
+  @ApiProperty({ example: 120 }) daysQuiet!: number;
+  @ApiProperty({ enum: ['HIGH', 'MEDIUM'] }) risk!: 'HIGH' | 'MEDIUM';
+}

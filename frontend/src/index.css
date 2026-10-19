@@ -1,27 +1,45 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --color-navy: #0B1E36;
-  --color-navy-dark: #061120;
-  --color-navy-light: #16365C;
-  --color-gold: #C2831E;
-  --color-gold-light: #E4A333;
-  --color-gold-glow: #F6BC47;
-  --color-gold-hover: #A86F15;
-  --color-gold-soft: #F9EED9;
-  --color-ivory: #FBF8F1;
+  --font-serif: 'Instrument Serif', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  --color-ivory: #F8F5F1;
   --color-ivory-light: #FFFFFF;
+  --color-navy: #102B4E;
+  --color-navy-dark: #0B2340;
+  --color-navy-light: #1D4172;
+  --color-gold: #C69A43;
+  --color-gold-light: #D5AD66;
+  --color-gold-soft: #F7EEDA;
+  --color-text-secondary: #65758B;
+  --color-positive: #15803D;
+  --color-negative: #DC2626;
 }
 
 :root {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  color: #0B1E36;
-  background-color: #FBF8F1;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  color: #102B4E;
+  background-color: #F8F5F1;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* ========================================================================= */
+  /* CANONICAL GROWNOVA OS DESIGN SYSTEM TOKENS                                */
+  /* ========================================================================= */
+  --gn-bg-ivory: #F8F5F1;
+  --gn-primary-navy: #102B4E;
+  --gn-deep-navy: #0B2340;
+  --gn-muted-gold: #C69A43;
+  --gn-warm-gold: #D5AD66;
+  --gn-glass-white: rgba(255, 255, 255, 0.78);
+  --gn-glass-border: rgba(255, 255, 255, 0.92);
+  --gn-text-primary: #102B4E;
+  --gn-text-secondary: #65758B;
+  --gn-muted-surface: rgba(255, 255, 255, 0.55);
+  --gn-positive: #15803D;
+  --gn-negative: #DC2626;
 }
 
 body {
@@ -29,61 +47,159 @@ body {
   padding: 0;
   overflow-x: hidden;
   min-height: 100vh;
+  background-color: #F8F5F1;
+  color: #102B4E;
 }
 
-/* Luminous VisionOS Glass Container */
-.vision-glass-container {
-  background: rgba(255, 255, 255, 0.70);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-  border: 1.5px solid rgba(255, 255, 255, 0.95);
+/* ========================================================================= */
+/* 1. GLASS SURFACES HIERARCHY                                               */
+/* ========================================================================= */
+
+/* Level 1: Floating Navigation Island */
+.os-nav-island, .nav-island-glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(28px) saturate(170%);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.92);
   box-shadow: 
-    0 30px 70px -15px rgba(11, 30, 54, 0.22),
-    0 12px 28px -6px rgba(194, 131, 30, 0.12),
-    inset 0 2px 2px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 2px 0 rgba(255, 255, 255, 0.5);
+    0 12px 36px -6px rgba(16, 43, 78, 0.10),
+    0 4px 12px rgba(198, 154, 67, 0.04),
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.4);
 }
 
-/* Luminous Dashboard Card Glass */
-.vision-card-glass {
+/* Level 2: Primary Panels (KPI cards, executive cards) */
+.gn-panel, .os-panel-primary {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 
+    0 16px 36px -8px rgba(16, 43, 78, 0.08),
+    0 4px 12px rgba(198, 154, 67, 0.03),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+}
+
+/* Level 2B: Dense Workspace Panels (Finance, Inventory, Data Tables) */
+.gn-panel-dense {
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 12px 28px -6px rgba(16, 43, 78, 0.07),
+    inset 0 1px 1px rgba(255, 255, 255, 1);
+  border-radius: 20px;
+}
+
+/* Level 3: Secondary Interactive Cards */
+.gn-card-secondary, .os-card-secondary {
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 
+    0 6px 18px -3px rgba(16, 43, 78, 0.05),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gn-card-secondary:hover, .os-card-secondary:hover {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 12px 26px -4px rgba(16, 43, 78, 0.09),
+    0 4px 12px rgba(198, 154, 67, 0.06),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+  transform: translateY(-1.5px);
+}
+
+/* Level 4: Soft Neutral Surface */
+.gn-card-subtle, .os-card-subtle {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 
+    0 4px 12px -2px rgba(16, 43, 78, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 0.85);
+}
+
+/* ========================================================================= */
+/* 2. CANONICAL APP TILES & SEARCH FIELD                                     */
+/* ========================================================================= */
+
+/* App Workspace Tile (Rounded square 16-20px radius) */
+.gn-app-tile {
   background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 
+    0 4px 14px -2px rgba(16, 43, 78, 0.05),
+    inset 0 1px 1px rgba(255, 255, 255, 1);
+  border-radius: 18px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gn-app-tile:hover {
+  background: #FFFFFF;
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 10px 24px -4px rgba(16, 43, 78, 0.10),
+    0 2px 8px rgba(198, 154, 67, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+}
+
+/* Pill Search Field */
+.gn-search-pill {
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 
+    0 4px 16px -2px rgba(16, 43, 78, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 1);
+  border-radius: 9999px;
+}
+
+/* Floating Circular Button (Carousel Navigation) */
+.gn-floating-btn {
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.95);
   box-shadow: 
-    0 8px 20px -3px rgba(11, 30, 54, 0.06),
-    inset 0 1px 1.5px rgba(255, 255, 255, 1);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    0 8px 24px -4px rgba(16, 43, 78, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 1);
+  transition: all 0.2s ease;
 }
 
-.vision-card-glass:hover {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 
-    0 12px 28px -4px rgba(11, 30, 54, 0.10),
-    0 4px 12px rgba(194, 131, 30, 0.08),
-    inset 0 1px 2px rgba(255, 255, 255, 1);
-  transform: translateY(-2px);
+.gn-floating-btn:hover {
+  background: #FFFFFF;
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px -4px rgba(16, 43, 78, 0.16);
 }
 
-/* Floating Navigation Island */
-.nav-island-glass {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(24px) saturate(170%);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
-  border: 1.5px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 
-    0 12px 32px -4px rgba(11, 30, 54, 0.10),
-    inset 0 1.5px 1px rgba(255, 255, 255, 1);
+/* Active Navigation & Selected Controls */
+.os-active-control {
+  background: #F7EEDA !important;
+  color: #102B4E !important;
+  border: 1px solid rgba(198, 154, 67, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(198, 154, 67, 0.15) !important;
+  font-weight: 700;
 }
 
 /* Luminous Secondary Button Pill */
 .luminous-glass-pill {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(20px) saturate(170%);
   -webkit-backdrop-filter: blur(20px) saturate(170%);
-  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  border: 1.5px solid rgba(255, 255, 255, 0.92);
   box-shadow: 
-    0 8px 24px -3px rgba(11, 30, 54, 0.10),
+    0 8px 24px -3px rgba(16, 43, 78, 0.08),
     inset 0 1.5px 1px rgba(255, 255, 255, 1);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -91,56 +207,75 @@ body {
 .luminous-glass-pill:hover {
   background: #FFFFFF;
   box-shadow: 
-    0 12px 30px -4px rgba(11, 30, 54, 0.15),
+    0 12px 30px -4px rgba(16, 43, 78, 0.14),
     inset 0 1.5px 1px rgba(255, 255, 255, 1);
   transform: translateY(-1.5px);
 }
 
 /* Luminous Micro Badge Glass */
 .luminous-badge {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(255, 255, 255, 1);
+  border: 1.5px solid rgba(255, 255, 255, 0.92);
   box-shadow: 
-    0 6px 18px -2px rgba(11, 30, 54, 0.08),
+    0 6px 18px -2px rgba(16, 43, 78, 0.06),
     inset 0 1px 1.5px rgba(255, 255, 255, 1);
 }
 
-/* Radiant Gold Text Gradient */
+/* Radiant Gold Text */
 .radiant-gold-text {
-  background: linear-gradient(135deg, #B57716 0%, #E3A330 50%, #B57716 100%);
+  background: linear-gradient(135deg, #B2822B 0%, #D5AD66 50%, #B2822B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 1px rgba(181, 119, 22, 0.2));
+  filter: drop-shadow(0 1px 1px rgba(198, 154, 67, 0.2));
 }
 
-/* Radiant Gold Gradient Button with intense glow and specular shine */
+/* Canonical Muted Gold Button */
 .gold-glow-btn {
-  background: linear-gradient(135deg, #C2831E 0%, #E3A435 50%, #BD7E1A 100%);
+  background: linear-gradient(135deg, #D5AD66 0%, #C69A43 100%);
   box-shadow: 
-    0 12px 32px -4px rgba(194, 131, 30, 0.55),
-    0 4px 14px rgba(194, 131, 30, 0.35),
+    0 10px 28px -4px rgba(198, 154, 67, 0.40),
+    0 4px 12px rgba(198, 154, 67, 0.20),
     inset 0 1.5px 1px rgba(255, 255, 255, 0.75);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .gold-glow-btn:hover {
-  background: linear-gradient(135deg, #CF8E24 0%, #EDB144 50%, #C8861E 100%);
+  background: linear-gradient(135deg, #D5AD66 0%, #E2BE77 50%, #C69A43 100%);
   box-shadow: 
-    0 16px 40px -4px rgba(194, 131, 30, 0.65),
-    0 6px 18px rgba(194, 131, 30, 0.45),
+    0 14px 34px -4px rgba(198, 154, 67, 0.50),
+    0 6px 16px rgba(198, 154, 67, 0.30),
     inset 0 2px 1.5px rgba(255, 255, 255, 0.9);
   transform: translateY(-1.5px);
 }
 
-/* Glass reflection shine overlay */
+/* Deep Navy Primary Button */
+.navy-btn {
+  background: #102B4E;
+  color: #FFFFFF;
+  border: 1px solid rgba(198, 154, 67, 0.35);
+  box-shadow: 
+    0 8px 20px -3px rgba(16, 43, 78, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: all 0.22s ease;
+}
+
+.navy-btn:hover {
+  background: #0B2340;
+  border-color: rgba(198, 154, 67, 0.6);
+  box-shadow: 
+    0 12px 26px -3px rgba(16, 43, 78, 0.35);
+  transform: translateY(-1.5px);
+}
+
+/* Glass shine overlay */
 .glass-shine {
   background: linear-gradient(
     115deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.5) 30%,
-    rgba(255, 255, 255, 0.15) 45%,
+    rgba(255, 255, 255, 0.45) 30%,
+    rgba(255, 255, 255, 0.12) 45%,
     transparent 65%
   );
   pointer-events: none;
@@ -155,9 +290,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(11, 30, 54, 0.2);
+  background: rgba(16, 43, 78, 0.2);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(11, 30, 54, 0.35);
+  background: rgba(16, 43, 78, 0.35);
 }

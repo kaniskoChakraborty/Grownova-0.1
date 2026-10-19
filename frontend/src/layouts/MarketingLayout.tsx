@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { LandingNav } from '../components/navigation/LandingNav';
-import { GrowNovaLogo } from '../components/GrowNovaLogo';
-import { Link } from 'react-router-dom';
-import { CheckCircle2, Sparkles, Shield, ArrowUpRight } from 'lucide-react';
+import { GrowNovaCompassLogo } from '../components/GrowNovaCompassLogo';
+import { Link, useNavigate } from 'react-router-dom';
+import { Shield, ArrowUpRight } from 'lucide-react';
 
 interface MarketingLayoutProps {
   children: React.ReactNode;
@@ -13,50 +13,63 @@ export const MarketingLayout: React.FC<MarketingLayoutProps> = ({
   children,
   showNav = true,
 }) => {
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  const triggerToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3200);
-  };
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-between bg-[#FBF8F1] text-[#0B1E36] overflow-x-hidden selection:bg-[#C2831E]/25">
-      {/* Shared Navigation */}
-      {showNav && (
-        <LandingNav
-          onGetStartedClick={() => triggerToast('GrowNova onboarding initiated. Welcome!')}
-          onSignInClick={() => triggerToast('Opening secure business login...')}
+    <div className="relative min-h-screen w-full flex flex-col justify-between bg-[#F8F5F1] text-[#102B4E] overflow-x-hidden selection:bg-[#C69A43]/20">
+      
+      {/* Background Atmosphere - Canonical Misty Mountain Scenery */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-all duration-700 ease-out opacity-45"
+          style={{
+            backgroundImage: "url('/dashboard-bg.jpg')",
+            backgroundPosition: 'center 40%',
+          }}
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F8F5F1]/85 via-[#F8F5F1]/70 to-[#F8F5F1]/95" />
+      </div>
+
+      {/* Shared Navigation with React Router navigation */}
+      {showNav && (
+        <div className="relative z-30">
+          <LandingNav
+            onGetStartedClick={() => navigate('/auth?mode=signup')}
+            onSignInClick={() => navigate('/auth?mode=signin')}
+          />
+        </div>
       )}
 
       {/* Main Page Content with Subtle Smooth Transition */}
-      <main className="flex-1 w-full animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
+      <main className="relative z-10 flex-1 w-full animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
         {children}
       </main>
 
       {/* Shared Cohesive Footer */}
-      <footer className="relative z-20 border-t border-[#0B1E36]/10 bg-white/40 backdrop-blur-xl py-12 px-6 sm:px-12 md:px-16 mt-16">
+      <footer className="relative z-20 border-t border-[#102B4E]/10 bg-white/60 backdrop-blur-xl py-12 px-6 sm:px-12 md:px-16 mt-16">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="flex flex-col gap-2">
-            <GrowNovaLogo size="md" />
-            <p className="text-xs text-[#475569] max-w-sm mt-1">
+            <Link to="/" className="inline-block focus:outline-none">
+              <GrowNovaCompassLogo size="md" showText={true} />
+            </Link>
+            <p className="text-xs text-[#65758B] max-w-sm mt-1">
               An AI-first, vernacular business operating system engineered for Indian MSMEs. Unifying sales, finance, inventory, compliance and everyday operations.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-6 sm:gap-10 text-sm font-semibold text-[#0B1E36]">
-            <Link to="/product" className="hover:text-[#C2831E] transition-colors">Product</Link>
-            <Link to="/solutions" className="hover:text-[#C2831E] transition-colors">Solutions</Link>
-            <Link to="/resources" className="hover:text-[#C2831E] transition-colors">Resources</Link>
-            <Link to="/pricing" className="hover:text-[#C2831E] transition-colors flex items-center gap-1">
-              Pricing <span className="text-[10px] bg-[#C2831E]/15 text-[#C2831E] px-2 py-0.5 rounded-full font-bold">Soon</span>
+          <div className="flex flex-wrap items-center gap-6 sm:gap-10 text-sm font-semibold text-[#102B4E]">
+            <Link to="/product" className="hover:text-[#C69A43] transition-colors">Product</Link>
+            <Link to="/solutions" className="hover:text-[#C69A43] transition-colors">Solutions</Link>
+            <Link to="/resources" className="hover:text-[#C69A43] transition-colors">Resources</Link>
+            <Link to="/pricing" className="hover:text-[#C69A43] transition-colors flex items-center gap-1">
+              Pricing <span className="text-[10px] bg-[#C69A43]/15 text-[#C69A43] px-2 py-0.5 rounded-full font-bold">Soon</span>
+            </Link>
+            <Link to="/dashboard" className="text-[#C69A43] hover:underline font-bold">
+              OS Dashboard →
             </Link>
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-[#475569]">
+          <div className="flex items-center gap-3 text-xs text-[#65758B]">
             <span className="flex items-center gap-1 font-medium bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-200">
               <Shield className="w-3.5 h-3.5 text-emerald-600" />
               100% Indian GST & Statutory Compliant
@@ -64,28 +77,19 @@ export const MarketingLayout: React.FC<MarketingLayoutProps> = ({
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto pt-8 mt-8 border-t border-[#0B1E36]/10 flex flex-col sm:flex-row items-center justify-between text-xs text-[#64748B] gap-4">
+        <div className="max-w-7xl mx-auto pt-8 mt-8 border-t border-[#102B4E]/10 flex flex-col sm:flex-row items-center justify-between text-xs text-[#65758B] gap-4">
           <div>
             © {new Date().getFullYear()} GrowNova Technologies Pvt. Ltd. All rights reserved.
           </div>
-          <div className="flex items-center gap-5">
-            <span className="hover:text-[#0B1E36] transition-colors cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-[#0B1E36] transition-colors cursor-pointer">Terms of Service</span>
-            <span className="hover:text-[#0B1E36] transition-colors cursor-pointer flex items-center gap-1">
-              Security <ArrowUpRight className="w-3 h-3" />
-            </span>
+          <div className="flex items-center gap-5 font-medium">
+            <Link to="/pricing" className="hover:text-[#102B4E] transition-colors">Pricing</Link>
+            <Link to="/auth" className="hover:text-[#102B4E] transition-colors">Sign In</Link>
+            <Link to="/dashboard" className="hover:text-[#102B4E] transition-colors flex items-center gap-1 font-bold">
+              Executive OS <ArrowUpRight className="w-3 h-3" />
+            </Link>
           </div>
         </div>
       </footer>
-
-      {/* Floating Interactive Toast */}
-      {toastMessage && (
-        <div className="fixed top-24 right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full vision-glass-container shadow-xl border border-white/80 animate-in fade-in slide-in-from-top-4 duration-300">
-          <Sparkles className="w-4 h-4 text-[#C2831E]" />
-          <span className="text-xs font-semibold text-[#0B1E36]">{toastMessage}</span>
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-        </div>
-      )}
     </div>
   );
 };

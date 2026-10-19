@@ -1,18 +1,26 @@
+import React from 'react';
+
 interface AuthTabsProps {
   activeTab: 'signin' | 'signup';
-  onTabChange: (tab: 'signin' | 'signup') => void;
+  onChange?: (tab: 'signin' | 'signup') => void;
+  onTabChange?: (tab: 'signin' | 'signup') => void;
 }
 
-export const AuthTabs = ({ activeTab, onTabChange }: AuthTabsProps) => {
+export const AuthTabs: React.FC<AuthTabsProps> = ({ activeTab, onChange, onTabChange }) => {
+  const handleChange = (tab: 'signin' | 'signup') => {
+    if (onChange) onChange(tab);
+    if (onTabChange) onTabChange(tab);
+  };
+
   return (
-    <div className="w-full bg-black/[0.04] p-1 rounded-2xl border border-white/60 flex items-center mb-6 shadow-2xs backdrop-blur-xs">
+    <div className="w-full max-w-sm bg-black/[0.04] p-1 rounded-2xl border border-white/80 flex items-center shadow-2xs backdrop-blur-xs select-none">
       <button
         type="button"
-        onClick={() => onTabChange('signin')}
-        className={`flex-1 py-2.5 px-4 rounded-xl text-[13.5px] font-semibold transition-all duration-200 cursor-pointer text-center select-none ${
+        onClick={() => handleChange('signin')}
+        className={`flex-1 py-2 px-4 rounded-xl text-[13.5px] font-semibold transition-all duration-200 cursor-pointer text-center ${
           activeTab === 'signin'
-            ? 'bg-[#E1C699] text-[#0B1E36] font-bold shadow-[0_2px_8px_rgba(225,198,153,0.4)]'
-            : 'text-[#55677D] hover:text-[#0B1E36] hover:bg-white/30'
+            ? 'bg-[#F7EEDA] text-[#102B4E] font-bold border border-[#C69A43]/40 shadow-xs'
+            : 'text-[#65758B] hover:text-[#102B4E] hover:bg-white/40'
         }`}
       >
         Sign In
@@ -20,11 +28,11 @@ export const AuthTabs = ({ activeTab, onTabChange }: AuthTabsProps) => {
 
       <button
         type="button"
-        onClick={() => onTabChange('signup')}
-        className={`flex-1 py-2.5 px-4 rounded-xl text-[13.5px] font-semibold transition-all duration-200 cursor-pointer text-center select-none ${
+        onClick={() => handleChange('signup')}
+        className={`flex-1 py-2 px-4 rounded-xl text-[13.5px] font-semibold transition-all duration-200 cursor-pointer text-center ${
           activeTab === 'signup'
-            ? 'bg-[#E1C699] text-[#0B1E36] font-bold shadow-[0_2px_8px_rgba(225,198,153,0.4)]'
-            : 'text-[#55677D] hover:text-[#0B1E36] hover:bg-white/30'
+            ? 'bg-[#F7EEDA] text-[#102B4E] font-bold border border-[#C69A43]/40 shadow-xs'
+            : 'text-[#65758B] hover:text-[#102B4E] hover:bg-white/40'
         }`}
       >
         Sign Up
@@ -32,3 +40,5 @@ export const AuthTabs = ({ activeTab, onTabChange }: AuthTabsProps) => {
     </div>
   );
 };
+
+export default AuthTabs;

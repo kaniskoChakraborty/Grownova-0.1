@@ -21,7 +21,7 @@ export const SocialLogin = ({ onGoogleClick, onMicrosoftClick }: SocialLoginProp
         <button
           type="button"
           onClick={onGoogleClick}
-          className="group flex items-center justify-center gap-2.5 py-3 px-3 rounded-2xl bg-white/80 hover:bg-white backdrop-blur-md border border-white/90 shadow-2xs hover:shadow-sm text-[12px] sm:text-[13px] font-semibold text-[#0B1E36] transition-all duration-200 active:scale-98 cursor-pointer"
+          className="group flex items-center justify-center gap-2.5 py-3 px-3 rounded-2xl bg-white/80 hover:bg-white backdrop-blur-md border border-white/90 shadow-2xs hover:shadow-sm text-[12px] sm:text-[13px] font-semibold text-[#102B4E] transition-all duration-200 active:scale-98 cursor-pointer"
         >
           {/* Authentic Google Multi-Color G Icon */}
           <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
@@ -49,7 +49,7 @@ export const SocialLogin = ({ onGoogleClick, onMicrosoftClick }: SocialLoginProp
         <button
           type="button"
           onClick={onMicrosoftClick}
-          className="group flex items-center justify-center gap-2.5 py-3 px-3 rounded-2xl bg-white/80 hover:bg-white backdrop-blur-md border border-white/90 shadow-2xs hover:shadow-sm text-[12px] sm:text-[13px] font-semibold text-[#0B1E36] transition-all duration-200 active:scale-98 cursor-pointer"
+          className="group flex items-center justify-center gap-2.5 py-3 px-3 rounded-2xl bg-white/80 hover:bg-white backdrop-blur-md border border-white/90 shadow-2xs hover:shadow-sm text-[12px] sm:text-[13px] font-semibold text-[#102B4E] transition-all duration-200 active:scale-98 cursor-pointer"
         >
           {/* Authentic Microsoft 4-Color Grid Icon */}
           <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 21 21">

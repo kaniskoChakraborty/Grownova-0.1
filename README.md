@@ -1,14 +1,50 @@
-# GrowNova Backend
+# 🌟 GrowNova — One Operating System
 
-Backend API for **GrowNova OS**, an AI-first, vernacular, one-tap business OS for Indian MSMEs.
+<div align="center">
 
-Built with **NestJS 11**, **TypeScript 5**, **Prisma 7** (PostgreSQL), **Redis**, and **JWT** authentication.
+<!-- Animated Typing SVG Header Banner -->
+<a href="https://github.com/kaniskoChakraborty/Grownova-0.1">
+  <img src="https://readme-typing-svg.demolab.com?font=Playfair+Display&weight=700&size=30&duration=3000&pause=1000&color=C2831E&center=true&vCenter=true&width=820&lines=Your+business.+One+operating+system.;Built+for+Indian+Enterprises+%26+MSMEs;Next-Gen+Apple+visionOS+Liquid+Glass+UI;Sales+%E2%80%A2+CRM+%E2%80%A2+Accounting+%E2%80%A2+HR+%E2%80%A2+Reports;Experience+GrowNova+in+One+Click+%E2%86%92" alt="GrowNova Typing Banner" />
+</a>
+
+<p align="center">
+  <b>An AI-first, vernacular, one-tap business OS engineered for Indian enterprises, MSMEs, and entrepreneurs.</b>
+  <br />
+  <i>Unified sales, finance, inventory, CRM, HR, compliance, and everyday business intelligence.</i>
+</p>
+
+<!-- Technology Badges -->
+<p align="center">
+  <img src="https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite_8-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/NestJS_11-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS" />
+  <img src="https://img.shields.io/badge/Prisma_7-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma 7" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis" />
+  <img src="https://img.shields.io/badge/Design-visionOS_Liquid_Glass-C2831E?style=for-the-badge&logo=apple&logoColor=white" alt="Apple visionOS Glass" />
+</p>
+
+<p align="center">
+  <a href="#-quick-start-for-anyone-non-tech-friendly">⚡ Quick Start</a> •
+  <a href="#-current-phase--roadmap">📌 Status & Roadmap</a> •
+  <a href="#-what-all-we-have-built-till-now">✨ What We Built</a> •
+  <a href="#-visual-previews">📸 Visual Previews</a> •
+  <a href="#-backend-api-architecture">⚙️ Backend Architecture</a> •
+  <a href="#-project-structure">📂 Project Structure</a> •
+  <a href="#-faq--troubleshooting-for-non-tech-users">❓ FAQ</a>
+</p>
 
 ---
 
-## Current Phase
+</div>
 
-**Current Phase: Phase 7 — Data Migration (completed)**
+<br />
+
+## 📌 Current Phase & Roadmap
+
+**Current Progress: Phase 8 — CRM Leads, WhatsApp Webhook & GrowAI Enrichment (Completed)**
 
 | Phase | Scope | Status |
 |-------|-------|--------|
@@ -20,39 +56,68 @@ Built with **NestJS 11**, **TypeScript 5**, **Prisma 7** (PostgreSQL), **Redis**
 | **Phase 5** | Audit logging with SHA-256 cryptographic hash chaining, tamper detection, global exception filter, rate limiting (`ThrottlerGuard`), database seeding (`prisma/seed.ts`) | ✅ Done |
 | **Phase 6** | Owner onboarding flow with industry UI presets, DigiLocker consent/KYC mock adapter, WhatsApp conversational intake contract | ✅ Done |
 | **Phase 7** | Legacy data migration engine for Indian MSMEs: Excel (`.xlsx`, `.xls`) and Tally XML (`.xml`) parsers with normalized schema extraction | ✅ Done |
-
-> [!NOTE]
-> Future phases will expand domain logic (CRM, Inventory, POS, Accounting, GST, HR, Payroll, etc.) and connect external production APIs (live DigiLocker, WhatsApp Business API, GSTN, UPI, ONDC) according to the GrowNova Product Requirements.
-
----
-
-## Tech Stack
-
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Framework** | NestJS 11 (Express) | Modular backend architecture |
-| **Language** | TypeScript 5 | Type-safe enterprise development |
-| **Database & ORM** | PostgreSQL via Prisma 7 (`@prisma/adapter-pg`) | Primary relational data store |
-| **Cache & Sessions** | Redis via `ioredis` | Refresh token store & fast caching |
-| **Auth & Security** | Passport JWT, `bcrypt`, custom `@Roles()` decorator & `RolesGuard` | Dual-token authentication & tenant RBAC |
-| **Audit Ledger** | SHA-256 Cryptographic Hash Chaining | Tamper-evident, immutable audit trail for tenant actions |
-| **Rate Limiting** | `@nestjs/throttler` (`ThrottlerGuard`) | API flood protection (default 60 req/min) |
-| **Data Migration** | `xlsx`, `fast-xml-parser`, `multer` | Multi-format ingestion of legacy Excel & Tally ERP data |
-| **Validation** | `class-validator`, `class-transformer` | Global request payload validation |
-| **API Contracts** | Zod schemas in `src/common/contracts` | Shared contract definitions between frontend & backend |
-| **API Documentation** | Swagger (`@nestjs/swagger`) | Interactive OpenAPI docs with JWT & file upload support |
+| **Phase 8** | WhatsApp inbound webhook to CRM leads, GrowAI lead enrichment & scoring, CRM leads CRUD & contracts | ✅ Done |
+| **Phase 9** | Full domain module logic (Inventory catalog sync, POS billing, GST invoicing) | ⏳ In Progress |
+| **Phase 10** | Live third-party integrations (Official WhatsApp Business API, Sandbox GSTN e-Invoice/e-Way, Sandbox ONDC Beckn protocol) | 📋 Planned |
 
 ---
 
-## Prerequisites
+## ⚡ Quick Start for Anyone (Non-Tech Friendly)
 
+You do **NOT** need to be a programmer or terminal expert to run GrowNova. Follow whichever option is easiest for you:
+
+### 🚀 Option 1: The One-Click Way (Windows & Mac)
+
+<details open>
+<summary><b>Click to expand One-Click Instructions</b></summary>
+<br />
+
+1. **Prerequisite**: Make sure **Node.js** is installed on your computer. If not, download it once from [nodejs.org](https://nodejs.org/) (click the big green **LTS** button and install).
+2. **On Windows**:
+   - Double-click the file named **`run.bat`** in this project folder.
+   - It will automatically verify packages, launch your browser, and open GrowNova at `http://localhost:5173`!
+3. **On Mac or Linux**:
+   - Double-click or run `./run.sh` in your terminal.
+   - That's it! GrowNova opens immediately in your web browser.
+
+</details>
+
+---
+
+### 💻 Option 2: Frontend Development (React 19 + Vite)
+
+If you are running or developing the frontend UI in your terminal:
+
+```bash
+# Step 1: Clone this repository and enter the directory
+git clone https://github.com/kaniskoChakraborty/Grownova-0.1.git
+cd Grownova-0.1
+
+# Step 2: Switch to your branch
+git checkout devansh
+
+# Step 3: Run the frontend application
+cd frontend
+npm install
+npm run dev
+```
+
+Now open your web browser and visit:
+👉 **[http://localhost:5173](http://localhost:5173)**
+
+---
+
+### 🛠️ Option 3: Backend API (NestJS 11 + Prisma 7 + Redis)
+
+If you are running the backend API services:
+
+#### Prerequisites
 - **Node.js**: `v20+` or `v22+` (LTS recommended)
 - **npm**: `v10+`
-- **PostgreSQL**: a reachable database instance (local, Docker, or managed)
-- **Redis**: a running instance (default `127.0.0.1:6379`)
+- **PostgreSQL**: A reachable database instance (local, Docker, or managed)
+- **Redis**: A running instance (default `127.0.0.1:6379`)
 
-### Quick Start with Docker
-
+#### Start PostgreSQL & Redis via Docker:
 ```bash
 # PostgreSQL 16
 docker run -d --name grownova-postgres \
@@ -65,91 +130,183 @@ docker run -d --name grownova-redis \
   -p 6379:6379 redis:7
 ```
 
----
-
-## Installation
-
+#### Install dependencies & configure environment:
 ```bash
+# In the root project directory:
 npm install
-```
-
----
-
-## Environment Setup
-
-Copy `.env.example` to `.env` and configure your credentials:
-
-```bash
 cp .env.example .env
 ```
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NODE_ENV` | Application environment (`development`, `production`, `test`) | `development` |
-| `PORT` | HTTP port for the API server | `3000` |
-| `DATABASE_URL` | PostgreSQL connection string | — (required) |
-| `REDIS_HOST` | Redis host | `127.0.0.1` |
-| `REDIS_PORT` | Redis port | `6379` |
-| `JWT_ACCESS_SECRET` | Secret used to sign/verify access tokens | dev fallback (set this!) |
-| `JWT_ACCESS_EXPIRES_IN` | Access token lifetime | `15m` |
-| `JWT_REFRESH_SECRET` | Secret used to sign/verify refresh tokens | dev fallback (set this!) |
-| `JWT_REFRESH_EXPIRES_IN` | Refresh token lifetime | `7d` |
-
-Example `.env`:
-
-```env
-NODE_ENV=development
-PORT=3000
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/grownova?schema=public"
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-JWT_ACCESS_SECRET=your-secure-access-secret-key-min-32-chars
-JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_SECRET=your-secure-refresh-secret-key-min-32-chars
-JWT_REFRESH_EXPIRES_IN=7d
-```
-
-> [!IMPORTANT]
-> Always set `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` explicitly in staging and production. Never commit `.env` files to git.
-
----
-
-## Database Setup & Migrations
-
-Prisma is configured via `prisma7.config.ts`, which reads `DATABASE_URL` from `.env`. The generated Prisma client resides in `generated/prisma` (git-ignored).
-
+#### Database Setup & Migrations:
 ```bash
 # 1. Generate the Prisma client
 npx prisma generate
 
 # 2. Apply database migrations
-npx prisma migrate dev          # Development
-npx prisma migrate deploy       # Production / CI
+npx prisma migrate dev
 
 # 3. Seed demo data (Business, all 4 user roles, modules, initial audit logs)
 npx prisma db seed
-
-# 4. (Optional) Open Prisma Studio UI to inspect tables
-npx prisma studio
 ```
 
-### Data Model
+#### Start the Backend Server:
+```bash
+# Development mode with hot-reload
+npm run start:dev
 
-| Model | Purpose |
-|-------|---------|
-| `Business` | Tenant (MSME) — name, industry, contact phone, email, address, city, state, country (default `India`), `isActive` status flag |
-| `User` | Belongs to a tenant business; unique email, bcrypt-hashed password, role (`UserRole`), `isActive` status flag |
-| `Module` | Per-business enabled feature toggle flags, unique on `(businessId, key)` |
-| `AuditLog` | Cryptographic SHA-256 chained audit records — tracks tenant action, actor, entity, entity ID, request metadata, IP, user-agent, `previousHash`, and `hash` |
+# Or production build and run
+npm run build
+npm run start:prod
+```
 
-#### User Roles (`UserRole` Enum)
+---
 
-- `OWNER` — Full administrative control over the MSME tenant and onboarding
-- `ACCOUNTANT` — Access to accounting, invoices, tax, and GST reporting
-- `OPS` — Operations, warehouse, inventory, and order fulfillment
-- `EMPLOYEE` — Default user role for standard POS, retail billing, and basic tasks
+### 🌐 Quick Navigation URLs
 
-#### Seed Accounts (`npx prisma db seed`)
+| Screen / Feature | Web URL | Description |
+| :--- | :--- | :--- |
+| 🏠 **Main Landing Page** | [`http://localhost:5173/`](http://localhost:5173/) | Hero presentation with 3D liquid glass visionOS dashboard |
+| 🔐 **Dedicated Auth Page** | [`http://localhost:5173/auth`](http://localhost:5173/auth) | Dual glass slabs for instant Sign In & Sign Up transitions |
+| 🩺 **Backend Health API** | [`http://localhost:3000/health`](http://localhost:3000/health) | NestJS system status and health verification probe |
+| 📚 **Swagger OpenAPI Docs** | [`http://localhost:3000/docs`](http://localhost:3000/docs) | Interactive API documentation with JWT & file upload testing |
+
+<br />
+
+---
+
+## 📸 Visual Previews
+
+### 1. Main Landing Page & Apple visionOS Liquid Glass Dashboard
+*Featuring authentic frosted translucency, 3D specular rim reflections, and interactive spatial mouse tilt over the sunlit Indian heritage scene:*
+
+<div align="center">
+  <img src="docs/screenshots/landing-preview.png" alt="GrowNova Landing Page and visionOS Glass Dashboard" width="95%" style="border-radius: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.15);" />
+</div>
+
+<br />
+
+### 2. Dedicated Authentication Experience (`/auth`)
+*Dual liquid glass slab architecture with live Sign In / Sign Up tab switching, high-resolution vector mini-dashboard, and enterprise Single Sign-On:*
+
+<div align="center">
+  <img src="docs/screenshots/auth-preview.png" alt="GrowNova Dedicated Auth Page" width="95%" style="border-radius: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.15);" />
+</div>
+
+<br />
+
+---
+
+## ✨ What All We Have Built Till Now
+
+Here is a comprehensive breakdown of everything built into the GrowNova platform across frontend and backend:
+
+### 💎 1. Apple visionOS Liquid Glassmorphism System
+- **100% Vector Precision**: Completely eliminated low-resolution raster artifacts. All text uses true scalable web fonts (`Playfair Display` serif & `Plus Jakarta Sans`), and all icons are razor-sharp vector SVGs.
+- **Authentic Glass Physics**: Engineered using multi-layer CSS:
+  - Frosted liquid backdrop blur: `backdrop-filter: blur(28px) saturate(175%)`
+  - 3D Bevel Highlights: Inset multi-angle specular gleams (`inset 0 2px 3px rgba(255,255,255,0.95)` and bottom base reflections).
+  - Ambient Golden Rim Glow: Soft radial ambient lighting matching the golden hour sunset.
+- **Spatial Mouse Parallax (Gyroscopic Tilt)**: Real-time 3D rotation (`perspective(1200px)` with subtle `rotateX` and `rotateY` response) as the user navigates their cursor across the viewport.
+
+---
+
+### 📊 2. Executive Command Dashboard (`VisionDashboard.tsx`)
+- **Top Header Bar**:
+  - Official GrowNova brand logo with interlocking gear-node icon.
+  - Active navigation pill capsule: `Home` (amber active state), `CRM`, `Accounting`, `HR`, and `Reports`.
+  - Global Search pill with keyboard shortcut badge: `Search or ask... ⌘ K`.
+  - Notification bell with red status badge.
+  - User Profile chip featuring executive portrait avatar (Ravi, Owner) and quick dropdown chevron.
+- **Greeting & Live Telemetry KPIs**:
+  - Editorial date stamp: `Mon, 5 September 2025`.
+  - Elegant serif greeting: `Good morning, Ravi` with warm amber underline bar and subtitle `Your business. In better hands.`
+  - **4 KPI Stat Cards** with customized smooth bezier sparklines:
+    1. 📈 **Total Sales**: `₹ 12,48,000` (`↑ 12% vs last month` + emerald green curve)
+    2. 🛒 **Total Orders**: `246` (`↑ 8% vs last month` + warm amber curve)
+    3. 💳 **Outstanding**: `₹ 3,42,000` (`↑ 5% vs last month` + red alert curve)
+    4. 👥 **Active Customers**: `186` (`↑ 14% vs last month` + emerald green curve)
+- **Sales Overview Interactive Chart**:
+  - Timeframe selector dropdown (`This Month ∨`, `Last Month`, `Q3 FY25`, `This Year`) + expand button.
+  - Large metric display: `₹ 12.48L` with growth banner `Steady growth. Stronger tomorrow.`
+  - Mathematical SVG area chart with sapphire wave curve and soft gradient fill.
+  - Interactive glowing node at **15 Sep** with floating dark navy tooltip: `₹ 2,48,000`.
+- **2×2 Quick Actions Grid**:
+  - 📄 **Create Invoice**: Amber frosted card with gold document icon.
+  - 👤+ **Add Customer**: Sky blue frosted card with user-plus icon.
+  - 🧾 **Record Expense**: Soft lavender frosted card with receipt icon.
+  - 📅 **Approve Leave**: Mint green frosted card with calendar icon.
+- **Things to Do Workflow Checklist**:
+  - Dynamic completion states: Click any task to toggle between completed (solid blue square with white checkmark) and pending.
+  - Urgency indicators: `Today` (coral/red), `Tomorrow` (amber), `In 2 days` (gray), `In 3 days` (gray).
+  - Quick action forward button `(→)`.
+
+---
+
+### 🔐 3. Dedicated Authentication Suite (`/auth`)
+- **Direct Route**: `http://localhost:5173/auth` is completely isolated from the landing page.
+- **Dual Slab Composition**: Matches the visual reference, rendering two vertical glass slabs standing on the mahogany executive desk.
+- **Instant Client-Side Tab Switching**:
+  - Seamlessly toggle between **Sign In** and **Sign Up** inside the right glass panel without page reloads.
+- **Sign In View**:
+  - Frosted email input with mail icon.
+  - Frosted password input with lock icon and interactive `Eye` / `EyeOff` visibility toggle.
+  - "Keep me signed in" checkbox + interactive "Forgot password?" reset toast notification.
+  - Golden amber CTA button: `Sign in →`.
+  - Enterprise Single Sign-On: Google (`Continue with Google`) and Microsoft (`Continue with Microsoft`) vector branded cards.
+- **Sign Up View**:
+  - Full Name, Business / Company Name, Email, Password, and Confirm Password fields.
+  - Full client validation with matching password checks.
+  - Golden amber CTA button: `Create account →`.
+- **Left Panel Mini Dashboard Preview (`GrowNovaPreview.tsx`)**:
+  - A perfectly scaled, razor-sharp vector miniature of the visionOS glass dashboard embedded directly inside the left glass slab.
+
+---
+
+### 👑 4. Hero Section & Typography Alignment (`HeroLeft.tsx`)
+- **Flush Left Margin Alignment**: Cleanly aligned uppercase eyebrow `AN OPERATING SYSTEM FOR INDIAN BUSINESSES`, large dual-tone headline `Your business. One operating system.`, and body paragraph.
+- **Call-to-Action Buttons**:
+  - `Start with GrowNova →` (warm golden gradient with glowing hover effect, routes to `/auth?mode=signup`).
+  - `Explore the OS ▶` (frosted glass button with play icon).
+- **Value Proposition Badges**:
+  - 📊 `All-in-one business platform`
+  - ⚡ `AI-powered decisions (Axiom)`
+  - 🛡️ `Built for India compliance ready`
+
+---
+
+## ⚙️ Backend API Architecture
+
+Built with **NestJS 11**, **TypeScript 5**, **Prisma 7** (PostgreSQL), **Redis**, and **JWT** authentication.
+
+### Core Backend Capabilities
+
+1. **Authentication & Session Security (`/auth`)**:
+   - Dual-token architecture: short-lived Access Token (15m) + Redis-stored Refresh Token (7d).
+   - Redis token revocation on logout.
+   - Role-Based Access Control (`OWNER`, `ACCOUNTANT`, `OPS`, `EMPLOYEE`) guarded via `@Roles()` decorator and `RolesGuard`.
+2. **Multi-Tenant Business Management (`/businesses`)**:
+   - Strict tenant isolation enforced at database and middleware level.
+   - Soft-deactivation (`isActive = false`) and full business profiles.
+3. **Cryptographic Audit Ledger (`/audit`)**:
+   - SHA-256 hash-chained immutable audit log.
+   - Every mutation records actor, entity, payload, IP, user-agent, and previous hash.
+   - Runtime integrity verification endpoint (`GET /audit/integrity`) to instantly detect data tampering.
+4. **Owner Onboarding & Dynamic UI Presets (`/onboarding`)**:
+   - Seamless onboarding flow automatically computing UI presets (`retail`, `manufacturing`, `services`, `general`).
+5. **DigiLocker KYC Mock Integration (`/integrations/digilocker`)**:
+   - Consent generation and automated verification for `GSTIN`, `PAN`, and `AADHAAR`.
+6. **WhatsApp Conversational Intake & Inbound Webhooks (`/integrations/whatsapp`)**:
+   - Inbound webhook capturing conversation messages and automatically creating CRM leads.
+7. **CRM Leads & GrowAI Lead Enrichment (`/crm/leads`, `/growai`)**:
+   - Rules-based parser extracting customer details, urgency, and purchase intent.
+   - GrowAI intelligent lead scoring and automated sales insights.
+8. **Universal Data Migration Engine (`/migration`)**:
+   - Multi-format legacy file ingestion for Indian MSMEs: Excel (`.xlsx`, `.xls`) and Tally ERP 9 / Tally Prime XML (`.xml`).
+   - Normalizes data into typed records ready for system sync.
+
+---
+
+### Seed Accounts (`npx prisma db seed`)
 
 All seeded demo accounts share the password: `TestPassword123`
 
@@ -160,428 +317,9 @@ All seeded demo accounts share the password: `TestPassword123`
 
 ---
 
-## Running the App
+### Shared API Contracts (Zod)
 
-```bash
-# Development mode with hot-reload
-npm run start:dev
-
-# Standard run
-npm run start
-
-# Debug mode
-npm run start:debug
-
-# Production build and run
-npm run build
-npm run start:prod
-```
-
----
-
-## API Documentation
-
-Interactive Swagger OpenAPI docs (with Bearer authentication and binary file upload support) are available at:
-
-```
-http://localhost:3000/docs
-```
-
----
-
-## API Endpoints
-
-All requests are validated by a global `ValidationPipe` (`whitelist`, `transform`, `forbidNonWhitelisted`). Rate limiting is enforced globally at **60 requests per minute** per IP via `ThrottlerGuard`.
-
-### 1. Health
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `GET` | `/health` | None | API liveness & health check |
-
-```bash
-curl -i http://localhost:3000/health
-# {"status":"ok","service":"grownova-api"}
-```
-
----
-
-### 2. Authentication (`/auth`)
-
-| Method | Path | Auth | Roles | Description |
-|--------|------|------|-------|-------------|
-| `POST` | `/auth/signup` | None | — | Register a user under an existing business |
-| `POST` | `/auth/login` | None | — | Authenticate with email/password; returns access token & refresh token |
-| `POST` | `/auth/refresh` | None | — | Exchange a valid refresh token for a new access token |
-| `POST` | `/auth/logout` | Bearer JWT | Any | Invalidate the refresh token in Redis |
-| `GET` | `/auth/me` | Bearer JWT | Any | Fetch profile of currently authenticated user |
-| `GET` | `/auth/rbac-owner-test` | Bearer JWT | `OWNER` | Verify role-based access control guard |
-
-#### Sign Up
-
-```bash
-curl -X POST http://localhost:3000/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "StrongPassword123",
-    "name": "Taksh",
-    "businessId": "550e8400-e29b-41d4-a716-446655440000"
-  }'
-```
-
-#### Log In
-
-```bash
-curl -X POST http://localhost:3000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "taksh.demo@grownova.in",
-    "password": "TestPassword123"
-  }'
-```
-
-Response:
-
-```json
-{
-  "accessToken": "eyJhbGciOi...",
-  "refreshToken": "eyJhbGciOi...",
-  "user": {
-    "id": "...",
-    "email": "taksh.demo@grownova.in",
-    "name": "Taksh Demo",
-    "role": "OWNER",
-    "businessId": "550e8400-e29b-41d4-a716-446655440000"
-  }
-}
-```
-
-#### Refresh Access Token
-
-```bash
-curl -X POST http://localhost:3000/auth/refresh \
-  -H "Content-Type: application/json" \
-  -d '{"refreshToken":"<refresh-jwt>"}'
-# {"accessToken":"<new-jwt>"}
-```
-
-#### Log Out
-
-```bash
-curl -X POST http://localhost:3000/auth/logout \
-  -H "Authorization: Bearer <jwt>"
-# {"message":"Logged out successfully"}
-```
-
----
-
-### 3. Businesses (`/businesses`)
-
-All business endpoints require a Bearer JWT and enforce strict multi-tenant isolation: requests can only view or modify the business matching the caller's JWT `businessId`. Any cross-tenant access returns `404 Not Found`.
-
-| Method | Path | Auth | Roles | Description |
-|--------|------|------|-------|-------------|
-| `POST` | `/businesses` | Bearer JWT | Any | Create a new business profile |
-| `GET` | `/businesses` | Bearer JWT | Any | List business profile for the caller's tenant |
-| `GET` | `/businesses/:id` | Bearer JWT | Any | Get tenant business details by ID |
-| `PATCH` | `/businesses/:id` | Bearer JWT | Any | Partially update tenant business details |
-| `PATCH` | `/businesses/:id/deactivate` | Bearer JWT | Any | Soft-deactivate the business (`isActive = false`) |
-| `DELETE` | `/businesses/:id` | Bearer JWT | Any | Permanently delete the tenant business |
-
-```bash
-curl -X PATCH http://localhost:3000/businesses/550e8400-e29b-41d4-a716-446655440000 \
-  -H "Authorization: Bearer <jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{"phone":"+91-9876543210","city":"Surat","state":"Gujarat"}'
-```
-
----
-
-### 4. Audit & Reliability (`/audit`)
-
-Phase 5 introduced an immutable, tamper-evident audit ledger using SHA-256 hash chaining. Write operations (`POST`, `PATCH`, `DELETE`) on tenant resources are automatically intercepted by `AuditInterceptor`.
-
-| Method | Path | Auth | Roles | Description |
-|--------|------|------|-------|-------------|
-| `POST` | `/audit/test` | Bearer JWT | Any | Append a manual test audit record for the tenant |
-| `GET` | `/audit/integrity` | Bearer JWT | Any | Cryptographically verify the SHA-256 hash chain |
-
-#### Hash Chain Verification
-
-Each log entry hashes its own payload together with the `previousHash` from the prior record. If any past database record is modified, inserted, or deleted, the hash sequence breaks:
-
-```bash
-curl http://localhost:3000/audit/integrity \
-  -H "Authorization: Bearer <jwt>"
-```
-
-Response (Valid chain):
-
-```json
-{
-  "valid": true,
-  "checked": 12,
-  "brokenAt": null,
-  "reason": null
-}
-```
-
-Response (Tampered database record detected):
-
-```json
-{
-  "valid": false,
-  "checked": 12,
-  "brokenAt": "e0b96879-...",
-  "reason": "Hash mismatch"
-}
-```
-
-#### Global Error Envelope (`HttpExceptionFilter`)
-
-Uncaught exceptions or validation errors are formatted uniformly:
-
-```json
-{
-  "success": false,
-  "error": {
-    "statusCode": 400,
-    "message": ["industry must be one of the following values: retail, manufacturing, services, food_beverage, wholesale, other"],
-    "error": "Bad Request"
-  },
-  "timestamp": "2026-10-01T02:30:00.000Z",
-  "path": "/onboarding"
-}
-```
-
----
-
-### 5. Onboarding (`/onboarding`)
-
-Phase 6 introduced the owner-guided onboarding flow. When an MSME owner completes profile setup, the system automatically computes and assigns the appropriate industry-specific UI preset:
-
-| Industry | Assigned UI Preset |
-|----------|-------------------|
-| `retail`, `wholesale`, `food_beverage` | `retail` |
-| `manufacturing` | `manufacturing` |
-| `services` | `services` |
-| `other` | `general` |
-
-| Method | Path | Auth | Roles | Description |
-|--------|------|------|-------|-------------|
-| `POST` | `/onboarding` | Bearer JWT | `OWNER` | Complete onboarding & configure tenant UI preset |
-
-```bash
-curl -X POST http://localhost:3000/onboarding \
-  -H "Authorization: Bearer <owner-jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Shree Ganesh Textiles",
-    "industry": "retail",
-    "phone": "+91-9876543210",
-    "email": "ganesh@textiles.in",
-    "address": "Ring Road Market",
-    "city": "Surat",
-    "state": "Gujarat",
-    "country": "India"
-  }'
-```
-
-Response:
-
-```json
-{
-  "onboardingCompleted": true,
-  "channel": "web",
-  "uiPreset": "retail",
-  "business": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Shree Ganesh Textiles",
-    "industry": "retail",
-    "phone": "+91-9876543210",
-    "email": "ganesh@textiles.in",
-    "address": "Ring Road Market",
-    "city": "Surat",
-    "state": "Gujarat",
-    "country": "India"
-  }
-}
-```
-
----
-
-### 6. Integrations (`/integrations`)
-
-#### DigiLocker KYC & Consent (`/integrations/digilocker`)
-
-Provides mock consent and verification flows for Indian identity documents (`AADHAAR`, `PAN`, `GSTIN`).
-
-| Method | Path | Auth | Roles | Description |
-|--------|------|------|-------|-------------|
-| `POST` | `/integrations/digilocker/consent` | Bearer JWT | `OWNER` | Generate a mock DigiLocker consent ticket |
-| `POST` | `/integrations/digilocker/kyc` | Bearer JWT | `OWNER` | Verify consent ID and retrieve verified KYC profile |
-
-**Request Consent**:
-
-```bash
-curl -X POST http://localhost:3000/integrations/digilocker/consent \
-  -H "Authorization: Bearer <owner-jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{"documentType":"GSTIN"}'
-```
-
-Response:
-
-```json
-{
-  "consentId": "a910f9bd-3f3c-4cf2-831e-4581f21db597",
-  "status": "GRANTED",
-  "documentType": "GSTIN",
-  "provider": "digilocker-mock",
-  "expiresAt": "2026-10-01T03:30:00.000Z"
-}
-```
-
-**Verify KYC**:
-
-```bash
-curl -X POST http://localhost:3000/integrations/digilocker/kyc \
-  -H "Authorization: Bearer <owner-jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{"consentId":"a910f9bd-3f3c-4cf2-831e-4581f21db597"}'
-```
-
-Response:
-
-```json
-{
-  "consentId": "a910f9bd-3f3c-4cf2-831e-4581f21db597",
-  "verified": true,
-  "documentType": "GSTIN",
-  "maskedDocumentNumber": "27AAAAA0000A1Z5",
-  "kyc": {
-    "name": "Verified MSME Business",
-    "address": "Verified Business Address, India",
-    "pan": "ABCDE1234F"
-  },
-  "provider": "digilocker-mock",
-  "verifiedAt": "2026-10-01T02:30:00.000Z"
-}
-```
-
-#### WhatsApp Conversational Intake (`/integrations/whatsapp`)
-
-Captures incoming MSME business leads and conversational onboarding details through WhatsApp.
-
-| Method | Path | Auth | Roles | Description |
-|--------|------|------|-------|-------------|
-| `POST` | `/integrations/whatsapp/intake` | Bearer JWT | `OWNER` | Intake and map incoming WhatsApp business details |
-
-```bash
-curl -X POST http://localhost:3000/integrations/whatsapp/intake \
-  -H "Authorization: Bearer <owner-jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "phone": "+919876543210",
-    "businessName": "Balaji Electronics",
-    "senderName": "Ramesh Patel",
-    "industry": "retail",
-    "city": "Ahmedabad",
-    "state": "Gujarat",
-    "message": "Interested in setting up POS and inventory sync"
-  }'
-```
-
----
-
-### 7. Data Migration Engine (`/migration`)
-
-Phase 7 delivered a universal legacy migration engine tailored for Indian MSMEs transitioning from spreadsheets or desktop accounting software (Tally ERP 9 / Tally Prime) to GrowNova OS.
-
-| Method | Path | Auth | Roles | Description |
-|--------|------|------|-------|-------------|
-| `POST` | `/migration/upload` | Bearer JWT | Any | Upload `.xlsx`, `.xls`, or `.xml` file to parse into normalized records |
-
-#### Supported Formats & Parsers
-
-1. **Excel Spreadsheets (`.xlsx`, `.xls`)**:
-   - Parses multi-sheet workbooks using `xlsx`
-   - Maps each sheet to an entity category (e.g. Products, Customers, Vendors)
-   - Preserves typed rows, column keys, and empty cell defaults
-2. **Tally XML Exports (`.xml`)**:
-   - Parses complex, nested Tally XML hierarchies using `fast-xml-parser`
-   - Flattens master records, ledgers, vouchers, and inventory items into normalized entity dictionaries
-   - Handles XML attributes, numeric conversion, and whitespace trimming
-
-#### Sample Upload Request
-
-```bash
-curl -X POST http://localhost:3000/migration/upload \
-  -H "Authorization: Bearer <jwt>" \
-  -F "file=@test-data/products.xlsx"
-```
-
-Response:
-
-```json
-{
-  "source": "excel",
-  "totalRecords": 25,
-  "records": [
-    {
-      "source": "excel",
-      "entity": "Sheet1",
-      "data": {
-        "Product Name": "Cotton Kurti Blue",
-        "SKU": "CK-BLU-M",
-        "Price": 899,
-        "Stock": 45,
-        "GST Rate": "5%"
-      }
-    }
-  ]
-}
-```
-
-Tally XML Upload:
-
-```bash
-curl -X POST http://localhost:3000/migration/upload \
-  -H "Authorization: Bearer <jwt>" \
-  -F "file=@test-data/tally-sample.xml"
-```
-
-Response:
-
-```json
-{
-  "source": "tally_xml",
-  "totalRecords": 3,
-  "records": [
-    {
-      "source": "tally_xml",
-      "entity": "LEDGER",
-      "data": {
-        "NAME": "Cash Account",
-        "PARENT": "Cash-in-Hand",
-        "OPENINGBALANCE": 15000
-      }
-    }
-  ]
-}
-```
-
-Ready-to-use sample files are available under `test-data/`:
-- `test-data/products.xlsx` — Multi-row product catalog
-- `test-data/tally-sample.xml` — Tally ERP XML master export
-- `test-data/invalid.txt` — Negative test fixture for file type validation
-
----
-
-## API Contracts (Zod)
-
-Shared request/response contracts reside in `src/common/contracts` and `src/migration/contracts`. They export Zod schemas and inferred TypeScript types:
+Shared request/response contracts reside in `src/common/contracts` and `src/migration/contracts`:
 
 - `src/common/contracts/auth/auth.contract.ts` — `SignupRequest`, `SignupResponse`, `LoginRequest`, `LoginResponse`
 - `src/common/contracts/business.contract.ts` — `CreateBusinessRequest`, `CreateBusinessResponse`, `UpdateBusinessRequest`
@@ -591,69 +329,128 @@ Shared request/response contracts reside in `src/common/contracts` and `src/migr
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
-```
-backend/
-├── .env.example
-├── nest-cli.json
-├── package.json
-├── prisma7.config.ts                  # Prisma CLI config (migrations, seed config, DATABASE_URL)
-├── prisma/
-│   ├── schema.prisma                  # Business, User, Module, AuditLog models + UserRole enum
-│   ├── seed.ts                        # Database seeding script (demo business, users, roles)
+```text
+Grownova-0.1/
+├── run.bat                          # ⚡ 1-Click Windows Launcher (Frontend + Browser)
+├── run.sh                           # ⚡ 1-Click Mac/Linux Launcher
+├── README.md                        # 📖 Complete Project Documentation
+├── package.json                     # Backend configuration (NestJS)
+├── nest-cli.json                    # NestJS CLI configuration
+├── prisma7.config.ts                # Prisma 7 CLI configuration
+├── prisma/                          # Database schema, seed script & SQL migrations
+│   ├── schema.prisma
+│   ├── seed.ts
 │   └── migrations/
-├── generated/prisma/                  # Generated Prisma client (git-ignored)
-├── test-data/                         # Sample datasets for migration testing
-│   ├── products.xlsx                  # Sample Excel inventory file
-│   ├── tally-sample.xml               # Sample Tally XML export
-│   └── invalid.txt                    # Invalid file test fixture
-└── src/
-    ├── main.ts                        # Application bootstrap, Swagger, global pipes & filters
-    ├── app.module.ts                  # Root application module with Throttler & Interceptors
-    ├── config/
-    │   └── configuration.ts           # Typed environment configuration
-    ├── common/
-    │   ├── contracts/                 # Shared Zod API contracts
-    │   ├── filters/
-    │   │   └── http-exception.filter.ts # Unified global error response filter
-    │   └── interceptors/
-    │       └── api-response.interceptor.ts # API response envelope interceptor
-    ├── health/                        # GET /health liveness check
-    ├── prisma/                        # PrismaService (PostgreSQL adapter)
-    ├── redis/                         # RedisService (ioredis client)
-    ├── auth/                          # Signup, login, refresh, logout, JWT strategy & RolesGuard
-    ├── businesses/                    # Tenant-scoped business CRUD & deactivation
-    ├── audit/                         # SHA-256 hash-chained audit logging & integrity verification
-    ├── onboarding/                    # Owner onboarding & industry UI preset assignment
-    ├── integrations/                  # External service adapters & intake
-    │   ├── digilocker/                # DigiLocker consent & mock KYC verification
-    │   └── whatsapp/                  # WhatsApp conversational intake & messaging
-    ├── migration/                     # Data migration engine (Excel & Tally XML parsers)
-    │   ├── contracts/                 # Migration contract types
-    │   └── parsers/                   # ExcelParser & TallyParser implementations
-    ├── users/                         # User management (skeleton)
-    ├── crm/  inventory/  pos/         # MSME domain modules (skeletons)
-    ├── accounting/  gst/
-    ├── hr/  payroll/  production/
-    ├── marketing/  support/
-    ├── dashboard/  collaboration/  growai/
-    ├── notifications/  jobs/
-    └── integerations/                 # Secondary third-party adapter stubs (UPI, GSTN, ONDC, Tally)
+├── test-data/                       # Sample test datasets (Excel & Tally XML)
+│   ├── products.xlsx
+│   ├── tally-sample.xml
+│   └── invalid.txt
+├── src/                             # Backend source code (NestJS)
+│   ├── main.ts                      # Application bootstrap & Swagger setup
+│   ├── app.module.ts                # Root application module
+│   ├── config/                      # Typed environment configuration
+│   ├── common/                      # Shared Zod contracts, filters & interceptors
+│   ├── health/                      # GET /health system liveness module
+│   ├── prisma/                      # PrismaService (PostgreSQL adapter)
+│   ├── redis/                       # RedisService (ioredis client)
+│   ├── auth/                        # JWT authentication & RolesGuard
+│   ├── businesses/                  # Multi-tenant business management
+│   ├── audit/                       # SHA-256 hash-chained audit logging
+│   ├── onboarding/                  # Owner onboarding & UI presets
+│   ├── integrations/                # DigiLocker KYC & WhatsApp intake/webhook
+│   ├── crm/                         # CRM leads, parsing & scoring
+│   ├── growai/                      # AI rules & enrichment engine
+│   └── migration/                   # Excel & Tally XML migration parsers
+│
+└── frontend/                        # Frontend React Application (Vite + Tailwind)
+    ├── package.json                 # Frontend dependencies & scripts
+    ├── vite.config.ts               # Vite configuration
+    ├── index.html                   # HTML entry point with Google Fonts
+    ├── public/                      # Static assets & photography
+    │   ├── hero-bg.jpg              # Cinematic sunlit Indian heritage desk scene
+    │   ├── ravi_avatar_hq.jpg       # High-resolution executive portrait
+    │   └── reference.jpg            # Original visual source of truth
+    └── src/
+        ├── App.tsx                  # Client-side router (/ and /auth)
+        ├── pages/
+        │   ├── LandingPage.tsx      # Main landing experience
+        │   └── AuthPage.tsx         # Dedicated /auth authentication route
+        └── components/
+            ├── VisionDashboard.tsx  # 100% Vector visionOS Liquid Glass Dashboard
+            ├── HeroLeft.tsx         # Aligned marketing copy & CTAs
+            ├── GrowNovaLogo.tsx     # Official vector GrowNova brand logo
+            ├── ReferenceCompare.tsx # QA reference comparison slider
+            ├── navigation/
+            │   └── LandingNav.tsx   # Top navigation bar
+            └── auth/
+                ├── AuthShell.tsx        # Dual liquid glass slab container
+                ├── AuthTabs.tsx         # Sign In / Sign Up tab switcher
+                ├── AuthForm.tsx         # Interactive login & registration forms
+                ├── SocialLogin.tsx      # Google & Microsoft SSO tiles
+                └── GrowNovaPreview.tsx  # Vector miniature preview tablet
 ```
 
 ---
 
-## Roadmap
+## 🛠️ Technology Stack
 
-- [x] **Phase 0**: NestJS foundation & health endpoint
-- [x] **Phase 1**: Prisma 7, PostgreSQL, Redis, initial migrations
-- [x] **Phase 2**: Zod API contracts, global validation, JWT auth, business API
-- [x] **Phase 3**: Redis-backed refresh token rotation & session revocation
-- [x] **Phase 4**: Role-Based Access Control (`OWNER`, `ACCOUNTANT`, `OPS`, `EMPLOYEE`) & multi-tenancy
-- [x] **Phase 5**: Cryptographic SHA-256 audit ledger, tamper verification, rate limiting, DB seeding
-- [x] **Phase 6**: MSME onboarding flow, DigiLocker KYC mock adapter, WhatsApp intake
-- [x] **Phase 7**: Legacy data migration engine for Excel (`.xlsx`) and Tally XML (`.xml`)
-- [ ] **Phase 8**: Next.js 15 Web Frontend integration with dynamic UI presets (`retail`, `manufacturing`, `services`)
-- [ ] **Phase 9**: Full domain module logic (Inventory catalog sync, POS billing, GST invoicing)
-- [ ] **Phase 10**: Live third-party integrations (Official WhatsApp Business API, Sandbox GSTN e-Invoice/e-Way, Sandbox ONDC Beckn protocol)
+| Domain | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend Framework** | React 19 (TypeScript) | Reactive, component-driven user interface |
+| **Build & Dev Tooling**| Vite 8 | Instant Hot Module Replacement (HMR) & rapid bundling |
+| **Styling & CSS** | Tailwind CSS + Custom CSS | Glassmorphism tokens, backdrop filters, custom animations |
+| **Iconography** | Lucide React | Clean, scalable vector SVG icons |
+| **Typography** | Playfair Display & Plus Jakarta Sans | High-contrast luxury editorial serif + clean modern sans-serif |
+| **Routing** | React Router v7 | Seamless client-side route navigation (`/` and `/auth`) |
+| **Backend Framework** | NestJS 11 + Express | Enterprise-grade modular TypeScript API server |
+| **Database & ORM** | PostgreSQL + Prisma 7 | Primary relational multi-tenant database |
+| **Caching & Tokens** | Redis (ioredis) | Refresh token session store & rapid cache |
+| **API Validation** | Zod + class-validator | Strict runtime payload and contract validation |
+| **Audit Ledger** | SHA-256 Cryptographic Chain | Tamper-evident ledger of all business mutations |
+
+---
+
+## ❓ FAQ & Troubleshooting for Non-Tech Users
+
+<details>
+<summary><b>1. How do I stop the app when I'm done?</b></summary>
+<br />
+Click into the command prompt or terminal window where GrowNova is running and press <b>Ctrl + C</b> on your keyboard. Type <code>y</code> if asked to terminate the batch job.
+</details>
+
+<details>
+<summary><b>2. It says "Node.js is not recognized" when I double-click run.bat</b></summary>
+<br />
+This means Node.js is not yet installed on your computer. Download the free, official installer from <a href="https://nodejs.org/">nodejs.org</a> (choose the LTS version). Run the installer, accept default settings, and double-click <code>run.bat</code> again.
+</details>
+
+<details>
+<summary><b>3. The browser didn't open automatically</b></summary>
+<br />
+Simply open Google Chrome, Safari, Edge, or Firefox and manually type or click: <a href="http://localhost:5173">http://localhost:5173</a>.
+</details>
+
+<details>
+<summary><b>4. How do I get the latest updates from GitHub?</b></summary>
+<br />
+Open terminal in the project folder and run:
+<pre><code>git checkout devansh
+git pull origin devansh</code></pre>
+Then run <code>run.bat</code> or <code>npm run dev</code> (inside the <code>frontend</code> folder).
+</details>
+
+<br />
+
+---
+
+<div align="center">
+
+<b>GrowNova Business Operating System</b> • Built with precision for Indian enterprises.
+
+<br />
+
+<sub>© 2026 GrowNova Inc. All rights reserved.</sub>
+
+</div>

@@ -10,5 +10,6 @@ import { InventoryService } from './inventory.service';
   imports: [PrismaModule, RealtimeModule, BullModule.registerQueue({ name: INVENTORY_QUEUE })],
   controllers: [InventoryController],
   providers: [InventoryService, ExpiryProcessor],
+  exports: [InventoryService],
 })
 export class InventoryModule {}

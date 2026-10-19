@@ -155,7 +155,7 @@ export class InventoryService {
   // 'inventory.low_stock' when the variant's stock across active locations drops to or below its threshold,
   // 'inventory.shrinkage' when a count (ADJUST) finds less than the system had.
   // ponytail: checked after commit, so two sales racing past the threshold can both alert or neither; fine for a nudge.
-  private async alert(
+  async alert(
     businessId: string,
     variant: { id: string; sku: string; lowStockThreshold: number | null },
     rows: { type: StockMovementType; quantity: Prisma.Decimal; unitCost: Prisma.Decimal }[],
@@ -235,7 +235,7 @@ export class InventoryService {
 
   // The no-op increment row-locks the variant's stock level at a location, so movements on it queue up instead of
   // two of them reading the same balance and overselling. Batch stock there is only changed while holding this lock.
-  private lockLevel(tx: Prisma.TransactionClient, businessId: string, variantId: string, locationId: string) {
+  lockLevel(tx: Prisma.TransactionClient, businessId: string, variantId: string, locationId: string) {
     return tx.stockLevel.upsert({
       where: { variantId_locationId: { variantId, locationId } },
       create: { variantId, locationId, businessId },
@@ -245,14 +245,14 @@ export class InventoryService {
 
   // Every stock change goes through here, inside the caller's transaction: ledger rows (one per batch touched),
   // the batch stock, and the variant's stock level at the location.
-  private async applyMovement(
+  async applyMovement(
     tx: Prisma.TransactionClient,
     variant: ActiveVariant,
     location: { id: string; name: string },
     type: StockMovementType,
     amount: Prisma.Decimal,
     batch: { id: string; batchNo: string } | null,
-    entry: { businessId: string; actorId: string; unitCost: Prisma.Decimal | number; reference?: string; note?: string; transferId?: string },
+    entry: { businessId: string; actorId: string; unitCost: Prisma.Decimal | number; reference?: string; note?: string; transferId?: string; posOrderId?: string },
   ) {
     const ids = { variantId: variant.id, locationId: location.id };
     const level = await this.lockLevel(tx, entry.businessId, variant.id, location.id);
@@ -305,13 +305,13 @@ export class InventoryService {
     return rows;
   }
 
-  private async activeVariant(businessId: string, id: string) {
+  async activeVariant(businessId: string, id: string) {
     const variant = await this.prisma.productVariant.findFirst({ where: { id, businessId, isActive: true }, include: { product: { select: { unit: true } } } });
     if (!variant) throw new NotFoundException(`Variant ${id} not found or archived`);
     return variant;
   }
 
-  private async activeLocation(businessId: string, id: string) {
+  async activeLocation(businessId: string, id: string) {
     const location = await this.prisma.location.findFirst({ where: { id, businessId, isActive: true } });
     if (!location) throw new NotFoundException(`Location ${id} not found or archived`);
     return location;

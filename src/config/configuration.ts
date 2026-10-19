@@ -15,4 +15,9 @@ export default () => ({
     refreshSecret: process.env.JWT_REFRESH_SECRET || 'dev-refresh-secret',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   },
+
+  upi: {
+    // Shared with the UPI provider to sign its payment callbacks.
+    webhookSecret: process.env.UPI_WEBHOOK_SECRET || 'dev-upi-webhook-secret',
+  },
 });

@@ -44,4 +44,10 @@ export class UpdateBusinessDto {
     message: 'gstin must be a 15-character GSTIN like 07ABCDE1234F1Z5',
   })
   gstin?: string;
+
+  @IsOptional()
+  @Matches(/^[a-zA-Z0-9._-]{2,256}@[a-zA-Z]{2,64}$/, {
+    message: 'upiId must be a UPI address like myshop@okicici',
+  })
+  upiId?: string;
 }

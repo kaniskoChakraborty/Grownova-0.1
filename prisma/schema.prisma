@@ -24,6 +24,9 @@ model Business {
   stockLevels     StockLevel[]
   stockLedger     StockLedgerEntry[]
   batches         Batch[]
+  posOrders       PosOrder[]
+  upiPayments     UpiPayment[]
+  syncConflicts   PosSyncConflict[]
   id        String   @id @default(uuid())
   name      String
   industry  String?
@@ -33,6 +36,7 @@ model Business {
   city      String?
   state     String?
   gstin     String?
+  upiId     String? // VPA customers pay to, e.g. shop@okicici
   country   String   @default("India")
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -219,14 +223,15 @@ model InvoicePayment {
   @@index([invoiceId])
 }
 
-// Next invoice serial per business per financial year (GST wants a fresh series each April).
+// Next serial per business, document series and financial year (GST wants a fresh series each April).
 model InvoiceCounter {
   businessId String
   business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  series     String   @default("INV") // INV for invoices, POS for counter sales
   fy         String // e.g. "2026-27"
   last       Int      @default(0)
 
-  @@id([businessId, fy])
+  @@id([businessId, series, fy])
 }
 
 /// Something the business sells. Stock is tracked per variant, so every product has at least one.
@@ -267,6 +272,7 @@ model ProductVariant {
   stockLevels StockLevel[]
   stockLedger StockLedgerEntry[]
   batches     Batch[]
+  posLines    PosOrderLine[]
 
   @@unique([businessId, sku])
   @@unique([businessId, barcode])
@@ -287,6 +293,7 @@ model Location {
   stockLevels StockLevel[]
   stockLedger StockLedgerEntry[]
   batchStocks BatchStock[]
+  posOrders   PosOrder[]
 
   @@unique([businessId, name])
 }
@@ -334,12 +341,14 @@ model StockLedgerEntry {
   transferId   String? // shared by the TRANSFER_OUT and TRANSFER_IN rows of one transfer
   batchId      String?
   batch        Batch?            @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  posOrderId   String? // the POS sale (or its cancellation) that moved this stock
   createdAt    DateTime          @default(now())
 
   @@index([businessId, variantId, locationId, createdAt])
   @@index([transferId])
   @@index([batchId, createdAt])
   @@index([businessId, createdAt])
+  @@index([posOrderId])
 }
 
 /// A lot of one variant, e.g. a delivery of medicine with its own expiry date. Created by the first IN that names it.
@@ -372,4 +381,115 @@ model BatchStock {
 
   @@id([batchId, locationId])
   @@index([locationId])
+}
+
+enum PosOrderStatus {
+  PENDING_PAYMENT // UPI sale waiting for the bank's callback
+  PAID
+  CANCELLED
+}
+
+/// A counter sale. Its stock leaves the location the moment the order is created; cancelling puts it back.
+model PosOrder {
+  id             String         @id @default(uuid())
+  businessId     String
+  business       Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  locationId     String
+  location       Location       @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  number         String // POS/26-27/000001
+  status         PosOrderStatus
+  paymentMethod  PaymentMethod
+  total          Decimal        @db.Decimal(12, 2)
+  customerName   String?
+  customerPhone  String?
+  idempotencyKey String? // the client's Idempotency-Key header; a repeat returns this order
+  createdById    String?
+  paidAt         DateTime?
+  cancelledAt    DateTime?
+  cancelReason   String?
+  upiTxnRef      String?        @unique // tr= in the UPI link; the bank echoes it back in its callback
+  ewbNo          String?        @unique // e-way bill number (mock GSTN portal)
+  ewbDate        DateTime?
+  ewbValidUntil  DateTime?
+  ewb            Json? // consignee, vehicle, distance and HSN lines as sent to the portal
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  lines       PosOrderLine[]
+  upiPayments UpiPayment[]
+
+  @@unique([businessId, number])
+  @@unique([businessId, idempotencyKey])
+  @@index([businessId, createdAt])
+}
+
+model PosOrderLine {
+  id        String         @id @default(uuid())
+  orderId   String
+  order     PosOrder       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  quantity  Decimal        @db.Decimal(12, 3)
+  unitPrice Decimal        @db.Decimal(12, 2)
+  lineTotal Decimal        @db.Decimal(12, 2)
+
+  @@index([orderId])
+}
+
+enum UpiCallbackResult {
+  MATCHED // order marked PAID
+  AMOUNT_MISMATCH // money arrived but not the order total; order left as it was
+  ORDER_NOT_PENDING // order already paid or cancelled; money needs a refund or a look
+  UNKNOWN_REF // no order has this txnRef
+  FAILED // the bank reported a failed payment
+}
+
+/// Every callback the UPI provider sends, kept even when it matches nothing, for reconciliation.
+model UpiPayment {
+  id         String            @id @default(uuid())
+  businessId String?
+  business   Business?         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  orderId    String?
+  order      PosOrder?         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  txnRef     String
+  utr        String            @unique // bank reference; a repeated callback with the same UTR is ignored
+  amount     Decimal           @db.Decimal(12, 2)
+  status     String // SUCCESS or FAILED, as the bank reported it
+  payerVpa   String?
+  result     UpiCallbackResult
+  receivedAt DateTime          @default(now())
+
+  @@index([businessId, receivedAt])
+  @@index([orderId])
+}
+
+enum SyncConflictType {
+  PRICE_CHANGED // sold offline at an old price; the offline price was kept
+  STOCK_SHORT // sold more offline than the system had; booked in full, stock deducted only down to 0
+  REJECTED // could not be booked at all (archived item or shop, bad data); the original sale is in detail
+}
+
+enum SyncConflictStatus {
+  AUTO_RESOLVED // a rule handled it; kept as a log
+  OPEN // needs a person
+  RESOLVED
+}
+
+/// What happened to offline sales that didn't sync cleanly.
+model PosSyncConflict {
+  id           String             @id @default(uuid())
+  businessId   String
+  business     Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  deviceId     String
+  clientId     String // the till's own id for the sale
+  orderId      String? // the booked order; null when REJECTED
+  type         SyncConflictType
+  status       SyncConflictStatus
+  detail       Json
+  note         String?
+  resolvedById String?
+  resolvedAt   DateTime?
+  createdAt    DateTime           @default(now())
+
+  @@index([businessId, status, createdAt])
 }

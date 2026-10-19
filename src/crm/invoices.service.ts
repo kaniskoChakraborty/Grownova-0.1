@@ -30,8 +30,8 @@ export class InvoicesService {
     // ponytail: 4-digit serial keeps the number within GST's 16-character limit up to 9999 invoices a year.
     return this.prisma.$transaction(async (tx) => {
       const { last } = await tx.invoiceCounter.upsert({
-        where: { businessId_fy: { businessId, fy } },
-        create: { businessId, fy, last: 1 },
+        where: { businessId_series_fy: { businessId, series: 'INV', fy } },
+        create: { businessId, series: 'INV', fy, last: 1 },
         update: { last: { increment: 1 } },
       });
       return tx.invoice.create({

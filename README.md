@@ -8,7 +8,7 @@ Built with **NestJS 11**, **TypeScript 5**, **Prisma 7** (PostgreSQL), **Redis**
 
 ## Current Phase
 
-**Current Phase: Phase 7 — Data Migration (completed)**
+**Current Phase: Phase 10 — Inventory (completed)**
 
 | Phase | Scope | Status |
 |-------|-------|--------|
@@ -20,9 +20,12 @@ Built with **NestJS 11**, **TypeScript 5**, **Prisma 7** (PostgreSQL), **Redis**
 | **Phase 5** | Audit logging with SHA-256 cryptographic hash chaining, tamper detection, global exception filter, rate limiting (`ThrottlerGuard`), database seeding (`prisma/seed.ts`) | ✅ Done |
 | **Phase 6** | Owner onboarding flow with industry UI presets, DigiLocker consent/KYC mock adapter, WhatsApp conversational intake contract | ✅ Done |
 | **Phase 7** | Legacy data migration engine for Indian MSMEs: Excel (`.xlsx`, `.xls`) and Tally XML (`.xml`) parsers with normalized schema extraction | ✅ Done |
+| **Phase 8** | Mock WhatsApp webhook, message-to-lead parsing, tenant-scoped CRM lead CRUD, GrowAI enrichment behind an isolated LLM wrapper with a rules fallback | ✅ Done |
+| **Phase 9** | CRM pipeline stages and history, lead scoring, Socket.IO events, BullMQ reminders, invoices and payments, mock GSTN IRN, HSN/SAC suggestion, debtor ageing, per-FY invoice numbering, churn stub | ✅ Done |
+| **Phase 10** | Inventory: products, variants, locations, append-only stock ledger, movements, transfers, barcode lookup, batches with FEFO and expiry alerts, batch trace, low-stock and shrinkage alerts, COGS, demand forecast v1 | ✅ Done |
 
 > [!NOTE]
-> Future phases will expand domain logic (CRM, Inventory, POS, Accounting, GST, HR, Payroll, etc.) and connect external production APIs (live DigiLocker, WhatsApp Business API, GSTN, UPI, ONDC) according to the GrowNova Product Requirements.
+> Future phases will expand domain logic (POS, Accounting, GST returns, HR, Payroll, etc.) and connect external production APIs (live DigiLocker, WhatsApp Business API, GSTN, UPI, ONDC) according to the GrowNova Product Requirements.
 
 ---
 
@@ -94,6 +97,9 @@ cp .env.example .env
 | `JWT_ACCESS_EXPIRES_IN` | Access token lifetime | `15m` |
 | `JWT_REFRESH_SECRET` | Secret used to sign/verify refresh tokens | dev fallback (set this!) |
 | `JWT_REFRESH_EXPIRES_IN` | Refresh token lifetime | `7d` |
+| `ANTHROPIC_API_KEY` | Hosted LLM key for GrowAI lead enrichment; without it enrichment uses rules | — (optional) |
+| `LLM_MODEL` | Model used by `LlmService` | `claude-haiku-5-5` |
+| `LLM_PROVIDER` | Set to `mock` to force the rules fallback | — |
 
 Example `.env`:
 
@@ -579,6 +585,87 @@ Ready-to-use sample files are available under `test-data/`:
 
 ---
 
+### 8. CRM & Sales (`/crm`, `/gst`)
+
+Phases 8 and 9. A mock WhatsApp message becomes a lead, GrowAI enriches and scores it, and the lead moves through the pipeline `NEW → CONTACTED → QUALIFIED → WON`, or `LOST` from any open stage. A score of 70 or more auto-qualifies a lead, and a fully paid invoice moves its lead to `WON`.
+
+| Method | Path | Roles | Description |
+|--------|------|-------|-------------|
+| `POST` | `/integrations/whatsapp/webhook` | OWNER | Mock WhatsApp message; creates or updates a lead |
+| `POST` | `/crm/leads` | OWNER, OPS, EMPLOYEE | Create a lead |
+| `GET` | `/crm/leads` | Any | List leads |
+| `GET` | `/crm/leads/:id` | Any | Get a lead |
+| `PATCH` | `/crm/leads/:id` | OWNER, OPS, EMPLOYEE | Edit a lead |
+| `POST` | `/crm/leads/:id/enrich` | OWNER, OPS, EMPLOYEE | GrowAI summary, intent, tags and score (0–100) |
+| `PATCH` | `/crm/leads/:id/stage` | OWNER, OPS, EMPLOYEE | Move a lead to a stage |
+| `POST` | `/crm/leads/:id/advance` | OWNER, OPS, EMPLOYEE | Move a lead to the next stage |
+| `GET` | `/crm/leads/:id/history` | Any | Stage history, oldest first |
+| `POST` | `/crm/leads/:id/reminders` | OWNER, OPS, EMPLOYEE | Schedule a follow-up reminder (BullMQ) |
+| `GET` | `/crm/leads/:id/reminders` | Any | List a lead's reminders |
+| `GET` | `/crm/leads/churn-risk` | Any | Won customers quiet for 90+ days (MEDIUM) or 180+ days (HIGH) |
+| `POST` | `/crm/invoices` | OWNER, ACCOUNTANT | Create an invoice, numbered per financial year (`INV/2026-27/0001`) |
+| `GET` | `/crm/invoices` | Any | List invoices |
+| `GET` | `/crm/invoices/:id` | Any | Get an invoice |
+| `POST` | `/crm/invoices/:id/payments` | OWNER, ACCOUNTANT | Record a payment |
+| `POST` | `/crm/invoices/:id/irn` | OWNER, ACCOUNTANT | Mock GSTN e-invoice IRN |
+| `POST` | `/crm/invoices/:id/cancel` | OWNER, ACCOUNTANT | Cancel an unpaid invoice (blocked 24 h after IRN) |
+| `GET` | `/crm/invoices/ageing` | OWNER, ACCOUNTANT | Debtor ageing buckets per customer |
+| `GET` | `/gst/hsn?q=` | Any | HSN/SAC code suggestions (English and Hindi keywords) |
+
+---
+
+### 9. Inventory (`/inventory`)
+
+Phase 10. Every stock change is a row in an append-only ledger (a database trigger blocks updates and deletes), and stock can never go below 0. Sales and transfers without a batch number take stock first-expiry-first-out (FEFO).
+
+| Method | Path | Roles | Description |
+|--------|------|-------|-------------|
+| `POST` | `/inventory/products` | OWNER, OPS | Create a product with its variants |
+| `GET` | `/inventory/products` | Any | List products |
+| `GET` | `/inventory/products/:id` | Any | Get a product |
+| `PATCH` | `/inventory/products/:id` | OWNER, OPS | Edit a product; `isActive: false` archives it |
+| `POST` | `/inventory/products/:id/variants` | OWNER, OPS | Add a variant (SKU, barcode, prices, `lowStockThreshold`) |
+| `PATCH` | `/inventory/variants/:id` | OWNER, OPS | Edit a variant |
+| `POST` | `/inventory/locations` | OWNER, OPS | Create a shop or godown |
+| `GET` | `/inventory/locations` | Any | List locations |
+| `PATCH` | `/inventory/locations/:id` | OWNER, OPS | Edit a location |
+| `POST` | `/inventory/stock/movements` | OWNER, OPS | `IN`, `OUT` or `ADJUST` (physical count); returns the ledger rows written |
+| `POST` | `/inventory/stock/transfers` | OWNER, OPS | Move several items between locations, all or nothing |
+| `GET` | `/inventory/stock` | Any | Stock per variant and location |
+| `GET` | `/inventory/stock/ledger` | Any | Stock history, newest first |
+| `GET` | `/inventory/stock/low` | Any | Variants at or below their low-stock threshold |
+| `GET` | `/inventory/barcode/:code` | Any | Variant, product and stock for a barcode |
+| `GET` | `/inventory/batches` | Any | Batches with stock per location |
+| `GET` | `/inventory/batches/expiring?days=30` | Any | Batches expiring soon |
+| `GET` | `/inventory/batches/:id/trace` | Any | Every movement of a batch, oldest first |
+| `GET` | `/inventory/reports/cogs?from=&to=` | OWNER, ACCOUNTANT, OPS | Cost of goods sold per variant (India-time days, month to date by default) |
+| `GET` | `/inventory/reports/shrinkage?from=&to=` | OWNER, ACCOUNTANT, OPS | Stock found missing by counts, per variant and location, at cost |
+| `GET` | `/inventory/reports/forecast?days=30&horizon=14` | OWNER, ACCOUNTANT, OPS | Average daily sales, days of cover and suggested reorder |
+
+```bash
+curl -X POST http://localhost:3000/inventory/stock/movements \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"variantId":"<variant-id>","locationId":"<location-id>","type":"IN","quantity":20,"batchNo":"B-2611","expiryDate":"2027-03-31"}'
+```
+
+---
+
+### 10. Real-time Events (Socket.IO)
+
+Connect with the access token, for example `io('http://localhost:3000', { auth: { token: accessToken } })`. Each socket joins its business's room, so a tenant only hears its own events.
+
+| Event | When |
+|-------|------|
+| `lead.created` | A lead is created |
+| `lead.stage_changed` | A lead moves stage |
+| `lead.reminder_due` | A scheduled reminder fires |
+| `inventory.low_stock` | A variant's total stock drops to its low-stock threshold |
+| `inventory.shrinkage` | A stock count finds stock missing |
+| `inventory.expiry_alert` | Daily at 08:00 IST, batches expiring within 30 days |
+
+---
+
 ## API Contracts (Zod)
 
 Shared request/response contracts reside in `src/common/contracts` and `src/migration/contracts`. They export Zod schemas and inferred TypeScript types:
@@ -633,8 +720,12 @@ backend/
     │   ├── contracts/                 # Migration contract types
     │   └── parsers/                   # ExcelParser & TallyParser implementations
     ├── users/                         # User management (skeleton)
-    ├── crm/  inventory/  pos/         # MSME domain modules (skeletons)
-    ├── accounting/  gst/
+    ├── crm/                           # Leads, pipeline, reminders, invoices, IRN, ageing (Phases 8–9)
+    ├── inventory/                     # Products, stock ledger, transfers, batches, reports (Phase 10)
+    ├── gst/                           # HSN/SAC suggestion
+    ├── realtime/                      # Socket.IO gateway, per-business rooms
+    ├── pos/                           # MSME domain modules (skeletons)
+    ├── accounting/
     ├── hr/  payroll/  production/
     ├── marketing/  support/
     ├── dashboard/  collaboration/  growai/
@@ -654,6 +745,7 @@ backend/
 - [x] **Phase 5**: Cryptographic SHA-256 audit ledger, tamper verification, rate limiting, DB seeding
 - [x] **Phase 6**: MSME onboarding flow, DigiLocker KYC mock adapter, WhatsApp intake
 - [x] **Phase 7**: Legacy data migration engine for Excel (`.xlsx`) and Tally XML (`.xml`)
-- [ ] **Phase 8**: Next.js 15 Web Frontend integration with dynamic UI presets (`retail`, `manufacturing`, `services`)
-- [ ] **Phase 9**: Full domain module logic (Inventory catalog sync, POS billing, GST invoicing)
-- [ ] **Phase 10**: Live third-party integrations (Official WhatsApp Business API, Sandbox GSTN e-Invoice/e-Way, Sandbox ONDC Beckn protocol)
+- [x] **Phase 8**: Mock WhatsApp webhook, CRM leads, GrowAI enrichment
+- [x] **Phase 9**: CRM pipeline, lead scoring, real-time events, reminders, invoices, mock e-invoice (IRN)
+- [x] **Phase 10**: Inventory: stock ledger, transfers, batches and expiry, low stock, COGS, demand forecast
+- [ ] **Phase 11**: POS, UPI mock, offline sync

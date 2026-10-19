@@ -6,9 +6,9 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import {
   BarcodeLookupDto, BatchDto, BatchTraceDto, CreateLocationDto, CreateProductDto, CreateVariantDto, ExpiringBatchDto,
-  ExpiringBatchesQuery, ListBatchesQuery, ListProductsQuery, LocationResponseDto, ProductResponseDto, StockLedgerEntryDto,
-  StockLevelDto, StockMovementDto, StockQuery, StockTransferDto, TransferResponseDto, UpdateLocationDto, UpdateProductDto,
-  UpdateVariantDto,
+  ExpiringBatchesQuery, ForecastLineDto, ForecastQuery, ListBatchesQuery, ListProductsQuery, LocationResponseDto, PeriodQuery,
+  PeriodReportDto, ProductResponseDto, StockLedgerEntryDto, StockLevelDto, StockMovementDto, StockQuery, StockTransferDto,
+  TransferResponseDto, UpdateLocationDto, UpdateProductDto, UpdateVariantDto, VariantStockDto,
 } from './dto/inventory.dto';
 import { InventoryService } from './inventory.service';
 
@@ -16,6 +16,7 @@ type AuthedRequest = { user: { id: string; businessId: string } };
 
 const ALL = [UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.OPS, UserRole.EMPLOYEE];
 const STOCK = [UserRole.OWNER, UserRole.OPS];
+const REPORTS = [UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.OPS];
 
 @ApiTags('Inventory')
 @ApiBearerAuth()
@@ -92,7 +93,8 @@ export class InventoryController {
   @ApiCreatedResponse({
     type: [StockLedgerEntryDto],
     description: 'Stock in, stock out, or a physical count (ADJUST). 400 if it would take stock below 0. ' +
-      'Returns the ledger rows written: usually one, more when an OUT spans several batches.',
+      'Returns the ledger rows written: usually one, more when an OUT spans several batches. ' +
+      'Sends live inventory.low_stock when the variant drops to its threshold, and inventory.shrinkage when a count finds stock missing.',
   })
   recordMovement(@Req() req: AuthedRequest, @Body() dto: StockMovementDto) {
     return this.inventory.recordMovement(req.user.businessId, dto, req.user.id);
@@ -138,6 +140,34 @@ export class InventoryController {
   @ApiOkResponse({ type: BatchTraceDto, description: 'Batch traceability: every movement of the batch, oldest first, and where it sits now' })
   traceBatch(@Req() req: AuthedRequest, @Param('id') id: string) {
     return this.inventory.traceBatch(req.user.businessId, id);
+  }
+
+  @Get('stock/low')
+  @Roles(...ALL)
+  @ApiOkResponse({ type: [VariantStockDto], description: 'Variants whose total stock across active locations is at or below their lowStockThreshold' })
+  lowStock(@Req() req: AuthedRequest) {
+    return this.inventory.lowStock(req.user.businessId);
+  }
+
+  @Get('reports/cogs')
+  @Roles(...REPORTS)
+  @ApiOkResponse({ type: PeriodReportDto, description: 'Cost of goods sold: units sold (OUT) in the period at their recorded unit cost, per variant' })
+  cogs(@Req() req: AuthedRequest, @Query() query: PeriodQuery) {
+    return this.inventory.cogs(req.user.businessId, query);
+  }
+
+  @Get('reports/shrinkage')
+  @Roles(...REPORTS)
+  @ApiOkResponse({ type: PeriodReportDto, description: 'Stock that physical counts (ADJUST) found missing in the period, per variant and location, at cost' })
+  shrinkage(@Req() req: AuthedRequest, @Query() query: PeriodQuery) {
+    return this.inventory.shrinkage(req.user.businessId, query);
+  }
+
+  @Get('reports/forecast')
+  @Roles(...REPORTS)
+  @ApiOkResponse({ type: [ForecastLineDto], description: 'Demand forecast v1: average daily sales carried forward, with days of cover and a suggested reorder. Soonest to run out first.' })
+  forecast(@Req() req: AuthedRequest, @Query() query: ForecastQuery) {
+    return this.inventory.forecast(req.user.businessId, query);
   }
 
   @Get('stock/ledger')

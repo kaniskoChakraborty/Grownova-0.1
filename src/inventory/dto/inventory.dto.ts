@@ -214,6 +214,26 @@ export class ExpiringBatchesQuery {
   days?: number;
 }
 
+export class PeriodQuery {
+  @ApiPropertyOptional({ example: '2026-10-01', description: 'YYYY-MM-DD, India time. Defaults to the 1st of this month.' })
+  @IsOptional() @Matches(DATE, { message: 'from must be YYYY-MM-DD' }) @IsDateString({ strict: true })
+  from?: string;
+
+  @ApiPropertyOptional({ example: '2026-10-31', description: 'YYYY-MM-DD, India time, included. Defaults to today.' })
+  @IsOptional() @Matches(DATE, { message: 'to must be YYYY-MM-DD' }) @IsDateString({ strict: true })
+  to?: string;
+}
+
+export class ForecastQuery {
+  @ApiPropertyOptional({ example: 30, default: 30, description: 'Days of sales history to average' })
+  @IsOptional() @Type(() => Number) @IsInt() @Min(7) @Max(365)
+  days?: number;
+
+  @ApiPropertyOptional({ example: 14, default: 14, description: 'Days ahead to forecast' })
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(90)
+  horizon?: number;
+}
+
 class StockProductDto {
   @ApiProperty() name!: string;
   @ApiProperty() unit!: string;
@@ -317,4 +337,44 @@ export class ExpiringBatchDto extends BatchDto {
 
 export class BatchTraceDto extends BatchDto {
   @ApiProperty({ type: [StockLedgerEntryDto], description: 'Every movement of this batch, oldest first' }) ledger!: StockLedgerEntryDto[];
+}
+
+class ReportVariantDto {
+  @ApiProperty() sku!: string;
+  @ApiPropertyOptional({ type: String, nullable: true }) name!: string | null;
+  @ApiProperty({ type: StockProductDto }) product!: StockProductDto;
+}
+
+class ReportLineDto {
+  @ApiProperty() variantId!: string;
+  @ApiPropertyOptional({ description: 'Shrinkage only' }) locationId?: string;
+  @ApiProperty({ type: ReportVariantDto }) variant!: ReportVariantDto;
+  @ApiPropertyOptional({ type: StockLocationDto, description: 'Shrinkage only' }) location?: StockLocationDto;
+  @ApiProperty({ type: String, example: '12', description: 'Units sold (COGS) or found missing (shrinkage)' }) quantity!: string;
+  @ApiProperty({ type: String, example: '5040', description: 'Rupees at the unit cost recorded on each entry' }) value!: string;
+}
+
+export class PeriodReportDto {
+  @ApiProperty({ example: '2026-10-01' }) from!: string;
+  @ApiProperty({ example: '2026-10-16' }) to!: string;
+  @ApiProperty({ type: String, example: '5040', description: 'Rupees' }) total!: string;
+  @ApiProperty({ type: [ReportLineDto], description: 'Largest value first' }) lines!: ReportLineDto[];
+}
+
+export class VariantStockDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() sku!: string;
+  @ApiPropertyOptional({ type: String, nullable: true }) name!: string | null;
+  @ApiPropertyOptional({ type: Number, nullable: true }) lowStockThreshold!: number | null;
+  @ApiProperty({ type: StockProductDto }) product!: StockProductDto;
+  @ApiProperty({ type: [BarcodeStockDto], description: 'Stock at each active location' }) stockLevels!: BarcodeStockDto[];
+  @ApiProperty({ type: String, example: '4', description: 'Total across active locations' }) quantity!: string;
+}
+
+export class ForecastLineDto extends VariantStockDto {
+  @ApiProperty({ type: String, example: '30', description: 'Units sold in the history window' }) sold!: string;
+  @ApiProperty({ type: String, example: '1' }) perDay!: string;
+  @ApiProperty({ type: String, example: '14', description: 'Expected sales over the horizon' }) demand!: string;
+  @ApiPropertyOptional({ type: Number, nullable: true, example: 4, description: 'Days until stock runs out at the current rate; null if nothing sold' }) daysOfCover!: number | null;
+  @ApiProperty({ type: String, example: '20', description: 'Suggested order: demand plus threshold minus stock, rounded up' }) reorder!: string;
 }

@@ -2,10 +2,11 @@ import { randomUUID } from 'crypto';
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, StockMovementType } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { daysUntil, fefoSlices } from './stock';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
+import { daysUntil, fefoSlices, forecastLine, istPeriod } from './stock';
 import {
-  CreateLocationDto, CreateProductDto, CreateVariantDto, ListBatchesQuery, ListProductsQuery, StockMovementDto,
-  StockQuery, StockTransferDto, UpdateLocationDto, UpdateProductDto, UpdateVariantDto,
+  CreateLocationDto, CreateProductDto, CreateVariantDto, ForecastQuery, ListBatchesQuery, ListProductsQuery, PeriodQuery,
+  StockMovementDto, StockQuery, StockTransferDto, UpdateLocationDto, UpdateProductDto, UpdateVariantDto,
 } from './dto/inventory.dto';
 
 const WITH_VARIANTS = { variants: { orderBy: { createdAt: 'asc' as const } } };
@@ -15,10 +16,34 @@ const STOCK_DETAIL = {
   location: { select: { name: true } },
 };
 const LEDGER_DETAIL = { ...STOCK_DETAIL, batch: { select: { batchNo: true, expiryDate: true } } };
+const VARIANT_NAME = { select: { sku: true, name: true, product: { select: { name: true, unit: true } } } };
+const VARIANT_STOCK = {
+  id: true, sku: true, name: true, lowStockThreshold: true, product: { select: { name: true, unit: true } },
+  stockLevels: {
+    where: { location: { isActive: true } },
+    select: { locationId: true, quantity: true, location: { select: { name: true } } },
+    orderBy: { location: { name: 'asc' as const } },
+  },
+};
 const BATCH_DETAIL = {
   variant: { select: { sku: true, name: true, product: { select: { name: true, unit: true } } } },
   stocks: { where: { quantity: { gt: 0 } }, select: { locationId: true, quantity: true, location: { select: { name: true } } } },
 };
+
+// Adds up ledger rows per key: units out (OUT and losses are negative in the ledger, so this flips the sign) and
+// their value at each row's unit cost. Largest value first.
+function totals<R extends { quantity: Prisma.Decimal; unitCost: Prisma.Decimal }>(rows: R[], key: (row: R) => string) {
+  const lines = new Map<string, Omit<R, 'quantity' | 'unitCost'> & { quantity: Prisma.Decimal; value: Prisma.Decimal }>();
+  for (const row of rows) {
+    const { quantity, unitCost, ...rest } = row;
+    const line = lines.get(key(row)) ?? { ...rest, quantity: new Prisma.Decimal(0), value: new Prisma.Decimal(0) };
+    line.quantity = line.quantity.minus(quantity);
+    line.value = line.value.minus(quantity.times(unitCost));
+    lines.set(key(row), line);
+  }
+  const sorted = [...lines.values()].sort((a, b) => b.value.comparedTo(a.value));
+  return { total: sorted.reduce((sum, l) => sum.plus(l.value), new Prisma.Decimal(0)), lines: sorted };
+}
 
 // Turns a unique-index clash (duplicate SKU, barcode or location name) into a 409 instead of a 500.
 async function unique<T>(write: Promise<T>, what: string): Promise<T> {
@@ -32,7 +57,10 @@ async function unique<T>(write: Promise<T>, what: string): Promise<T> {
 
 @Injectable()
 export class InventoryService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly realtime: RealtimeGateway,
+  ) {}
 
   // ---- Products and variants ----
 
@@ -113,12 +141,39 @@ export class InventoryService {
       throw new BadRequestException('expiryDate and mfgDate can only be set on an IN with a batchNo');
     }
     if (dto.mfgDate && dto.expiryDate && dto.mfgDate > dto.expiryDate) throw new BadRequestException('mfgDate must be on or before expiryDate');
-    return this.prisma.$transaction(async (tx) => {
+    const rows = await this.prisma.$transaction(async (tx) => {
       const batch = dto.batchNo ? await this.resolveBatch(tx, businessId, variant, dto.type, { ...dto, batchNo: dto.batchNo }) : null;
       return this.applyMovement(tx, variant, location, dto.type, new Prisma.Decimal(dto.quantity), batch, {
         businessId, actorId, unitCost: dto.unitCost ?? variant.costPrice, reference: dto.reference, note: dto.note,
       });
     });
+    await this.alert(businessId, variant, rows);
+    return rows;
+  }
+
+  // Live alerts once a movement is saved (transfers never change a variant's total, so they skip this):
+  // 'inventory.low_stock' when the variant's stock across active locations drops to or below its threshold,
+  // 'inventory.shrinkage' when a count (ADJUST) finds less than the system had.
+  // ponytail: checked after commit, so two sales racing past the threshold can both alert or neither; fine for a nudge.
+  private async alert(
+    businessId: string,
+    variant: { id: string; sku: string; lowStockThreshold: number | null },
+    rows: { type: StockMovementType; quantity: Prisma.Decimal; unitCost: Prisma.Decimal }[],
+  ) {
+    const change = rows.reduce((sum, r) => sum.plus(r.quantity), new Prisma.Decimal(0));
+    const threshold = variant.lowStockThreshold;
+    if (threshold !== null && change.lt(0)) {
+      const { _sum } = await this.prisma.stockLevel.aggregate({ where: { variantId: variant.id, location: { isActive: true } }, _sum: { quantity: true } });
+      const quantity = _sum.quantity ?? new Prisma.Decimal(0);
+      if (quantity.lte(threshold) && quantity.minus(change).gt(threshold)) {
+        this.realtime.emitToBusiness(businessId, 'inventory.low_stock', { variantId: variant.id, sku: variant.sku, threshold, quantity });
+      }
+    }
+    const losses = rows.filter((r) => r.type === StockMovementType.ADJUST && r.quantity.lt(0));
+    if (losses.length) {
+      const value = losses.reduce((sum, r) => sum.minus(r.quantity.times(r.unitCost)), new Prisma.Decimal(0));
+      this.realtime.emitToBusiness(businessId, 'inventory.shrinkage', { variantId: variant.id, sku: variant.sku, value, entries: losses });
+    }
   }
 
   // Moves several variants from one location to another. All or nothing: if any item is short, nothing moves.
@@ -310,6 +365,70 @@ export class InventoryService {
     });
     if (!batch) throw new NotFoundException('Batch not found');
     return batch;
+  }
+
+  // ---- Low stock, reports and forecast ----
+
+  private async variantsWithStock(businessId: string, where: Prisma.ProductVariantWhereInput = {}) {
+    const variants = await this.prisma.productVariant.findMany({
+      where: { ...where, businessId, isActive: true, product: { isActive: true } },
+      select: VARIANT_STOCK,
+      orderBy: { sku: 'asc' },
+      take: 1000, // ponytail: fixed cap, page it when a business has more active SKUs
+    });
+    return variants.map((v) => ({ ...v, quantity: v.stockLevels.reduce((sum, l) => sum.plus(l.quantity), new Prisma.Decimal(0)) }));
+  }
+
+  // Variants whose stock across active locations is at or below their lowStockThreshold.
+  async lowStock(businessId: string) {
+    const variants = await this.variantsWithStock(businessId, { lowStockThreshold: { not: null } });
+    return variants.filter((v) => v.quantity.lte(v.lowStockThreshold!));
+  }
+
+  private period({ from, to }: PeriodQuery) {
+    const period = istPeriod(from, to);
+    if (period.gte >= period.lt) throw new BadRequestException('from must be on or before to');
+    return period;
+  }
+
+  // Cost of goods sold: units sold (OUT) in the period at the unit cost recorded on each sale, per variant.
+  // ponytail: rows are summed in JS; move the sum into SQL if a month of sales outgrows memory.
+  async cogs(businessId: string, query: PeriodQuery) {
+    const { from, to, gte, lt } = this.period(query);
+    const rows = await this.prisma.stockLedgerEntry.findMany({
+      where: { businessId, type: StockMovementType.OUT, createdAt: { gte, lt } },
+      select: { variantId: true, quantity: true, unitCost: true, variant: VARIANT_NAME },
+    });
+    return { from, to, ...totals(rows, (r) => r.variantId) };
+  }
+
+  // Shrinkage: stock that physical counts (ADJUST) found missing in the period, per variant and location, at cost.
+  async shrinkage(businessId: string, query: PeriodQuery) {
+    const { from, to, gte, lt } = this.period(query);
+    const rows = await this.prisma.stockLedgerEntry.findMany({
+      where: { businessId, type: StockMovementType.ADJUST, quantity: { lt: 0 }, createdAt: { gte, lt } },
+      select: { variantId: true, locationId: true, quantity: true, unitCost: true, variant: VARIANT_NAME, location: { select: { name: true } } },
+    });
+    return { from, to, ...totals(rows, (r) => `${r.variantId}/${r.locationId}`) };
+  }
+
+  // Demand forecast v1 for every active variant, the ones that will run out soonest first.
+  async forecast(businessId: string, { days = 30, horizon = 14 }: ForecastQuery) {
+    const [variants, sold] = await Promise.all([
+      this.variantsWithStock(businessId),
+      this.prisma.stockLedgerEntry.groupBy({
+        by: ['variantId'],
+        where: { businessId, type: StockMovementType.OUT, createdAt: { gte: new Date(Date.now() - days * 86_400_000) } },
+        _sum: { quantity: true },
+      }),
+    ]);
+    const soldBy = new Map(sold.map((s) => [s.variantId, (s._sum.quantity ?? new Prisma.Decimal(0)).neg()]));
+    return variants
+      .map((v) => {
+        const unitsSold = soldBy.get(v.id) ?? new Prisma.Decimal(0);
+        return { ...v, sold: unitsSold, ...forecastLine(unitsSold, days, v.quantity, horizon, v.lowStockThreshold) };
+      })
+      .sort((a, b) => (a.daysOfCover ?? Infinity) - (b.daysOfCover ?? Infinity));
   }
 
   findStock(businessId: string, { locationId, variantId }: StockQuery) {

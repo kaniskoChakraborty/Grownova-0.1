@@ -8,7 +8,7 @@ Built with **NestJS 11**, **TypeScript 5**, **Prisma 7** (PostgreSQL), **Redis**
 
 ## Current Phase
 
-**Current Phase: Phase 10 — Inventory (completed)**
+**Current Phase: Phase 11 — POS, UPI and offline sync (completed)**
 
 | Phase | Scope | Status |
 |-------|-------|--------|
@@ -23,6 +23,7 @@ Built with **NestJS 11**, **TypeScript 5**, **Prisma 7** (PostgreSQL), **Redis**
 | **Phase 8** | Mock WhatsApp webhook, message-to-lead parsing, tenant-scoped CRM lead CRUD, GrowAI enrichment behind an isolated LLM wrapper with a rules fallback | ✅ Done |
 | **Phase 9** | CRM pipeline stages and history, lead scoring, Socket.IO events, BullMQ reminders, invoices and payments, mock GSTN IRN, HSN/SAC suggestion, debtor ageing, per-FY invoice numbering, churn stub | ✅ Done |
 | **Phase 10** | Inventory: products, variants, locations, append-only stock ledger, movements, transfers, barcode lookup, batches with FEFO and expiry alerts, batch trace, low-stock and shrinkage alerts, COGS, demand forecast v1 | ✅ Done |
+| **Phase 11** | POS orders with live stock deduction and idempotency keys, mock UPI link with signed webhook and reconciliation, receipt PDF and mock dispatch, offline till sync with conflict log and auto-merge, mock GSTN e-way bill | ✅ Done |
 
 > [!NOTE]
 > Future phases will expand domain logic (POS, Accounting, GST returns, HR, Payroll, etc.) and connect external production APIs (live DigiLocker, WhatsApp Business API, GSTN, UPI, ONDC) according to the GrowNova Product Requirements.
@@ -100,6 +101,7 @@ cp .env.example .env
 | `ANTHROPIC_API_KEY` | Hosted LLM key for GrowAI lead enrichment; without it enrichment uses rules | — (optional) |
 | `LLM_MODEL` | Model used by `LlmService` | `claude-haiku-5-5` |
 | `LLM_PROVIDER` | Set to `mock` to force the rules fallback | — |
+| `UPI_WEBHOOK_SECRET` | HMAC secret the UPI provider signs callbacks with | dev fallback (set this!) |
 
 Example `.env`:
 
@@ -651,7 +653,40 @@ curl -X POST http://localhost:3000/inventory/stock/movements \
 
 ---
 
-### 10. Real-time Events (Socket.IO)
+### 10. Point of Sale (`/pos`)
+
+Phase 11. A sale deducts stock immediately (FEFO, never below 0) and gets a gapless number per financial year, like `POS/26-27/000001`. Prices are GST-inclusive. Send an `Idempotency-Key` header so a retried request returns the first order instead of selling twice.
+
+| Method | Path | Roles | Description |
+|--------|------|-------|-------------|
+| `POST` | `/pos/orders` | OWNER, OPS, EMPLOYEE | Ring up a sale (`CASH`, `CARD` or `UPI`); UPI orders wait as `PENDING_PAYMENT` |
+| `GET` | `/pos/orders` | Any | Latest 100 orders, filter by `status` or `locationId` |
+| `GET` | `/pos/orders/:id` | Any | Get an order |
+| `POST` | `/pos/orders/:id/cancel` | OWNER, OPS | Void a sale and return its stock to the same batches |
+| `POST` | `/pos/orders/:id/upi` | OWNER, OPS, EMPLOYEE | `upi://pay` link for a pending order (draw it as a QR); needs the business `upiId` |
+| `POST` | `/pos/orders/:id/upi/simulate-payment` | OWNER, OPS, EMPLOYEE | Fire a signed mock bank callback (disabled in production) |
+| `POST` | `/integrations/upi/webhook` | None (HMAC `X-Upi-Signature`) | Bank callback; matched by `txnRef`, idempotent on `utr` |
+| `GET` | `/pos/reconciliation?date=` | OWNER, ACCOUNTANT, OPS | UPI billed vs received for an India-time day, with mismatches and unpaid orders |
+| `GET` | `/pos/orders/:id/receipt.pdf` | Any | 80 mm thermal receipt as a PDF |
+| `POST` | `/pos/orders/:id/receipt/send` | OWNER, OPS, EMPLOYEE | Mock WhatsApp or SMS dispatch of the receipt |
+| `POST` | `/pos/orders/:id/eway-bill` | OWNER, OPS | Mock GSTN e-way bill for a paid order; valid 1 day per 200 km. Needs the business GSTIN and HSN codes |
+| `POST` | `/pos/sync` | OWNER, OPS, EMPLOYEE | Upload up to 100 sales a till made offline; safe to retry |
+| `GET` | `/pos/sync/conflicts?status=OPEN` | OWNER, ACCOUNTANT, OPS | Sync conflicts needing a person |
+| `POST` | `/pos/sync/conflicts/:id/resolve` | OWNER, OPS | Mark a conflict as dealt with |
+
+Offline sync auto-merge rules: a sale already synced comes back `DUPLICATE`; a sale made at an old price keeps that price and logs `PRICE_CHANGED`; a sale larger than the stock left is booked in full, deducts only what there is and opens a `STOCK_SHORT` conflict; a sale that can't be booked (archived item, sold over 30 days ago) is `REJECTED` and kept for review.
+
+```bash
+curl -X POST http://localhost:3000/pos/orders \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Idempotency-Key: till-1-0001" \
+  -H "Content-Type: application/json" \
+  -d '{"locationId":"<location-id>","paymentMethod":"CASH","items":[{"variantId":"<variant-id>","quantity":2}]}'
+```
+
+---
+
+### 11. Real-time Events (Socket.IO)
 
 Connect with the access token, for example `io('http://localhost:3000', { auth: { token: accessToken } })`. Each socket joins its business's room, so a tenant only hears its own events.
 
@@ -663,6 +698,10 @@ Connect with the access token, for example `io('http://localhost:3000', { auth: 
 | `inventory.low_stock` | A variant's total stock drops to its low-stock threshold |
 | `inventory.shrinkage` | A stock count finds stock missing |
 | `inventory.expiry_alert` | Daily at 08:00 IST, batches expiring within 30 days |
+| `pos.order_created` | A POS sale is booked |
+| `pos.upi_payment` | A UPI callback arrives, with its match result |
+| `pos.receipt_sent` | A receipt is dispatched |
+| `pos.sync_conflicts` | An offline sync leaves conflicts open |
 
 ---
 
@@ -722,9 +761,9 @@ backend/
     ├── users/                         # User management (skeleton)
     ├── crm/                           # Leads, pipeline, reminders, invoices, IRN, ageing (Phases 8–9)
     ├── inventory/                     # Products, stock ledger, transfers, batches, reports (Phase 10)
-    ├── gst/                           # HSN/SAC suggestion
+    ├── gst/                           # HSN/SAC suggestion, e-way bill rules
     ├── realtime/                      # Socket.IO gateway, per-business rooms
-    ├── pos/                           # MSME domain modules (skeletons)
+    ├── pos/                           # POS orders, UPI, receipts, offline sync, e-way bill (Phase 11)
     ├── accounting/
     ├── hr/  payroll/  production/
     ├── marketing/  support/
@@ -748,4 +787,4 @@ backend/
 - [x] **Phase 8**: Mock WhatsApp webhook, CRM leads, GrowAI enrichment
 - [x] **Phase 9**: CRM pipeline, lead scoring, real-time events, reminders, invoices, mock e-invoice (IRN)
 - [x] **Phase 10**: Inventory: stock ledger, transfers, batches and expiry, low stock, COGS, demand forecast
-- [ ] **Phase 11**: POS, UPI mock, offline sync
+- [x] **Phase 11**: POS, UPI mock with reconciliation, receipts, offline sync, e-way bill

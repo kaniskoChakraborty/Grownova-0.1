@@ -6,8 +6,11 @@ import {
   FileText,
   CheckCircle2,
   Download,
-  RefreshCw
+  RefreshCw,
+  AlertCircle,
 } from 'lucide-react';
+import { apiClient } from '../../services/apiClient';
+import { useAuth } from '../../context/AuthContext';
 
 interface Voucher {
   id: string;
@@ -99,6 +102,7 @@ export const AccountingModuleView: React.FC<AccountingModuleViewProps> = ({
   onNotify = () => {},
   onOpenActionModal = () => {}
 }) => {
+  const { isDemoMode } = useAuth();
   const [vouchers] = useState<Voucher[]>(INITIAL_VOUCHERS);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('All');
@@ -107,18 +111,39 @@ export const AccountingModuleView: React.FC<AccountingModuleViewProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [migrationSummary, setMigrationSummary] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
+      setUploadError(null);
     }
   };
 
   const handleUploadMigration = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUploadError(null);
+
     if (!selectedFile) {
-      // Use demo simulation if no file selected
-      simulateMigration('TallyPrime_Backup_DayBook.xml');
+      if (isDemoMode) {
+        simulateMigration('TallyPrime_Backup_DayBook.xml');
+        return;
+      }
+      setUploadStatus('error');
+      setUploadError('Please select a valid .xml, .xlsx, or .xls file to upload.');
+      return;
+    }
+
+    // Client-side extension validation
+    const ext = selectedFile.name.toLowerCase().split('.').pop();
+    if (!['xml', 'xlsx', 'xls'].includes(ext || '')) {
+      setUploadStatus('error');
+      setUploadError('Unsupported file type. Please upload a .xml (Tally DayBook) or .xlsx/.xls (Excel) workbook.');
+      return;
+    }
+
+    if (isDemoMode) {
+      simulateMigration(selectedFile.name);
       return;
     }
 
@@ -127,24 +152,18 @@ export const AccountingModuleView: React.FC<AccountingModuleViewProps> = ({
     formData.append('file', selectedFile);
 
     try {
-      const res = await fetch('http://localhost:3000/migration/upload', {
-        method: 'POST',
-        body: formData
-      });
+      const data = await apiClient.upload<any>('/migration/upload', formData);
 
-      if (res.ok) {
-        const data = await res.json();
-        setUploadStatus('success');
-        setMigrationSummary(
-          `Successfully parsed ${data.vouchersCount || 148} vouchers and ${data.ledgersCount || 42} ledgers from ${selectedFile.name}`
-        );
-        onNotify(`Tally/Excel migration complete: ${selectedFile.name} integrated.`);
-      } else {
-        // Fallback to demo mode simulation gracefully
-        simulateMigration(selectedFile.name);
-      }
-    } catch {
-      simulateMigration(selectedFile.name);
+      setUploadStatus('success');
+      const count = Array.isArray(data) ? data.length : (data.vouchersCount || data.count || 'batch');
+      setMigrationSummary(
+        `Successfully imported and parsed ${count} ledger records from "${selectedFile.name}" into Double-Entry Ledger.`
+      );
+      onNotify(`Tally/Excel migration complete: ${selectedFile.name} integrated with backend.`);
+    } catch (err: any) {
+      setUploadStatus('error');
+      setUploadError(err.message || 'Failed to upload and parse migration file.');
+      onNotify(`Migration upload error: ${err.message || 'Request failed'}`);
     }
   };
 
@@ -153,9 +172,9 @@ export const AccountingModuleView: React.FC<AccountingModuleViewProps> = ({
     setTimeout(() => {
       setUploadStatus('success');
       setMigrationSummary(
-        `Parsed 148 Vouchers (112 Sales, 24 Payments, 12 Expenses) & 46 Ledger Master Accounts from "${fileName}". Balance is zero-error reconciled.`
+        `[Demo Mode] Parsed 148 Vouchers (112 Sales, 24 Payments, 12 Expenses) & 46 Ledger Master Accounts from "${fileName}". Balance is zero-error reconciled.`
       );
-      onNotify(`Parsed 148 vouchers from ${fileName} into Double-Entry Ledger.`);
+      onNotify(`[Demo] Parsed 148 vouchers from ${fileName} into Double-Entry Ledger.`);
     }, 700);
   };
 
@@ -314,6 +333,13 @@ export const AccountingModuleView: React.FC<AccountingModuleViewProps> = ({
               </button>
             </div>
           </form>
+
+          {uploadError && (
+            <div className="mt-3 p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 animate-in fade-in flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">{uploadError}</div>
+            </div>
+          )}
 
           {migrationSummary && (
             <div className="mt-3 p-3 rounded-xl bg-[#F7EEDA]/60 border border-[#C69A43]/30 text-xs text-[#102B4E] animate-in fade-in flex items-start gap-2">

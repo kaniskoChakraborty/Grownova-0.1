@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { apiClient, tokenStorage, ApiError } from '../services/apiClient';
 
 export type DashboardRole = 'OWNER' | 'OPS' | 'EMPLOYEE' | 'ACCOUNTANT';
 
@@ -7,143 +8,287 @@ export interface UserProfile {
   name: string;
   email: string;
   role: DashboardRole;
+  businessId?: string;
   businessName: string;
   avatarUrl: string;
 }
 
+export const DEMO_PERSONAS: Record<'OWNER' | 'OPS' | 'EMPLOYEE', UserProfile> = {
+  OWNER: {
+    id: 'demo-owner-001',
+    name: 'Ravi',
+    email: 'ravi.owner@grownova.in',
+    role: 'OWNER',
+    businessId: 'demo-biz-001',
+    businessName: 'Shree Ganesh Textiles',
+    avatarUrl: '/ravi_avatar_hq.jpg',
+  },
+  OPS: {
+    id: 'demo-ops-002',
+    name: 'manager',
+    email: 'manager.ops@grownova.in',
+    role: 'OPS',
+    businessId: 'demo-biz-001',
+    businessName: 'Shree Ganesh Textiles',
+    avatarUrl: '/ravi_avatar_hq.jpg',
+  },
+  EMPLOYEE: {
+    id: 'demo-emp-003',
+    name: 'employee',
+    email: 'employee@grownova.in',
+    role: 'EMPLOYEE',
+    businessId: 'demo-biz-001',
+    businessName: 'Shree Ganesh Textiles',
+    avatarUrl: '/ravi_avatar_hq.jpg',
+  },
+};
+
 interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
+  isLiveAuthenticated: boolean;
   isDemoMode: boolean;
-  login: (email: string, password?: string) => boolean;
-  signup: (data: { name: string; email: string; businessName: string }) => boolean;
-  logout: () => void;
+  isLoading: boolean;
+  login: (email: string, password?: string) => Promise<UserProfile>;
+  signup: (data: { name: string; email: string; businessName: string; password?: string }) => Promise<UserProfile>;
+  logout: () => Promise<void>;
   switchBusiness: (newBusinessName: string) => void;
   switchRole: (role: DashboardRole) => void;
   setDemoPersona: (role: 'OWNER' | 'OPS' | 'EMPLOYEE') => void;
+  exitDemoMode: () => void;
 }
-
-const DEFAULT_DEMO_USER: UserProfile = {
-  id: 'usr-ravi-001',
-  name: 'Ravi',
-  email: 'ravi.owner@grownova.in',
-  role: 'OWNER',
-  businessName: 'Shree Ganesh Textiles',
-  avatarUrl: '/ravi_avatar_hq.jpg',
-};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    const saved = localStorage.getItem('grownova_auth_user');
-    if (saved) {
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Synchronize and restore session on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const restoreSession = async () => {
+      const accessToken = tokenStorage.getAccessToken();
+
+      // 1. Attempt live session restoration if tokens are present
+      if (accessToken) {
+        try {
+          const me = await apiClient.get<any>('/auth/me');
+          if (isMounted && me) {
+            const liveUser: UserProfile = {
+              id: me.id || me.sub,
+              name: me.name || me.email?.split('@')[0] || 'GrowNova User',
+              email: me.email,
+              role: (me.role as DashboardRole) || 'OWNER',
+              businessId: me.businessId,
+              businessName: 'GrowNova Enterprise',
+              avatarUrl: '/ravi_avatar_hq.jpg',
+            };
+            setUser(liveUser);
+            setIsDemoMode(false);
+            setIsLoading(false);
+            return;
+          }
+        } catch {
+          // Token invalid and refresh failed; clear live session
+          tokenStorage.clear();
+        }
+      }
+
+      // 2. Check if explicit demo mode session exists in localStorage
+      const savedDemoRole = localStorage.getItem('grownova_demo_role');
+      if (savedDemoRole && (savedDemoRole === 'OWNER' || savedDemoRole === 'OPS' || savedDemoRole === 'EMPLOYEE')) {
+        if (isMounted) {
+          setUser(DEMO_PERSONAS[savedDemoRole]);
+          setIsDemoMode(true);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // 3. Fallback: unauthenticated state
+      if (isMounted) {
+        setUser(null);
+        setIsDemoMode(false);
+        setIsLoading(false);
+      }
+    };
+
+    restoreSession();
+
+    // Listen for global session expiration events (e.g. fatal 401s)
+    const unsubscribe = apiClient.onSessionExpired(() => {
+      if (isMounted) {
+        setUser(null);
+        setIsDemoMode(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
+
+  /**
+   * Live Authentication: Sign In
+   * POST /api/auth/login
+   *
+   * SECURITY: Never falls back silently to demo mode on failure.
+   */
+  const login = async (email: string, password?: string): Promise<UserProfile> => {
+    setIsLoading(true);
+    try {
+      // Clear demo artifacts
+      localStorage.removeItem('grownova_demo_role');
+
+      const response = await apiClient.post<{
+        accessToken: string;
+        refreshToken: string;
+        user: {
+          id: string;
+          email: string;
+          name: string;
+          role: string;
+          businessId: string;
+        };
+      }>('/auth/login', {
+        email: email.trim(),
+        password: password || '',
+      }, { skipAuth: true });
+
+      if (!response?.accessToken || !response?.user) {
+        throw new Error('Authentication response did not contain tokens');
+      }
+
+      tokenStorage.setAccessToken(response.accessToken);
+      tokenStorage.setRefreshToken(response.refreshToken);
+
+      const liveUser: UserProfile = {
+        id: response.user.id,
+        name: response.user.name || response.user.email.split('@')[0],
+        email: response.user.email,
+        role: (response.user.role as DashboardRole) || 'OWNER',
+        businessId: response.user.businessId,
+        businessName: 'GrowNova Enterprise',
+        avatarUrl: '/ravi_avatar_hq.jpg',
+      };
+
+      setUser(liveUser);
+      setIsDemoMode(false);
+      return liveUser;
+    } catch (err: any) {
+      // Never silently fall back to demo mode on error
+      setUser(null);
+      setIsDemoMode(false);
+      tokenStorage.clear();
+      const message = err instanceof ApiError ? err.message : (err?.message || 'Invalid email or password');
+      throw new Error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Live Authentication: Sign Up
+   * POST /api/auth/signup
+   */
+  const signup = async (data: { name: string; email: string; businessName: string; password?: string }): Promise<UserProfile> => {
+    setIsLoading(true);
+    try {
+      localStorage.removeItem('grownova_demo_role');
+
+      await apiClient.post('/auth/signup', {
+        email: data.email.trim(),
+        name: data.name.trim(),
+        password: data.password || 'GrowNovaPass@2025',
+        businessId: 'default-business-id',
+      }, { skipAuth: true });
+
+      return await login(data.email, data.password || 'GrowNovaPass@2025');
+    } catch (err: any) {
+      setUser(null);
+      setIsDemoMode(false);
+      tokenStorage.clear();
+      const message = err instanceof ApiError ? err.message : (err?.message || 'Registration failed');
+      throw new Error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Sign Out
+   * POST /api/auth/logout (for live users) and local storage clearance
+   */
+  const logout = async (): Promise<void> => {
+    if (!isDemoMode && tokenStorage.getAccessToken()) {
       try {
-        return JSON.parse(saved);
+        await apiClient.post('/auth/logout');
       } catch {
-        return DEFAULT_DEMO_USER;
+        // Backend might be offline; continue local session termination
       }
     }
-    // Default to Ravi owner for instant frictionless evaluation of the dashboard
-    return DEFAULT_DEMO_USER;
-  });
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('grownova_auth_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('grownova_auth_user');
-    }
-  }, [user]);
-
-  const login = (email: string, _password?: string): boolean => {
-    const demoUser: UserProfile = {
-      id: 'usr-ravi-001',
-      name: email.toLowerCase().includes('taksh') ? 'Taksh' : 'Ravi',
-      email: email.trim(),
-      role: 'OWNER',
-      businessName: 'Shree Ganesh Textiles',
-      avatarUrl: '/ravi_avatar_hq.jpg',
-    };
-    setUser(demoUser);
-    return true;
-  };
-
-  const signup = (data: { name: string; email: string; businessName: string }): boolean => {
-    const newUser: UserProfile = {
-      id: `usr-${Date.now()}`,
-      name: data.name.trim() || 'Ravi',
-      email: data.email.trim(),
-      role: 'OWNER',
-      businessName: data.businessName.trim() || 'GrowNova Enterprise',
-      avatarUrl: '/ravi_avatar_hq.jpg',
-    };
-    setUser(newUser);
-    return true;
-  };
-
-  const logout = () => {
+    tokenStorage.clear();
+    localStorage.removeItem('grownova_demo_role');
     setUser(null);
+    setIsDemoMode(false);
   };
 
-  const switchBusiness = (newBusinessName: string) => {
-    if (user) {
-      setUser({ ...user, businessName: newBusinessName });
-    }
-  };
+  /**
+   * Explicit Demo Entry
+   * Sets up isolated demo state without touching backend tokens.
+   */
+  const setDemoPersona = useCallback((role: 'OWNER' | 'OPS' | 'EMPLOYEE') => {
+    tokenStorage.clear();
+    localStorage.setItem('grownova_demo_role', role);
+    setUser(DEMO_PERSONAS[role]);
+    setIsDemoMode(true);
+  }, []);
 
-  const switchRole = (newRole: DashboardRole) => {
-    if (user) {
-      const name = newRole === 'OPS' ? 'manager' : newRole === 'EMPLOYEE' ? 'employee' : 'owner';
-      setUser({ ...user, role: newRole, name });
+  /**
+   * Explicit Demo Exit
+   */
+  const exitDemoMode = useCallback(() => {
+    localStorage.removeItem('grownova_demo_role');
+    setUser(null);
+    setIsDemoMode(false);
+  }, []);
+
+  /**
+   * Role Switching
+   * Allowed ONLY in demo mode. Forbidden in live authenticated sessions to prevent privilege escalation.
+   */
+  const switchRole = useCallback((newRole: DashboardRole) => {
+    if (isDemoMode) {
+      const personaKey = newRole === 'OPS' ? 'OPS' : newRole === 'EMPLOYEE' ? 'EMPLOYEE' : 'OWNER';
+      setDemoPersona(personaKey);
     } else {
-      setDemoPersona(newRole === 'OPS' ? 'OPS' : newRole === 'EMPLOYEE' ? 'EMPLOYEE' : 'OWNER');
+      console.warn('Frontend role escalation is prohibited for live authenticated accounts.');
     }
-  };
+  }, [isDemoMode, setDemoPersona]);
 
-  const setDemoPersona = (role: 'OWNER' | 'OPS' | 'EMPLOYEE') => {
-    if (role === 'OPS') {
-      setUser({
-        id: 'usr-ops-002',
-        name: 'manager',
-        email: 'manager.ops@grownova.in',
-        role: 'OPS',
-        businessName: 'Shree Ganesh Textiles',
-        avatarUrl: '/ravi_avatar_hq.jpg',
-      });
-    } else if (role === 'EMPLOYEE') {
-      setUser({
-        id: 'usr-emp-003',
-        name: 'employee',
-        email: 'employee@grownova.in',
-        role: 'EMPLOYEE',
-        businessName: 'Shree Ganesh Textiles',
-        avatarUrl: '/ravi_avatar_hq.jpg',
-      });
-    } else {
-      setUser({
-        id: 'usr-owner-001',
-        name: 'owner',
-        email: 'owner@grownova.in',
-        role: 'OWNER',
-        businessName: 'Shree Ganesh Textiles',
-        avatarUrl: '/ravi_avatar_hq.jpg',
-      });
-    }
-  };
+  const switchBusiness = useCallback((newBusinessName: string) => {
+    setUser((prev) => (prev ? { ...prev, businessName: newBusinessName } : null));
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
         isAuthenticated: !!user,
-        isDemoMode: true,
+        isLiveAuthenticated: !!user && !isDemoMode,
+        isDemoMode,
+        isLoading,
         login,
         signup,
         logout,
         switchBusiness,
         switchRole,
         setDemoPersona,
+        exitDemoMode,
       }}
     >
       {children}
@@ -158,3 +303,5 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+export default AuthContext;

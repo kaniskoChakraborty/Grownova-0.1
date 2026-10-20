@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface AgendaEvent {
@@ -83,12 +84,12 @@ export const CalendarPanel: React.FC = () => {
 
         <div className="flex items-center gap-3 text-xs text-[#65758B]">
           <span className="font-medium hidden sm:inline">{formattedToday}</span>
-          <a
-            href="/dashboard/calendar"
+          <Link
+            to="/dashboard/calendar"
             className="text-[11px] font-bold text-[#C69A43] hover:underline flex items-center gap-0.5 cursor-pointer"
           >
             <span>Full Calendar →</span>
-          </a>
+          </Link>
         </div>
       </div>
 

@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, User, Building2, ShieldCheck, ArrowRight, Check } from 'lucide-react';
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  User,
+  Building2,
+  ShieldCheck,
+  ArrowRight,
+  Check,
+  AlertCircle,
+  Loader2,
+} from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
 import { useAuth } from '../../context/AuthContext';
 
@@ -18,9 +30,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const navigate = useNavigate();
   const { login, signup, setDemoPersona } = useAuth();
 
+  // Async submission state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   // Sign In state
-  const [signInEmail, setSignInEmail] = useState('ravi.owner@grownova.in');
-  const [signInPassword, setSignInPassword] = useState('••••••••••••');
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
   const [keepSignedIn, setKeepSignedIn] = useState(true);
   const [showSignInPassword, setShowSignInPassword] = useState(false);
 
@@ -33,38 +49,67 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const [showSignUpPassword, setShowSignUpPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+
     if (activeTab === 'signin') {
       if (!signInEmail) {
-        onSuccessToast?.('Please enter your email address.');
+        setErrorMessage('Please enter your email address.');
         return;
       }
-      login(signInEmail, signInPassword);
-      onSuccessToast?.(`Welcome back! Authenticating to GrowNova OS...`);
-      setTimeout(() => {
+      if (!signInPassword) {
+        setErrorMessage('Please enter your password.');
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        await login(signInEmail, signInPassword);
+        onSuccessToast?.('Welcome back! Authenticated to GrowNova OS.');
         navigate('/dashboard');
-      }, 400);
+      } catch (err: any) {
+        // SECURITY: Never fall back to demo mode on failure
+        setErrorMessage(err.message || 'Authentication failed. Please verify your credentials.');
+      } finally {
+        setIsSubmitting(false);
+      }
     } else {
       if (!signUpEmail || !fullName) {
-        onSuccessToast?.('Please fill in your name and email.');
+        setErrorMessage('Please fill in your name and email.');
         return;
       }
       if (signUpPassword !== confirmPassword) {
-        onSuccessToast?.('Passwords do not match. Please verify.');
+        setErrorMessage('Passwords do not match. Please verify.');
         return;
       }
-      signup({ name: fullName, email: signUpEmail, businessName });
-      onSuccessToast?.(`Welcome to GrowNova, ${fullName}! Account created.`);
-      setTimeout(() => {
+
+      setIsSubmitting(true);
+      try {
+        await signup({ name: fullName, email: signUpEmail, businessName, password: signUpPassword });
+        onSuccessToast?.(`Welcome to GrowNova, ${fullName}! Account created.`);
         navigate('/dashboard');
-      }, 400);
+      } catch (err: any) {
+        setErrorMessage(err.message || 'Registration failed. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
   return (
     <div className="w-full">
       <form onSubmit={handleSubmit} className="space-y-3.5">
+        {errorMessage && (
+          <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-800 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in duration-200">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-600 stroke-[2.5]" />
+            <div className="flex-1">
+              <p className="font-bold text-red-900">Authentication Failed</p>
+              <p className="font-medium text-[11.5px] text-red-700/90 mt-0.5">{errorMessage}</p>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'signin' ? (
           <>
             {/* Email Field */}
@@ -75,7 +120,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                 required
                 value={signInEmail}
                 onChange={(e) => setSignInEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder="Enter your registered email"
                 className="w-full bg-transparent text-[13.5px] font-medium text-[#102B4E] placeholder:text-[#65758B]/70 focus:outline-none"
               />
             </div>
@@ -214,10 +259,20 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         {/* Primary Action Button */}
         <button
           type="submit"
-          className="group w-full py-3.5 px-6 rounded-2xl text-[14.5px] font-bold text-white gold-glow-btn transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer select-none shadow-md"
+          disabled={isSubmitting}
+          className="group w-full py-3.5 px-6 rounded-2xl text-[14.5px] font-bold text-white gold-glow-btn transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer select-none shadow-md disabled:opacity-75 disabled:cursor-not-allowed"
         >
-          <span>{activeTab === 'signin' ? 'Sign in to GrowNova OS' : 'Create account & Launch'}</span>
-          <ArrowRight className="w-4 h-4 stroke-[2.5] transition-transform duration-200 group-hover:translate-x-1" />
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin text-white" />
+              <span>Authenticating with GrowNova...</span>
+            </>
+          ) : (
+            <>
+              <span>{activeTab === 'signin' ? 'Sign in to GrowNova OS' : 'Create account & Launch'}</span>
+              <ArrowRight className="w-4 h-4 stroke-[2.5] transition-transform duration-200 group-hover:translate-x-1" />
+            </>
+          )}
         </button>
 
         {/* 1-Click Role-Based Demo Persona Shortcuts */}
@@ -236,7 +291,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               type="button"
               onClick={() => {
                 setDemoPersona('OWNER');
-                onSuccessToast?.('Logged in as Business Owner (Ravi)');
+                onSuccessToast?.('Logged in as Business Owner (Demo Mode)');
                 navigate('/dashboard');
               }}
               className="py-2 px-1.5 rounded-xl text-[11px] font-bold text-[#102B4E] bg-white/75 hover:bg-white border border-white/90 shadow-2xs hover:border-[#C69A43] transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer"
@@ -251,7 +306,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               type="button"
               onClick={() => {
                 setDemoPersona('OPS');
-                onSuccessToast?.('Logged in as Operations Manager');
+                onSuccessToast?.('Logged in as Operations Manager (Demo Mode)');
                 navigate('/dashboard/manager');
               }}
               className="py-2 px-1.5 rounded-xl text-[11px] font-bold text-[#102B4E] bg-white/75 hover:bg-white border border-white/90 shadow-2xs hover:border-[#15803D] transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer"
@@ -266,7 +321,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               type="button"
               onClick={() => {
                 setDemoPersona('EMPLOYEE');
-                onSuccessToast?.('Logged in as Team Employee');
+                onSuccessToast?.('Logged in as Team Employee (Demo Mode)');
                 navigate('/dashboard/employee');
               }}
               className="py-2 px-1.5 rounded-xl text-[11px] font-bold text-[#102B4E] bg-white/75 hover:bg-white border border-white/90 shadow-2xs hover:border-[#2563EB] transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer"
@@ -283,14 +338,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       {/* Social Login Options */}
       <SocialLogin
         onGoogleClick={() => {
-          login('ravi.google@grownova.in');
-          onSuccessToast?.('Signing in with Google Enterprise SSO...');
-          setTimeout(() => navigate('/dashboard'), 300);
+          onSuccessToast?.('Google SSO requires OAuth provider keys configured in production.');
         }}
         onMicrosoftClick={() => {
-          login('ravi.ms@grownova.in');
-          onSuccessToast?.('Signing in with Microsoft 365...');
-          setTimeout(() => navigate('/dashboard'), 300);
+          onSuccessToast?.('Microsoft 365 SSO requires Azure AD client configured in production.');
         }}
       />
 

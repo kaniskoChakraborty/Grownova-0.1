@@ -6,8 +6,12 @@ import {
   Download,
   Lock,
   ArrowUpRight,
-  BarChart3
+  BarChart3,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
+import { apiClient } from '../../services/apiClient';
+import { useAuth } from '../../context/AuthContext';
 
 interface AuditRecord {
   id: string;
@@ -80,9 +84,11 @@ interface ReportsModuleViewProps {
 export const ReportsModuleView: React.FC<ReportsModuleViewProps> = ({
   onNotify = () => {}
 }) => {
+  const { isDemoMode } = useAuth();
   const [logs, setLogs] = useState<AuditRecord[]>(INITIAL_AUDIT_LOGS);
   const [searchTerm, setSearchTerm] = useState('');
   const [verifying, setVerifying] = useState(false);
+  const [errorStatus, setErrorStatus] = useState<string | null>(null);
   const [integrityStatus, setIntegrityStatus] = useState<{
     intact: boolean;
     recordsCount: number;
@@ -97,22 +103,37 @@ export const ReportsModuleView: React.FC<ReportsModuleViewProps> = ({
 
   const handleVerifyIntegrity = async () => {
     setVerifying(true);
+    setErrorStatus(null);
     try {
-      const res = await fetch('http://localhost:3000/audit/integrity');
-      if (res.ok) {
-        const data = await res.json();
-        setIntegrityStatus({
-          intact: data.intact ?? true,
-          recordsCount: data.totalBlocks || 1842,
-          lastHash: data.latestHash || '9f82ab47c10d32e987410ebc',
-          verifiedAt: 'Just now'
-        });
-        onNotify('Audit integrity verification passed: 100% Hash Match.');
-      } else {
+      if (isDemoMode) {
         simulateIntegrityCheck();
+        return;
       }
-    } catch {
-      simulateIntegrityCheck();
+      const data = await apiClient.get<{
+        valid: boolean;
+        checked: number;
+        brokenAt?: string | null;
+        reason?: string | null;
+      }>('/audit/integrity');
+
+      setIntegrityStatus({
+        intact: data.valid,
+        recordsCount: data.checked,
+        lastHash: data.brokenAt ? `Mismatch at ${data.brokenAt}` : 'SHA-256 Ledger Sealed',
+        verifiedAt: 'Just now'
+      });
+
+      if (data.valid) {
+        onNotify(`Audit integrity verified: ${data.checked} ledger blocks valid.`);
+      } else {
+        setErrorStatus(`Integrity check flagged mismatch at block ${data.brokenAt}: ${data.reason}`);
+        onNotify(`Audit integrity mismatch detected at block ${data.brokenAt}.`);
+      }
+    } catch (err: any) {
+      setErrorStatus(err.message || 'Audit integrity verification failed.');
+      onNotify(`Audit verification error: ${err.message || 'Request failed'}`);
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -123,26 +144,34 @@ export const ReportsModuleView: React.FC<ReportsModuleViewProps> = ({
         intact: true,
         recordsCount: 1842,
         lastHash: '9f82ab47c10d32e987410ebc8914',
-        verifiedAt: 'Just now'
+        verifiedAt: 'Just now (Demo)'
       });
-      onNotify('Cryptographic audit check passed: 1,842 blocks unbroken.');
+      onNotify('Cryptographic audit check passed: 1,842 blocks unbroken (Demo).');
     }, 600);
   };
 
   const handleCreateTestAuditBlock = async () => {
     try {
-      const res = await fetch('http://localhost:3000/audit/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'FRONTEND_MANUAL_PROBE', payload: 'HealthVerification' })
-      });
-      if (res.ok) {
-        onNotify('Created new test cryptographic block in backend ledger.');
-      } else {
+      if (isDemoMode) {
         addMockRecord();
+        onNotify('Created new test cryptographic block (Demo Simulation).');
+        return;
       }
-    } catch {
-      addMockRecord();
+      const data = await apiClient.post<any>('/audit/test');
+      const newRecord: AuditRecord = {
+        id: data.id || `aud-${Date.now().toString().slice(-4)}`,
+        event: data.action || 'TEST',
+        actor: 'Owner (Verified Token)',
+        role: 'OWNER',
+        target: `AuditLog#${data.id?.slice(0, 8) || 'Block'}`,
+        hash: data.hash || 'sha256-verified-ledger-block',
+        timestamp: 'Just now',
+        status: 'Verified Valid'
+      };
+      setLogs([newRecord, ...logs]);
+      onNotify('Created new test cryptographic block in backend ledger.');
+    } catch (err: any) {
+      onNotify(`Failed to create test block: ${err.message || 'Request failed'}`);
     }
   };
 
@@ -188,7 +217,11 @@ export const ReportsModuleView: React.FC<ReportsModuleViewProps> = ({
             disabled={verifying}
             className="px-4 py-2 rounded-full bg-[#102B4E] hover:bg-[#0B2340] text-white text-xs font-bold border border-[#C69A43]/40 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
-            <ShieldCheck className={`w-3.5 h-3.5 text-[#C69A43] ${verifying ? 'animate-spin' : ''}`} />
+            {verifying ? (
+              <Loader2 className="w-3.5 h-3.5 text-[#C69A43] animate-spin" />
+            ) : (
+              <ShieldCheck className="w-3.5 h-3.5 text-[#C69A43]" />
+            )}
             <span>{verifying ? 'Verifying Block Chains…' : 'Run Audit Integrity Check'}</span>
           </button>
           <button
@@ -280,9 +313,9 @@ export const ReportsModuleView: React.FC<ReportsModuleViewProps> = ({
           <div className="space-y-2 text-xs">
             <div className="flex justify-between p-2 rounded-xl bg-white/70">
               <span className="text-[#55677D]">Cryptographic Hash Chain:</span>
-              <span className="font-bold text-emerald-700 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>INTACT & VERIFIED</span>
+              <span className={`font-bold flex items-center gap-1 ${integrityStatus?.intact ? 'text-emerald-700' : 'text-rose-700'}`}>
+                {integrityStatus?.intact ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                <span>{integrityStatus?.intact ? 'INTACT & VERIFIED' : 'INTEGRITY MISMATCH DETECTED'}</span>
               </span>
             </div>
             <div className="flex justify-between p-2 rounded-xl bg-white/70">
@@ -294,6 +327,13 @@ export const ReportsModuleView: React.FC<ReportsModuleViewProps> = ({
               <span className="font-mono text-[11px] text-[#102B4E]">{integrityStatus?.lastHash}…</span>
             </div>
           </div>
+
+          {errorStatus && (
+            <div className="mt-3 p-2.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-900 flex items-center gap-2 animate-in fade-in">
+              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+              <span>{errorStatus}</span>
+            </div>
+          )}
 
           <div className="mt-3 pt-2 border-t border-[#102B4E]/10 flex items-center justify-between">
             <span className="text-[11px] text-[#55677D]">Last probe: {integrityStatus?.verifiedAt}</span>

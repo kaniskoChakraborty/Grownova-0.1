@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 export const SystemStatusPill: React.FC = () => {
-  const [isOnline, setIsOnline] = useState<boolean>(true);
+  const { isDemoMode } = useAuth();
+  const [isOnline, setIsOnline] = useState<boolean>(false);
 
-  // Probe backend /health endpoint
+  // Probe backend /api/health endpoint
   useEffect(() => {
     let isMounted = true;
     const checkHealth = async () => {
       try {
-        const res = await fetch('http://localhost:3000/health');
+        const res = await fetch('/api/health');
         if (res.ok) {
           const data = await res.json();
           if (isMounted) setIsOnline(data.status === 'ok');
         } else {
-          if (isMounted) setIsOnline(true); // Graceful demo fallback
+          if (isMounted) setIsOnline(false);
         }
       } catch {
-        if (isMounted) setIsOnline(true); // Demo mode active
+        if (isMounted) setIsOnline(false);
       }
     };
 
@@ -32,11 +34,17 @@ export const SystemStatusPill: React.FC = () => {
     <div className="flex items-center gap-2 flex-wrap select-none">
       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/85 backdrop-blur-md border border-white shadow-sm text-xs font-semibold text-[#102B4E]">
         <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-[#15803D]' : 'bg-[#EAB308]'} animate-pulse`} />
-        <span>{isOnline ? 'System Online' : 'Connecting to API'}</span>
+        <span>{isOnline ? 'API Connected' : 'Backend Standby'}</span>
       </div>
-      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-[#C69A43] tracking-wider uppercase">
-        <span>Demo Mode</span>
-      </div>
+      {isDemoMode ? (
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-[#C69A43] tracking-wider uppercase">
+          <span>Demo Mode</span>
+        </div>
+      ) : (
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-700 tracking-wider uppercase">
+          <span>Live Session</span>
+        </div>
+      )}
       <div className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/60 border border-white/80 text-[10px] font-medium text-[#55677D]">
         <span>Latency 14ms • AES-256</span>
       </div>

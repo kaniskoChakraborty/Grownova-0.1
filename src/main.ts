@@ -13,6 +13,41 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
 
+  const configService = app.get(ConfigService);
+
+  const port = configService.get<number>('PORT') || 3000;
+  const nodeEnv =
+    configService.get<string>('NODE_ENV') || 'development';
+
+  // Environment-aware CORS configuration
+  const configuredOrigins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    configService.get<string>('FRONTEND_URL'),
+    configService.get<string>('CORS_ORIGIN'),
+  ].filter((origin): origin is string => Boolean(origin));
+
+  app.enableCors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, server-to-server)
+      if (!origin) return callback(null, true);
+      if (
+        configuredOrigins.includes(origin) ||
+        (nodeEnv === 'development' &&
+          /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))
+      ) {
+        return callback(null, true);
+      }
+      return callback(
+        new Error(`CORS blocked request from origin: ${origin}`),
+        false,
+      );
+    },
+    credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  });
+
   // Global validation
   app.useGlobalPipes(
     new ValidationPipe({
@@ -21,12 +56,6 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-
-  const configService = app.get(ConfigService);
-
-  const port = configService.get<number>('PORT') || 3000;
-  const nodeEnv =
-    configService.get<string>('NODE_ENV') || 'development';
 
   // Swagger
   const swaggerConfig = new DocumentBuilder()

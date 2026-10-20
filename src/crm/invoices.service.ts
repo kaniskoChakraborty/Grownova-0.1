@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { InvoiceStatus } from '../../generated/prisma/client';
+import { InvoiceStatus, JournalSource } from '../../generated/prisma/client';
+import { AccountingService } from '../accounting/accounting.service';
+import { DEBTORS, MONEY, SALES } from '../accounting/chart';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInvoiceDto, ListInvoicesQuery, RecordPaymentDto } from './dto/invoice.dto';
 import { LeadsService } from './leads.service';
@@ -19,6 +21,7 @@ export class InvoicesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly leads: LeadsService,
+    private readonly accounting: AccountingService,
   ) {}
 
   async create(businessId: string, dto: CreateInvoiceDto) {
@@ -34,10 +37,16 @@ export class InvoicesService {
         create: { businessId, series: 'INV', fy, last: 1 },
         update: { last: { increment: 1 } },
       });
-      return tx.invoice.create({
+      const invoice = await tx.invoice.create({
         data: { businessId, leadId: dto.leadId, number: `INV/${fy}/${String(last).padStart(4, '0')}`, total: dto.total, dueDate },
         include: DETAIL,
       });
+      // ponytail: the whole total goes to Sales; split out GST Output once invoices carry tax amounts.
+      await this.accounting.postEvent(tx, businessId, {
+        at: invoice.createdAt, narration: `Invoice ${invoice.number}`, source: JournalSource.INVOICE, sourceId: invoice.id,
+        lines: [{ code: DEBTORS, debit: invoice.total }, { code: SALES, credit: invoice.total }],
+      });
+      return invoice;
     });
   }
 
@@ -71,8 +80,12 @@ export class InvoicesService {
         const owed = updated.total.minus(updated.amountPaid).plus(dto.amount);
         throw new BadRequestException(`Payment is more than the ${owed.toString()} still owed on ${invoice.number}`);
       }
-      await tx.invoicePayment.create({
+      const payment = await tx.invoicePayment.create({
         data: { invoiceId: id, amount: dto.amount, method: dto.method, reference: dto.reference, recordedById: actorId },
+      });
+      await this.accounting.postEvent(tx, businessId, {
+        at: payment.paidAt, narration: `Payment for ${invoice.number}`, source: JournalSource.PAYMENT, sourceId: payment.id, actorId,
+        lines: [{ code: MONEY[dto.method], debit: payment.amount }, { code: DEBTORS, credit: payment.amount }],
       });
       const status = updated.amountPaid.equals(updated.total) ? InvoiceStatus.PAID : InvoiceStatus.PARTIALLY_PAID;
       await tx.invoice.update({ where: { id }, data: { status } });
@@ -107,11 +120,14 @@ export class InvoicesService {
     if (invoice.ackDate && Date.now() - invoice.ackDate.getTime() > IRN_CANCEL_WINDOW_MS) {
       throw new BadRequestException(`The IRN for ${invoice.number} is more than 24 hours old, so GST no longer allows cancelling it. Issue a credit note instead.`);
     }
-    const { count } = await this.prisma.invoice.updateMany({
-      where: { id, status: InvoiceStatus.UNPAID },
-      data: { status: InvoiceStatus.CANCELLED, cancelledAt: new Date(), cancelReason: reason },
+    await this.prisma.$transaction(async (tx) => {
+      const { count } = await tx.invoice.updateMany({
+        where: { id, status: InvoiceStatus.UNPAID },
+        data: { status: InvoiceStatus.CANCELLED, cancelledAt: new Date(), cancelReason: reason },
+      });
+      if (!count) throw new BadRequestException(`Only unpaid invoices can be cancelled, and ${invoice.number} is ${invoice.status}`);
+      await this.accounting.reverseEvent(tx, businessId, JournalSource.INVOICE, id, `${invoice.number} cancelled: ${reason}`);
     });
-    if (!count) throw new BadRequestException(`Only unpaid invoices can be cancelled, and ${invoice.number} is ${invoice.status}`);
     return this.findOne(businessId, id);
   }
 }

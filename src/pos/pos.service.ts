@@ -1,7 +1,9 @@
 import { randomUUID } from 'crypto';
 import { BadRequestException, ForbiddenException, HttpException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PaymentMethod, PosOrderStatus, Prisma, StockMovementType, SyncConflictStatus, SyncConflictType, UpiCallbackResult } from '../../generated/prisma/client';
+import { JournalSource, PaymentMethod, PosOrderStatus, Prisma, StockMovementType, SyncConflictStatus, SyncConflictType, UpiCallbackResult } from '../../generated/prisma/client';
+import { AccountingService } from '../accounting/accounting.service';
+import { DEBTORS, MONEY, SALES } from '../accounting/chart';
 import { financialYear } from '../crm/irn';
 import { EWB_THRESHOLD, ewbValidUntil, mockEwbNo, vehicleNo } from '../gst/ewaybill';
 import { InventoryService } from '../inventory/inventory.service';
@@ -29,6 +31,7 @@ export class PosService {
     private readonly inventory: InventoryService,
     private readonly realtime: RealtimeGateway,
     private readonly config: ConfigService,
+    private readonly accounting: AccountingService,
   ) {}
 
   // Rings up a sale: the order, its lines and the stock OUT (FEFO, never below 0) commit together or not at all.
@@ -83,6 +86,14 @@ export class PosService {
             lines: { create: lines.map(({ variant, quantity, unitPrice, lineTotal }) => ({ variantId: variant.id, quantity, unitPrice, lineTotal })) },
           },
         });
+        // Paid now: the money is in the till. UPI still pending: the customer owes it until the bank's callback.
+        // ponytail: the whole total goes to Sales; split out GST Output once order lines carry tax amounts.
+        if (total.gt(0)) {
+          await this.accounting.postEvent(tx, businessId, {
+            at: soldAt, narration: `POS sale ${order.number}`, source: JournalSource.POS_SALE, sourceId: order.id, actorId,
+            lines: [{ code: paid ? MONEY[dto.paymentMethod] : DEBTORS, debit: total }, { code: SALES, credit: total }],
+          });
+        }
         const moved = [];
         for (const { variant, quantity } of lines) {
           const entry = { businessId, actorId, unitCost: variant.costPrice, reference: order.number, note: 'POS sale', posOrderId: order.id };
@@ -191,6 +202,8 @@ export class PosService {
         data: { status: PosOrderStatus.CANCELLED, cancelledAt: new Date(), cancelReason: dto.reason },
       });
       if (!count) throw new BadRequestException(`${order.number} is already cancelled`);
+      // ponytail: a paid order's refund shows as a credit balance on Debtors until it is paid out at the counter.
+      await this.accounting.reverseEvent(tx, businessId, JournalSource.POS_SALE, id, `${order.number} cancelled: ${dto.reason}`, actorId);
       const sold = await tx.stockLedgerEntry.findMany({
         where: { posOrderId: id, type: StockMovementType.OUT },
         include: { batch: { select: { id: true, batchNo: true } }, location: true, variant: { include: { product: { select: { unit: true } } } } },
@@ -272,9 +285,17 @@ export class PosService {
           });
           if (!count) result = UpiCallbackResult.ORDER_NOT_PENDING;
         }
-        return tx.upiPayment.create({
+        const payment = await tx.upiPayment.create({
           data: { businessId: order?.businessId, orderId: order?.id, txnRef: cb.txnRef, utr: cb.utr, amount: cb.amount, status: cb.status, payerVpa: cb.payerVpa, result },
         });
+        // ponytail: only matched money is booked; mismatches and unknown refs stay in the UPI reconciliation for a person.
+        if (result === UpiCallbackResult.MATCHED) {
+          await this.accounting.postEvent(tx, order!.businessId, {
+            at: payment.receivedAt, narration: `UPI ${cb.utr} for ${order!.number}`, source: JournalSource.PAYMENT, sourceId: payment.id,
+            lines: [{ code: MONEY.UPI, debit: payment.amount }, { code: DEBTORS, credit: payment.amount }],
+          });
+        }
+        return payment;
       });
     } catch (e) {
       if ((e as { code?: string }).code === 'P2002') return this.prisma.upiPayment.findUniqueOrThrow({ where: { utr: cb.utr } });

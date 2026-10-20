@@ -27,6 +27,8 @@ model Business {
   posOrders       PosOrder[]
   upiPayments     UpiPayment[]
   syncConflicts   PosSyncConflict[]
+  accounts        Account[]
+  journals        Journal[]
   id        String   @id @default(uuid())
   name      String
   industry  String?
@@ -492,4 +494,75 @@ model PosSyncConflict {
   createdAt    DateTime           @default(now())
 
   @@index([businessId, status, createdAt])
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
+/// A ledger account in the business's chart of accounts. Seeded accounts (isSystem) are what automatic postings use.
+model Account {
+  id         String        @id @default(uuid())
+  businessId String
+  business   Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  code       String // e.g. "1000"
+  name       String
+  type       AccountType
+  isSystem   Boolean       @default(false) // seeded; can be renamed but not archived
+  isActive   Boolean       @default(true)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  lines      JournalLine[]
+
+  @@unique([businessId, code])
+  @@unique([businessId, name])
+}
+
+enum JournalSource {
+  MANUAL
+  REVERSAL
+  POS_SALE // sourceId = PosOrder.id
+  INVOICE // sourceId = Invoice.id
+  PAYMENT // sourceId = InvoicePayment.id or UpiPayment.id
+}
+
+/// A posted double-entry journal. Append-only: mistakes are fixed by posting its reversal, never by editing.
+model Journal {
+  id           String        @id @default(uuid())
+  businessId   String
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  number       String // JV/26-27/000001
+  date         DateTime      @db.Date // accounting date (India time)
+  narration    String
+  total        Decimal       @db.Decimal(14, 2) // sum of debits (= sum of credits)
+  source       JournalSource @default(MANUAL)
+  sourceId     String? // the sale, invoice or payment an automatic journal was posted for
+  reversalOfId String?       @unique // the journal this one cancels out
+  reversalOf   Journal?      @relation("Reversal", fields: [reversalOfId], references: [id], onDelete: NoAction)
+  reversedBy   Journal?      @relation("Reversal")
+  createdById  String?
+  createdAt    DateTime      @default(now())
+  lines        JournalLine[]
+
+  @@unique([businessId, number])
+  @@unique([businessId, source, sourceId]) // one journal per business event
+  @@index([businessId, date])
+}
+
+model JournalLine {
+  id        String   @id @default(uuid())
+  journalId String
+  journal   Journal  @relation(fields: [journalId], references: [id], onDelete: Cascade)
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  debit     Decimal  @default(0) @db.Decimal(14, 2)
+  credit    Decimal  @default(0) @db.Decimal(14, 2)
+  note      String?
+
+  @@index([journalId])
+  @@index([accountId])
 }

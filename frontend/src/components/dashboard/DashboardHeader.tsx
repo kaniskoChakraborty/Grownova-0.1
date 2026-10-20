@@ -23,7 +23,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onSearchClick,
   onNotificationsClick,
 }) => {
-  const { user, switchRole, logout } = useAuth();
+  const { user, switchRole, logout, isDemoMode } = useAuth();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -117,6 +117,11 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <span className="text-xs sm:text-sm font-medium text-[#102B4E] lowercase">
               {currentRoleName}
             </span>
+            {isDemoMode && (
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-[#C69A43] border border-[#C69A43]/25 uppercase tracking-wide">
+                Demo
+              </span>
+            )}
             <ChevronDown className={`w-3.5 h-3.5 text-[#102B4E]/60 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} />
           </button>
 
@@ -181,14 +186,15 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 </Link>
 
                 <button
-                  onClick={() => {
-                    logout();
+                  onClick={async () => {
+                    await logout();
+                    setProfileOpen(false);
                     navigate('/auth');
                   }}
-                  className="w-full px-3 py-1.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer text-left"
+                  className="w-full px-3 py-1.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer text-left transition-colors"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span>Sign Out</span>
+                  <span>{isDemoMode ? 'Exit Demo Mode' : 'Sign Out'}</span>
                 </button>
               </div>
             </div>

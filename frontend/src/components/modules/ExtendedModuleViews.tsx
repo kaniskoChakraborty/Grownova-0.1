@@ -12,8 +12,13 @@ import {
   ChevronRight,
   MapPin,
   Users,
-  X
+  X,
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
 } from 'lucide-react';
+import { apiClient } from '../../services/apiClient';
+import { useAuth } from '../../context/AuthContext';
 
 /* ========================================================================= */
 /* 1. PEOPLE & ORGANIZATION DIRECTORY                                        */
@@ -195,31 +200,46 @@ export const ProjectsModuleView: React.FC<{ onNotify?: (msg: string) => void }> 
 export const DocumentsModuleView: React.FC<{ onNotify?: (msg: string) => void }> = ({
   onNotify = () => {}
 }) => {
+  const { isDemoMode } = useAuth();
   const [digiLoading, setDigiLoading] = useState(false);
+  const [digiError, setDigiError] = useState<string | null>(null);
+  const [consentResult, setConsentResult] = useState<{
+    consentId: string;
+    consentUrl?: string;
+    expiresAt?: string;
+  } | null>(null);
 
   const handleDigiLockerKyc = async () => {
     setDigiLoading(true);
+    setDigiError(null);
     try {
-      const res = await fetch('http://localhost:3000/integrations/digilocker/consent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ businessId: 'shree-ganesh-textiles', consent: true })
-      });
-      if (res.ok) {
-        onNotify('DigiLocker verification consent confirmed.');
-      } else {
-        simulateDigi();
+      if (isDemoMode) {
+        await new Promise((r) => setTimeout(r, 600));
+        onNotify('DigiLocker KYC consent verified with Indian National Portal (Demo).');
+        setConsentResult({
+          consentId: 'demo-consent-8f3a9e',
+          expiresAt: 'In 15 minutes'
+        });
+        return;
       }
-    } catch {
-      simulateDigi();
-    }
-  };
 
-  const simulateDigi = () => {
-    setTimeout(() => {
+      // Backend expects: POST /integrations/digilocker/consent with body { documentType: 'AADHAAR' }
+      const res = await apiClient.post<{
+        consentId: string;
+        consentUrl: string;
+        expiresAt: string;
+      }>('/integrations/digilocker/consent', {
+        documentType: 'AADHAAR'
+      });
+
+      setConsentResult(res);
+      onNotify(`DigiLocker consent generated: Consent ID ${res.consentId.slice(0, 8)}…`);
+    } catch (err: any) {
+      setDigiError(err.message || 'DigiLocker verification failed.');
+      onNotify(`DigiLocker request failed: ${err.message || 'Request failed'}`);
+    } finally {
       setDigiLoading(false);
-      onNotify('DigiLocker KYC consent verified with Indian National Portal.');
-    }, 600);
+    }
   };
 
   const docs = [
@@ -241,10 +261,42 @@ export const DocumentsModuleView: React.FC<{ onNotify?: (msg: string) => void }>
           disabled={digiLoading}
           className="px-4 py-2 rounded-full bg-[#102B4E] hover:bg-[#0B2340] text-white text-xs font-bold border border-[#C69A43]/40 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 self-start sm:self-auto"
         >
-          <Lock className="w-3.5 h-3.5 text-[#C69A43]" />
+          {digiLoading ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C69A43]" />
+          ) : (
+            <Lock className="w-3.5 h-3.5 text-[#C69A43]" />
+          )}
           <span>{digiLoading ? 'Verifying Consent…' : 'Sync DigiLocker KYC'}</span>
         </button>
       </div>
+
+      {consentResult && (
+        <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between gap-3 animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>
+              <strong>DigiLocker Consent Active:</strong> ID <code className="font-mono">{consentResult.consentId}</code> (Expires: {consentResult.expiresAt || '15 mins'})
+            </span>
+          </div>
+          {consentResult.consentUrl && (
+            <a
+              href={consentResult.consentUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[11px] font-bold text-emerald-800 underline hover:text-emerald-950"
+            >
+              Open DigiLocker Portal →
+            </a>
+          )}
+        </div>
+      )}
+
+      {digiError && (
+        <div className="p-3 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-900 flex items-center gap-2 animate-in fade-in">
+          <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+          <span>DigiLocker Service Notice: {digiError}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="gn-panel p-4 flex flex-col justify-between">

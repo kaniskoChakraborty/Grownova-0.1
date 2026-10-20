@@ -36,7 +36,7 @@ interface AppShellProps {
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, switchBusiness } = useAuth();
+  const { user, logout, switchBusiness, isDemoMode } = useAuth();
 
   // Floating states
   const [searchOpen, setSearchOpen] = useState(false);
@@ -446,15 +446,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                     </button>
 
                     <button
-                      onClick={() => {
-                        logout();
+                      onClick={async () => {
+                        await logout();
                         setProfileOpen(false);
                         navigate('/auth');
                       }}
                       className="w-full text-left px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-700 transition-colors flex items-center gap-2 cursor-pointer"
                     >
                       <LogOut className="w-3.5 h-3.5 text-rose-600" />
-                      <span>Sign Out from OS</span>
+                      <span>{isDemoMode ? 'Exit Demo Mode' : 'Sign Out from OS'}</span>
                     </button>
                   </div>
                 </div>
@@ -501,14 +501,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             <div className="pt-1 flex items-center justify-between text-xs text-[#55677D]">
               <span className="font-semibold">{user?.businessName}</span>
               <button
-                onClick={() => {
-                  logout();
+                onClick={async () => {
+                  await logout();
                   setMobileMenuOpen(false);
                   navigate('/auth');
                 }}
-                className="text-rose-600 font-bold hover:underline"
+                className="text-rose-600 font-bold hover:underline cursor-pointer"
               >
-                Sign out
+                {isDemoMode ? 'Exit Demo' : 'Sign out'}
               </button>
             </div>
           </div>

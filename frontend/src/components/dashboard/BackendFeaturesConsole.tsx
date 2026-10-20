@@ -9,10 +9,15 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowRight,
-  Shield
+  Shield,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
+import { apiClient } from '../../services/apiClient';
+import { useAuth } from '../../context/AuthContext';
 
 export const BackendFeaturesConsole: React.FC = () => {
+  const { isDemoMode } = useAuth();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'growai' | 'migration' | 'audit' | 'whatsapp'>('growai');
 
@@ -26,7 +31,14 @@ export const BackendFeaturesConsole: React.FC = () => {
   } | null>(null);
 
   // Audit State
-  const [auditVerified, setAuditVerified] = useState<boolean>(false);
+  const [auditVerified, setAuditVerified] = useState<{
+    valid: boolean;
+    checked: number;
+    brokenAt?: string | null;
+    reason?: string | null;
+    isDemo?: boolean;
+  } | null>(null);
+  const [auditError, setAuditError] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
 
   // Migration State
@@ -69,17 +81,33 @@ export const BackendFeaturesConsole: React.FC = () => {
 
   const handleVerifyAudit = async () => {
     setIsVerifying(true);
+    setAuditError(null);
     try {
-      const res = await fetch('http://localhost:3000/audit/integrity');
-      if (res.ok) {
-        setAuditVerified(true);
-      } else {
-        setTimeout(() => setAuditVerified(true), 600); // graceful verification
+      if (isDemoMode) {
+        // Explicit demo verification simulation
+        await new Promise((r) => setTimeout(r, 600));
+        setAuditVerified({ valid: true, checked: 1842, isDemo: true });
+        return;
       }
-    } catch {
-      setTimeout(() => setAuditVerified(true), 600);
+      const data = await apiClient.get<{
+        valid: boolean;
+        checked: number;
+        brokenAt?: string | null;
+        reason?: string | null;
+      }>('/audit/integrity');
+
+      setAuditVerified({
+        valid: data.valid,
+        checked: data.checked,
+        brokenAt: data.brokenAt,
+        reason: data.reason,
+        isDemo: false,
+      });
+    } catch (err: any) {
+      setAuditVerified(null);
+      setAuditError(err.message || 'Audit verification request failed.');
     } finally {
-      setTimeout(() => setIsVerifying(false), 600);
+      setIsVerifying(false);
     }
   };
 
@@ -291,17 +319,40 @@ export const BackendFeaturesConsole: React.FC = () => {
                   <button
                     onClick={handleVerifyAudit}
                     disabled={isVerifying}
-                    className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-[#102B4E] hover:bg-[#0B2340] cursor-pointer flex items-center gap-1.5"
+                    className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-[#102B4E] hover:bg-[#0B2340] cursor-pointer flex items-center gap-1.5 disabled:opacity-60"
                   >
-                    <Shield className="w-3.5 h-3.5 text-[#C69A43]" />
+                    {isVerifying ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C69A43]" />
+                    ) : (
+                      <Shield className="w-3.5 h-3.5 text-[#C69A43]" />
+                    )}
                     <span>{isVerifying ? 'Verifying...' : 'Verify Ledger Integrity'}</span>
                   </button>
                 </div>
 
-                {auditVerified && (
-                  <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center gap-2">
+                {auditVerified && auditVerified.valid && (
+                  <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center gap-2 animate-in fade-in">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>Integrity Verified: 100% of transaction blocks match cryptographic hashes. Zero tampering detected.</span>
+                    <span>
+                      Integrity Verified: {auditVerified.checked} transaction blocks match cryptographic hashes. Zero tampering detected.
+                      {auditVerified.isDemo ? ' (Demo Simulation)' : ' (Live Backend)'}
+                    </span>
+                  </div>
+                )}
+
+                {auditVerified && !auditVerified.valid && (
+                  <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center gap-2 animate-in fade-in">
+                    <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    <span>
+                      Integrity Warning: Mismatch detected at block {auditVerified.brokenAt}. Reason: {auditVerified.reason || 'Hash mismatch'}
+                    </span>
+                  </div>
+                )}
+
+                {auditError && (
+                  <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-900 flex items-center gap-2 animate-in fade-in">
+                    <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                    <span>Audit Verification Error: {auditError}</span>
                   </div>
                 )}
               </div>

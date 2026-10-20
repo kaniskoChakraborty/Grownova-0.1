@@ -17,7 +17,7 @@ import { useAuth } from '../context/AuthContext';
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, switchRole } = useAuth();
+  const { user, switchRole, isDemoMode } = useAuth();
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -32,16 +32,18 @@ export const DashboardPage: React.FC = () => {
     }, 3500);
   };
 
-  // Synchronize persona role when navigating to specific role URLs
+  // Synchronize persona role when navigating to specific role URLs in demo mode
   useEffect(() => {
-    if (location.pathname === '/dashboard/manager' && user?.role !== 'OPS') {
-      switchRole('OPS');
-    } else if (location.pathname === '/dashboard/employee' && user?.role !== 'EMPLOYEE') {
-      switchRole('EMPLOYEE');
-    } else if (location.pathname === '/dashboard' && user?.role !== 'OWNER') {
-      switchRole('OWNER');
+    if (isDemoMode) {
+      if (location.pathname === '/dashboard/manager' && user?.role !== 'OPS') {
+        switchRole('OPS');
+      } else if (location.pathname === '/dashboard/employee' && user?.role !== 'EMPLOYEE') {
+        switchRole('EMPLOYEE');
+      } else if (location.pathname === '/dashboard' && user?.role !== 'OWNER') {
+        switchRole('OWNER');
+      }
     }
-  }, [location.pathname, user?.role, switchRole]);
+  }, [location.pathname, user?.role, switchRole, isDemoMode]);
 
   // Keyboard shortcut listener for ⌘K / Ctrl+K
   useEffect(() => {

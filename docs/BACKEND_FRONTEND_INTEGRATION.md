@@ -105,3 +105,59 @@ When operating in Demo Mode or when the backend database is unreachable, GrowNov
 | `text-secondary` | `#65758B` | Labels, time slots, subtitles, secondary metadata |
 | `positive-green` | `#15803D` | Positive trends (`↑ 18%`), System Online indicator |
 | `negative-red` | `#DC2626` | Negative trends (`↓ 6%`), critical alerts |
+
+---
+
+## 6. Batch 2: API Integration & Local Development Infrastructure
+
+### 6.1 Local Development Infrastructure Setup
+- **Docker Compose File**: `docker-compose.yml` provides containerized services for:
+  - **PostgreSQL 16**: Port `5432`, named volume `postgres_data` (persistent), healthcheck `pg_isready -U postgres -d grownova`, loads environment from `.env`.
+  - **Redis 7**: Port `6379`, named volume `redis_data` (persistent), healthcheck `redis-cli ping`, loads environment from `.env`.
+- **Infrastructure Management Commands**:
+  - `npm run docker:up` -> `docker compose up -d` (starts PostgreSQL & Redis in background)
+  - `npm run docker:down` -> `docker compose down` (safely stops services preserving all volume data)
+  - `npm run docker:logs` -> `docker compose logs -f` (tails container logs)
+  - `npm run docker:reset` -> `docker compose down -v` (CAUTION: destroys persistent volumes; only for full factory reset)
+  - `npm run db:migrate` -> `prisma migrate dev` (runs database migrations)
+  - `npm run db:seed` -> `tsx prisma/seed.ts` (seeds canonical test businesses, accounts, and modules)
+- **Local Host Docker Status & Blocker**:
+  - Verification test `docker --version` and `wsl -l -v` confirmed Docker CLI is not installed / not on the host Windows `PATH`, and WSL is uninstalled.
+  - Precise Blocker: Containers cannot be spawned until Docker Desktop for Windows (or an external PostgreSQL 16 & Redis 7 instance) is started on the developer host.
+  - Architecture Integrity: Redis is strictly maintained as required in `redis.service.ts` and configuration; no artificial disabling was introduced.
+
+### 6.2 Seeded Test Accounts (`prisma/seed.ts`)
+| Account Email | Role | Password | Description |
+|---|---|---|---|
+| `taksh.demo@grownova.in` | `OWNER` | `TestPassword123` | Canonical Business Owner account (full permissions) |
+| `accountant@grownova.local` | `ACCOUNTANT` | `TestPassword123` | Financial, taxation & general ledger access |
+| `ops@grownova.local` | `OPS` | `TestPassword123` | Operations / Manager dashboard access |
+| `test@grownova.local` | `EMPLOYEE` | `TestPassword123` | Employee task, timesheet & shift access |
+
+### 6.3 API Calls Migrated to Shared `apiClient`
+All direct backend calls are routed through `web/src/services/apiClient.ts` which proxies `/api/*` to the backend:
+1. `EditorialMessages.tsx`: Replaced raw `fetch('/api/health')` with `apiClient.get('/health', { skipAuth: true })`.
+2. `BackendFeaturesConsole.tsx`:
+   - Tab 2 (Migration): Replaced mock simulation with real `apiClient.upload<NormalizedMigrationResult>('/migration/upload', formData)` supporting `.xml, .xlsx, .xls`.
+   - Tab 3 (Audit Integrity): Verified `apiClient.get('/audit/integrity')` with localized retry and warning states.
+   - Tab 4 (WhatsApp): Replaced static mock with real `apiClient.post('/integrations/whatsapp/webhook', ...)` intake caller.
+3. `ReportsModuleView.tsx`:
+   - `apiClient.get('/audit/integrity')` for cryptographic ledger verification with localized retry button.
+   - `apiClient.post('/audit/test')` for generating new hashed ledger blocks with in-progress loading state.
+4. `ExtendedModuleViews.tsx` (`DocumentsModuleView`):
+   - `apiClient.post('/integrations/digilocker/consent', { documentType: 'AADHAAR' })` for national KYC consent.
+   - `apiClient.post('/integrations/digilocker/kyc', { consentId })` for verifying and displaying masked credential proofs.
+5. `AccountingModuleView.tsx`:
+   - `apiClient.upload('/migration/upload', formData)` with localized file extension validation, loading spinner, and retry button.
+
+### 6.4 Hardcoded URL Audit
+- Codebase grep confirmed: **Zero hardcoded `http://localhost:3000` instances** in any frontend component or view.
+- The only reference is in `web/vite.config.ts`, where `backendTarget = env.VITE_BACKEND_URL || 'http://localhost:3000'` serves as the default proxy forwarding target.
+
+### 6.5 Module Error Handling Enhancements
+- Localized error banners with actionable "Retry" buttons across all 4 modules.
+- Non-crashing isolation: an unavailable backend displays clear, user-friendly service notices without unmounting the dashboard shell.
+- Empty states implemented in tabular views (Audit Log, Accounting Vouchers) when search filters yield zero results.
+- No false success states: errors from API calls are displayed cleanly without optimistic completion messages.
+- Privacy & security: sensitive payloads and raw stack traces are stripped; friendly diagnostics are logged safely.
+

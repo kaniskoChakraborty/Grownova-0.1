@@ -20,8 +20,8 @@ echo Found Node.js version:
 node -v
 echo.
 
-echo [2/3] Checking frontend dependencies...
-cd /d "%~dp0frontend"
+echo [2/3] Checking web dependencies...
+cd /d "%~dp0web"
 if not exist node_modules (
     echo Dependencies not found. Installing packages... (This only happens on the first run)
     call npm install

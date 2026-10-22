@@ -333,63 +333,71 @@ Shared request/response contracts reside in `src/common/contracts` and `src/migr
 
 ```text
 Grownova-0.1/
-├── run.bat                          # ⚡ 1-Click Windows Launcher (Frontend + Browser)
+├── run.bat                          # ⚡ 1-Click Windows Launcher (Web App + Browser)
 ├── run.sh                           # ⚡ 1-Click Mac/Linux Launcher
 ├── README.md                        # 📖 Complete Project Documentation
-├── package.json                     # Backend configuration (NestJS)
-├── nest-cli.json                    # NestJS CLI configuration
-├── prisma7.config.ts                # Prisma 7 CLI configuration
-├── prisma/                          # Database schema, seed script & SQL migrations
-│   ├── schema.prisma
-│   ├── seed.ts
-│   └── migrations/
-├── test-data/                       # Sample test datasets (Excel & Tally XML)
-│   ├── products.xlsx
-│   ├── tally-sample.xml
-│   └── invalid.txt
-├── src/                             # Backend source code (NestJS)
-│   ├── main.ts                      # Application bootstrap & Swagger setup
-│   ├── app.module.ts                # Root application module
-│   ├── config/                      # Typed environment configuration
-│   ├── common/                      # Shared Zod contracts, filters & interceptors
-│   ├── health/                      # GET /health system liveness module
-│   ├── prisma/                      # PrismaService (PostgreSQL adapter)
-│   ├── redis/                       # RedisService (ioredis client)
-│   ├── auth/                        # JWT authentication & RolesGuard
-│   ├── businesses/                  # Multi-tenant business management
-│   ├── audit/                       # SHA-256 hash-chained audit logging
-│   ├── onboarding/                  # Owner onboarding & UI presets
-│   ├── integrations/                # DigiLocker KYC & WhatsApp intake/webhook
-│   ├── crm/                         # CRM leads, parsing & scoring
-│   ├── growai/                      # AI rules & enrichment engine
-│   └── migration/                   # Excel & Tally XML migration parsers
+├── docker-compose.yml               # 🐳 PostgreSQL 16 & Redis 7 Infrastructure
+├── package.json                     # 📦 Root Monorepo Orchestrator (npm workspaces)
 │
-└── frontend/                        # Frontend React Application (Vite + Tailwind)
-    ├── package.json                 # Frontend dependencies & scripts
-    ├── vite.config.ts               # Vite configuration
-    ├── index.html                   # HTML entry point with Google Fonts
-    ├── public/                      # Static assets & photography
-    │   ├── hero-bg.jpg              # Cinematic sunlit Indian heritage desk scene
-    │   ├── ravi_avatar_hq.jpg       # High-resolution executive portrait
-    │   └── reference.jpg            # Original visual source of truth
-    └── src/
-        ├── App.tsx                  # Client-side router (/ and /auth)
-        ├── pages/
-        │   ├── LandingPage.tsx      # Main landing experience
-        │   └── AuthPage.tsx         # Dedicated /auth authentication route
-        └── components/
-            ├── VisionDashboard.tsx  # 100% Vector visionOS Liquid Glass Dashboard
-            ├── HeroLeft.tsx         # Aligned marketing copy & CTAs
-            ├── GrowNovaLogo.tsx     # Official vector GrowNova brand logo
-            ├── ReferenceCompare.tsx # QA reference comparison slider
-            ├── navigation/
-            │   └── LandingNav.tsx   # Top navigation bar
-            └── auth/
-                ├── AuthShell.tsx        # Dual liquid glass slab container
-                ├── AuthTabs.tsx         # Sign In / Sign Up tab switcher
-                ├── AuthForm.tsx         # Interactive login & registration forms
-                ├── SocialLogin.tsx      # Google & Microsoft SSO tiles
-                └── GrowNovaPreview.tsx  # Vector miniature preview tablet
+├── backend/                         # 🛡️ NestJS 11 Backend Service
+│   ├── package.json                 # Backend dependencies & build scripts
+│   ├── nest-cli.json                # NestJS CLI configuration
+│   ├── prisma7.config.ts            # Prisma 7 CLI configuration
+│   ├── tsconfig.json                # TypeScript configuration
+│   ├── prisma/                      # Database schema, seed script & SQL migrations
+│   │   ├── schema.prisma
+│   │   ├── seed.ts
+│   │   └── migrations/
+│   ├── test-data/                   # Sample test datasets (Excel & Tally XML)
+│   │   ├── products.xlsx
+│   │   └── tally-sample.xml
+│   └── src/                         # Modular NestJS Micro-architecture
+│       ├── main.ts                  # Application bootstrap & Swagger setup
+│       ├── app.module.ts            # Root application module
+│       ├── config/                  # Typed environment configuration
+│       ├── common/                  # Shared Zod contracts, filters & interceptors
+│       ├── health/                  # GET /health system liveness module
+│       ├── prisma/                  # PrismaService (PostgreSQL adapter)
+│       ├── redis/                   # RedisService (ioredis client)
+│       ├── auth/                    # JWT authentication & RolesGuard
+│       ├── businesses/              # Multi-tenant business management
+│       ├── audit/                   # SHA-256 hash-chained audit logging
+│       ├── onboarding/              # Owner onboarding & UI presets
+│       ├── integrations/            # Unified integrations (DigiLocker, WhatsApp, GSTN, UPI, ONDC, Tally)
+│       ├── crm/                     # CRM leads, parsing & scoring
+│       ├── growai/                  # AI rules & enrichment engine
+│       └── migration/               # Excel & Tally XML migration parsers
+│
+├── web/                             # 🌐 React 19 Frontend Web Application (Vite + Tailwind)
+│   ├── package.json                 # Web dependencies & scripts
+│   ├── vite.config.ts               # Vite configuration & backend proxy
+│   ├── index.html                   # HTML entry point with Google Fonts
+│   ├── public/                      # Static assets & photography
+│   │   ├── hero-bg.jpg              # Cinematic sunlit Indian heritage desk scene
+│   │   ├── ravi_avatar_hq.jpg       # High-resolution executive portrait
+│   │   └── dashboard_glass.png      # Glassmorphic preview canvas
+│   └── src/
+│       ├── App.tsx                  # Client-side router (/ and /auth)
+│       ├── pages/
+│       │   ├── LandingPage.tsx      # Main empathetic landing experience
+│       │   └── AuthPage.tsx         # Dedicated /auth authentication route
+│       └── components/
+│           ├── GrowNovaLogo.tsx     # Official vector GrowNova brand logo
+│           ├── GrowNovaCompassLogo.tsx # Compass insignia
+│           ├── navigation/          # Navigation components
+│           ├── auth/                # Glassmorphism login & register slabs
+│           ├── dashboard/           # VisionOS executive workspace views
+│           ├── modules/             # Business modules (CRM, Inventory, Accounting)
+│           └── landing/             # Empathetic landing sections
+│               ├── HeroLeft.tsx
+│               ├── VisionDashboard.tsx
+│               ├── ChaosVsCalmSection.tsx
+│               ├── CashflowCalculator.tsx
+│               ├── DayInYourBusiness.tsx
+│               ├── FounderStoriesSection.tsx
+│               └── MigrationGuaranteeSection.tsx
+│
+└── app/                             # 📱 Mobile App (Reserved for React Native / Expo)
 ```
 
 ---

@@ -25,4 +25,7 @@ Thumbs.db
 .vscode
 *.log
 
-/generated/prisma
+# Prisma Generated Client
+**/generated/
+backend/.env
+backend/.env.save

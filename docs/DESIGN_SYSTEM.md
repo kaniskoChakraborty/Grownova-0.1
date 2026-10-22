@@ -8,8 +8,7 @@ Rather than resembling a generic enterprise ERP or an overcomplicated SaaS admin
 
 ### Canonical Visual Reference
 The sole source of truth for all visual design across the entire product is the canonical dashboard design:
-- **Reference Mockup**: `frontend/public/dashboard-reference.png`
-- **Pristine Atmospheric Artwork**: `frontend/public/dashboard-bg.jpg`
+- **Canonical Atmospheric Artwork**: `web/public/dashboard-bg.jpg`
 
 Every public landing page, authentication screen, executive dashboard, and vertical module view must adhere strictly to these principles.
 

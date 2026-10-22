@@ -18,9 +18,9 @@ echo "Found Node.js: $(node -v)"
 echo ""
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/frontend"
+cd "$SCRIPT_DIR/web"
 
-echo "[2/3] Checking frontend dependencies..."
+echo "[2/3] Checking web dependencies..."
 if [ ! -d "node_modules" ]; then
     echo "Dependencies not found. Installing packages... (This only happens on first run)"
     npm install

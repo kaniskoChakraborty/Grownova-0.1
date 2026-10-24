@@ -1,37 +1,66 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  Alert,
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { theme } from '../constants/theme';
 import { Header } from '../components/Header';
+import { useApp } from '../context/AppContext';
 
 interface AttendanceScreenProps {
   onBack: () => void;
 }
 
 export const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ onBack }) => {
-  const [punchedIn, setPunchedIn] = useState(true);
+  const {
+    staff,
+    isOwnerPunchedIn,
+    ownerPunchTime,
+    toggleOwnerPunch,
+    setStaffStatus,
+    addStaff,
+    language,
+  } = useApp();
 
-  const staff = [
-    { name: 'Ramesh Kumar', role: 'Counter Billing', time: '08:45 AM', status: 'present', geo: 'Inside Shop (12m)' },
-    { name: 'Sunita Patil', role: 'Inventory & Stock', time: '09:00 AM', status: 'present', geo: 'Inside Shop (18m)' },
-    { name: 'Suresh Verma', role: 'Helper & Delivery', time: '09:12 AM', status: 'present', geo: 'Mandi Gate (45m)' },
-    { name: 'Manoj Shinde', role: 'Loading Staff', time: '--:--', status: 'absent', geo: 'Not Clocked In' },
-  ];
+  const [addStaffModalVisible, setAddStaffModalVisible] = useState(false);
+  const [newStaffName, setNewStaffName] = useState('');
+  const [newStaffRole, setNewStaffRole] = useState('Counter Billing');
+  const [newStaffPhone, setNewStaffPhone] = useState('');
 
-  const togglePunch = () => {
-    setPunchedIn(!punchedIn);
-    Alert.alert(
-      punchedIn ? 'Punch Out Recorded' : '✅ Punch In Verified!',
-      punchedIn
-        ? 'Your clock-out has been recorded for the day.'
-        : 'Geotag verified at Pune Mandi Counter (Accuracy 12m). Attendance marked present.'
-    );
+  const presentCount = staff.filter((s) => s.status === 'present').length;
+  const halfDayCount = staff.filter((s) => s.status === 'half_day').length;
+  const absentCount = staff.filter((s) => s.status === 'absent').length;
+  const attendanceRate = Math.round(((presentCount + halfDayCount * 0.5) / (staff.length || 1)) * 100);
+
+  const handleCreateStaff = () => {
+    if (!newStaffName.trim() || !newStaffPhone.trim()) {
+      Alert.alert('Required Fields', 'Please enter staff name and mobile number.');
+      return;
+    }
+
+    addStaff({
+      name: newStaffName.trim(),
+      role: newStaffRole,
+      phone: newStaffPhone.trim(),
+    });
+
+    setNewStaffName('');
+    setNewStaffPhone('');
+    setAddStaffModalVisible(false);
+    Alert.alert('✅ Staff Registered', `${newStaffName} added to shop muster.`);
   };
 
   return (
     <View style={styles.container}>
       <Header
-        title="Staff Attendance"
+        title={language === 'hi' ? 'स्टाफ हाजिरी (Attendance)' : 'Staff Attendance & Geotag'}
         subtitle="GPS Geotag & Shop Muster"
         showBack={true}
         onBack={onBack}
@@ -43,144 +72,264 @@ export const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ onBack }) =>
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Mandi Geotag Banner */}
+        {/* Mandi Geotag Banner Card */}
         <View style={styles.geoCard}>
           <View style={styles.geoTop}>
             <View style={styles.geoLeft}>
-              <MaterialIcons name="storefront" size={20} color={theme.colors.secondary} />
-              <Text style={styles.geoTitle}>Counter 01 · Shree Ganesh Traders</Text>
+              <View style={styles.geoIconCircle}>
+                <MaterialIcons name="location-on" size={24} color={theme.colors.secondary} />
+              </View>
+              <View>
+                <Text style={styles.geoTitle}>Pune Mandi Market Counter</Text>
+                <Text style={styles.geoCoords}>18.5204° N, 73.8567° E · Accuracy 12m</Text>
+              </View>
             </View>
-            <View style={styles.geoPill}>
-              <Text style={styles.geoPillText}>Pune Mandi</Text>
+            <View style={styles.inShopBadge}>
+              <View style={styles.pulseDot} />
+              <Text style={styles.inShopText}>Inside Geofence</Text>
             </View>
           </View>
 
-          <View style={styles.geoBottom}>
-            <View style={styles.geoDateRow}>
-              <MaterialIcons name="calendar-today" size={14} color={theme.colors.textMuted} />
-              <Text style={styles.geoDate}>Today, Friday, 24 Oct</Text>
-            </View>
-            <View style={styles.musterBadge}>
-              <View style={styles.musterDot} />
-              <Text style={styles.musterText}>Muster Open</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Quick Stat Ribbon */}
-        <View style={styles.ribbon}>
-          <View style={styles.ribbonItem}>
-            <Text style={styles.ribbonLabel}>PRESENT</Text>
-            <Text style={[styles.ribbonVal, { color: theme.colors.success }]}>3</Text>
-          </View>
-          <View style={styles.ribbonDivider} />
-          <View style={styles.ribbonItem}>
-            <Text style={styles.ribbonLabel}>ABSENT</Text>
-            <Text style={[styles.ribbonVal, { color: theme.colors.error }]}>1</Text>
-          </View>
-          <View style={styles.ribbonDivider} />
-          <View style={styles.ribbonItem}>
-            <Text style={styles.ribbonLabel}>ON LEAVE</Text>
-            <Text style={styles.ribbonVal}>0</Text>
-          </View>
-        </View>
-
-        {/* Punch In / Out Button */}
-        <TouchableOpacity
-          style={[styles.punchBtn, !punchedIn && styles.punchBtnOut]}
-          activeOpacity={0.85}
-          onPress={togglePunch}
-        >
-          <View style={styles.punchLeft}>
-            <View style={styles.punchIconCircle}>
-              <MaterialIcons
-                name={punchedIn ? 'check-circle' : 'touch-app'}
-                size={24}
-                color={punchedIn ? theme.colors.success : theme.colors.primary}
-              />
-            </View>
+          {/* Owner Punch Clock CTA */}
+          <View style={styles.punchRow}>
             <View>
               <Text style={styles.punchTitle}>
-                {punchedIn ? 'You are Clocked In' : 'Punch In Now (हाजिरी लगाएं)'}
+                {isOwnerPunchedIn ? 'Counter Clocked In' : 'Counter Clocked Out'}
               </Text>
-              <Text style={styles.punchSubtitle}>
-                {punchedIn ? 'GPS Geotag Verified · 08:45 AM' : 'Tap to mark presence with GPS tag'}
+              <Text style={styles.punchTime}>
+                {isOwnerPunchedIn ? `Clocked in at ${ownerPunchTime || '08:30 AM'}` : 'Not clocked in today'}
               </Text>
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.punchBtn,
+                !isOwnerPunchedIn && { backgroundColor: theme.colors.success },
+              ]}
+              onPress={toggleOwnerPunch}
+              activeOpacity={0.8}
+            >
+              <MaterialIcons
+                name={isOwnerPunchedIn ? 'logout' : 'fingerprint'}
+                size={20}
+                color="#FFF"
+              />
+              <Text style={styles.punchBtnText}>
+                {isOwnerPunchedIn ? 'Clock Out' : 'Tap to Punch In'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* 3-Part Attendance Summary */}
+        <View style={styles.summaryBar}>
+          <View style={styles.summaryCol}>
+            <Text style={styles.summaryNumber}>{presentCount}</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.success }]}>Present</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.summaryCol}>
+            <Text style={styles.summaryNumber}>{halfDayCount}</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.warning }]}>Half-Day</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.summaryCol}>
+            <Text style={styles.summaryNumber}>{absentCount}</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.error }]}>Absent</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.summaryCol}>
+            <Text style={styles.summaryNumber}>{attendanceRate}%</Text>
+            <Text style={styles.summaryLabel}>Muster</Text>
+          </View>
+        </View>
+
+        {/* Staff Roster Section */}
+        <View style={styles.rosterHeaderRow}>
+          <Text style={styles.sectionTitle}>Shop Staff Roster ({staff.length})</Text>
+          <TouchableOpacity
+            style={styles.addStaffBtn}
+            onPress={() => setAddStaffModalVisible(true)}
+            activeOpacity={0.8}
+          >
+            <MaterialIcons name="person-add" size={16} color="#FFF" />
+            <Text style={styles.addStaffBtnText}>+ Add Staff</Text>
+          </TouchableOpacity>
+        </View>
+
+        {staff.map((member) => (
+          <View key={member.id} style={styles.staffCard}>
+            <View style={styles.staffTop}>
+              <View style={styles.staffLeft}>
+                <View style={styles.staffAvatar}>
+                  <Text style={styles.staffInitial}>{member.name.charAt(0)}</Text>
+                </View>
+                <View>
+                  <Text style={styles.staffName}>{member.name}</Text>
+                  <Text style={styles.staffRole}>
+                    {member.role} · {member.phone}
+                  </Text>
+                  <Text style={styles.staffGeo}>
+                    <MaterialIcons name="gps-fixed" size={12} color={theme.colors.secondary} />{' '}
+                    {member.geoAccuracy}
+                    {member.checkInTime ? ` · ${member.checkInTime}` : ''}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Interactive 3-way attendance status buttons */}
+            <View style={styles.statusToggleRow}>
+              <TouchableOpacity
+                style={[
+                  styles.statusBtn,
+                  member.status === 'present' && styles.statusBtnPresentActive,
+                ]}
+                onPress={() => setStaffStatus(member.id, 'present')}
+                activeOpacity={0.8}
+              >
+                <MaterialIcons
+                  name="check-circle"
+                  size={15}
+                  color={member.status === 'present' ? '#FFF' : theme.colors.success}
+                />
+                <Text
+                  style={[
+                    styles.statusBtnText,
+                    member.status === 'present' && styles.statusBtnTextActive,
+                    member.status !== 'present' && { color: theme.colors.success },
+                  ]}
+                >
+                  Present
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.statusBtn,
+                  member.status === 'half_day' && styles.statusBtnHalfActive,
+                ]}
+                onPress={() => setStaffStatus(member.id, 'half_day')}
+                activeOpacity={0.8}
+              >
+                <MaterialIcons
+                  name="timelapse"
+                  size={15}
+                  color={member.status === 'half_day' ? '#FFF' : theme.colors.warning}
+                />
+                <Text
+                  style={[
+                    styles.statusBtnText,
+                    member.status === 'half_day' && styles.statusBtnTextActive,
+                    member.status !== 'half_day' && { color: theme.colors.warning },
+                  ]}
+                >
+                  Half-Day
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.statusBtn,
+                  member.status === 'absent' && styles.statusBtnAbsentActive,
+                ]}
+                onPress={() => setStaffStatus(member.id, 'absent')}
+                activeOpacity={0.8}
+              >
+                <MaterialIcons
+                  name="cancel"
+                  size={15}
+                  color={member.status === 'absent' ? '#FFF' : theme.colors.error}
+                />
+                <Text
+                  style={[
+                    styles.statusBtnText,
+                    member.status === 'absent' && styles.statusBtnTextActive,
+                    member.status !== 'absent' && { color: theme.colors.error },
+                  ]}
+                >
+                  Absent
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-          <MaterialIcons name="chevron-right" size={24} color="#FFF" />
-        </TouchableOpacity>
-
-        {/* Staff List */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Daily Staff Roster</Text>
-          <Text style={styles.sectionCount}>4 Members</Text>
-        </View>
-
-        <View style={styles.staffList}>
-          {staff.map((s, idx) => (
-            <View key={idx} style={styles.staffCard}>
-              <View style={styles.staffLeft}>
-                <View
-                  style={[
-                    styles.avatarCircle,
-                    s.status === 'present'
-                      ? { backgroundColor: theme.colors.successBg }
-                      : { backgroundColor: theme.colors.errorContainer },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.avatarText,
-                      s.status === 'present'
-                        ? { color: theme.colors.success }
-                        : { color: theme.colors.error },
-                    ]}
-                  >
-                    {s.name.charAt(0)}
-                  </Text>
-                </View>
-
-                <View>
-                  <Text style={styles.staffName}>{s.name}</Text>
-                  <Text style={styles.staffRole}>{s.role}</Text>
-                  <View style={styles.geoRow}>
-                    <MaterialIcons
-                      name={s.status === 'present' ? 'location-on' : 'location-off'}
-                      size={12}
-                      color={s.status === 'present' ? theme.colors.success : theme.colors.textMuted}
-                    />
-                    <Text style={styles.geoText}>{s.geo}</Text>
-                  </View>
-                </View>
-              </View>
-
-              <View style={styles.staffRight}>
-                <Text style={styles.staffTime}>{s.time}</Text>
-                <View
-                  style={[
-                    styles.statusBadge,
-                    s.status === 'present'
-                      ? { backgroundColor: theme.colors.successBg }
-                      : { backgroundColor: theme.colors.errorContainer },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.statusBadgeText,
-                      s.status === 'present'
-                        ? { color: theme.colors.success }
-                        : { color: theme.colors.error },
-                    ]}
-                  >
-                    {s.status === 'present' ? 'Present' : 'Absent'}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          ))}
-        </View>
+        ))}
       </ScrollView>
+
+      {/* Add Staff Modal */}
+      <Modal
+        visible={addStaffModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setAddStaffModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Register Staff (नया कर्मचारी)</Text>
+              <TouchableOpacity
+                onPress={() => setAddStaffModalVisible(false)}
+                style={styles.closeBtn}
+              >
+                <MaterialIcons name="close" size={24} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.inputLabel}>Staff Name (नाम):</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="e.g. Nilesh Deshmukh"
+              placeholderTextColor={theme.colors.textMuted}
+              value={newStaffName}
+              onChangeText={setNewStaffName}
+            />
+
+            <Text style={styles.inputLabel}>Mobile Phone (फ़ोन):</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="98230-00000"
+              placeholderTextColor={theme.colors.textMuted}
+              keyboardType="phone-pad"
+              value={newStaffPhone}
+              onChangeText={setNewStaffPhone}
+            />
+
+            <Text style={styles.inputLabel}>Role (पद):</Text>
+            <View style={styles.rolesGrid}>
+              {[
+                'Counter Billing',
+                'Inventory & Stock',
+                'Helper & Delivery',
+                'Loading Staff',
+              ].map((role) => (
+                <TouchableOpacity
+                  key={role}
+                  style={[styles.roleChip, newStaffRole === role && styles.roleChipActive]}
+                  onPress={() => setNewStaffRole(role)}
+                >
+                  <Text
+                    style={[
+                      styles.roleChipText,
+                      newStaffRole === role && styles.roleChipTextActive,
+                    ]}
+                  >
+                    {role}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              style={styles.confirmStaffBtn}
+              onPress={handleCreateStaff}
+              activeOpacity={0.85}
+            >
+              <MaterialIcons name="check" size={20} color="#FFF" />
+              <Text style={styles.confirmStaffBtnText}>Register to Attendance Muster</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -198,223 +347,316 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   geoCard: {
-    backgroundColor: theme.colors.surfaceWhite,
+    backgroundColor: '#FFFDF9',
     borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.sm,
+    padding: theme.spacing.lg,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.borderGold,
+    marginBottom: theme.spacing.lg,
   },
   geoTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: theme.spacing.md,
   },
   geoLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-  },
-  geoTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: theme.colors.primary,
-  },
-  geoPill: {
-    backgroundColor: theme.colors.surfaceContainerLow,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: theme.borderRadius.full,
-  },
-  geoPillText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: theme.colors.textMuted,
-  },
-  geoBottom: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  geoDateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  geoDate: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-    fontWeight: '500',
-  },
-  musterBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: theme.colors.secondaryLight,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: theme.borderRadius.full,
-  },
-  musterDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: theme.colors.secondary,
-  },
-  musterText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: theme.colors.secondary,
-  },
-  ribbon: {
-    flexDirection: 'row',
-    backgroundColor: theme.colors.surfaceContainerLow,
-    borderRadius: theme.borderRadius.md,
-    paddingVertical: 10,
-    marginBottom: theme.spacing.md,
-  },
-  ribbonItem: {
+    gap: theme.spacing.md,
     flex: 1,
-    alignItems: 'center',
+    marginRight: 6,
   },
-  ribbonLabel: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: theme.colors.textMuted,
-  },
-  ribbonVal: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: theme.colors.primary,
-    marginTop: 2,
-  },
-  ribbonDivider: {
-    width: 1,
-    height: '80%',
-    backgroundColor: theme.colors.border,
-  },
-  punchBtn: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing.lg,
-    shadowColor: theme.colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  punchBtnOut: {
-    backgroundColor: theme.colors.secondary,
-  },
-  punchLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  punchIconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FFF',
+  geoIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.secondaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  punchTitle: {
+  geoTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FFF',
+    color: theme.colors.primary,
   },
-  punchSubtitle: {
+  geoCoords: {
     fontSize: 11,
-    color: theme.colors.primaryDim,
+    color: theme.colors.textMuted,
     marginTop: 2,
   },
-  sectionHeader: {
+  inShopBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.successBg,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: theme.borderRadius.full,
+    gap: 4,
+  },
+  pulseDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: theme.colors.success,
+  },
+  inShopText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: theme.colors.success,
+  },
+  punchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: theme.spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
+  punchTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+  },
+  punchTime: {
+    fontSize: 12,
+    color: theme.colors.textMuted,
+    marginTop: 1,
+  },
+  punchBtn: {
+    backgroundColor: theme.colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: theme.borderRadius.md,
+  },
+  punchBtnText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  summaryBar: {
+    backgroundColor: theme.colors.surfaceWhite,
+    borderRadius: theme.borderRadius.lg,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    marginBottom: theme.spacing.lg,
+  },
+  summaryCol: {
+    alignItems: 'center',
+  },
+  summaryNumber: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: theme.colors.primary,
+  },
+  summaryLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: theme.colors.textMuted,
+    marginTop: 2,
+  },
+  divider: {
+    width: 1,
+    height: 24,
+    backgroundColor: theme.colors.border,
+  },
+  rosterHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: theme.spacing.sm,
   },
   sectionTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
     color: theme.colors.primary,
   },
-  sectionCount: {
-    fontSize: 12,
-    color: theme.colors.textMuted,
+  addStaffBtn: {
+    backgroundColor: theme.colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: theme.borderRadius.full,
   },
-  staffList: {
-    gap: theme.spacing.sm,
+  addStaffBtnText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
   staffCard: {
     backgroundColor: theme.colors.surfaceWhite,
-    borderRadius: theme.borderRadius.md,
+    borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: theme.colors.border,
+    marginBottom: 8,
+  },
+  staffTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
   staffLeft: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.sm,
-    flex: 1,
+    alignItems: 'flex-start',
+    gap: theme.spacing.md,
   },
-  avatarCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  staffAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: theme.colors.surfaceContainerLow,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
   },
-  avatarText: {
-    fontSize: 14,
-    fontWeight: '700',
+  staffInitial: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: theme.colors.primary,
   },
   staffName: {
     fontSize: 14,
     fontWeight: '700',
-    color: theme.colors.primary,
+    color: theme.colors.textPrimary,
   },
   staffRole: {
     fontSize: 11,
     color: theme.colors.textMuted,
     marginTop: 1,
   },
-  geoRow: {
+  staffGeo: {
+    fontSize: 11,
+    color: theme.colors.secondary,
+    fontWeight: '600',
+    marginTop: 3,
+  },
+  statusToggleRow: {
+    flexDirection: 'row',
+    gap: 6,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
+  statusBtn: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
-    marginTop: 3,
+    justifyContent: 'center',
+    gap: 4,
+    paddingVertical: 7,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.surfaceContainerLow,
   },
-  geoText: {
-    fontSize: 10,
-    color: theme.colors.textMuted,
+  statusBtnPresentActive: {
+    backgroundColor: theme.colors.success,
   },
-  staffRight: {
-    alignItems: 'flex-end',
+  statusBtnHalfActive: {
+    backgroundColor: theme.colors.warning,
   },
-  staffTime: {
-    fontSize: 13,
+  statusBtnAbsentActive: {
+    backgroundColor: theme.colors.error,
+  },
+  statusBtnText: {
+    fontSize: 11,
     fontWeight: '700',
+  },
+  statusBtnTextActive: {
+    color: '#FFF',
+  },
+
+  // Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: theme.colors.surfaceWhite,
+    borderTopLeftRadius: theme.borderRadius.xl,
+    borderTopRightRadius: theme.borderRadius.xl,
+    padding: theme.spacing.xl,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: theme.spacing.lg,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
     color: theme.colors.primary,
   },
-  statusBadge: {
-    marginTop: 3,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-    borderRadius: theme.borderRadius.full,
+  closeBtn: {
+    padding: 6,
   },
-  statusBadgeText: {
-    fontSize: 10,
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    marginBottom: 4,
+  },
+  formInput: {
+    backgroundColor: theme.colors.surfaceContainerLow,
+    borderRadius: theme.borderRadius.md,
+    paddingHorizontal: 12,
+    height: 44,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    fontSize: 14,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.md,
+  },
+  rolesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: theme.spacing.lg,
+  },
+  roleChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.surfaceContainerLow,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  roleChipActive: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  roleChipText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: theme.colors.textMuted,
+  },
+  roleChipTextActive: {
+    color: '#FFF',
+  },
+  confirmStaffBtn: {
+    backgroundColor: theme.colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: theme.borderRadius.md,
+    marginTop: 8,
+  },
+  confirmStaffBtnText: {
+    color: '#FFF',
+    fontSize: 15,
     fontWeight: '700',
   },
 });

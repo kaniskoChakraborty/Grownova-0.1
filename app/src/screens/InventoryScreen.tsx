@@ -1,130 +1,343 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  Alert,
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { theme } from '../constants/theme';
 import { Header } from '../components/Header';
+import { useApp } from '../context/AppContext';
 
 export const InventoryScreen: React.FC = () => {
+  const { inventory, updateStock, reorderStock, addProduct, lowStockCount, language } = useApp();
   const [filter, setFilter] = useState<'all' | 'low'>('all');
   const [search, setSearch] = useState('');
+  const [addModalVisible, setAddModalVisible] = useState(false);
 
-  const inventoryItems = [
-    { id: '1', name: 'Fortune Sunflower Oil (1L)', cat: 'Edible Oils', stock: 14, min: 10, price: 145, status: 'safe' },
-    { id: '2', name: 'Aashirvaad Sharbati Atta (10kg)', cat: 'Flour & Grains', stock: 6, min: 15, price: 480, status: 'low' },
-    { id: '3', name: 'Tata Tea Premium (500g)', cat: 'Beverages', stock: 28, min: 20, price: 160, status: 'safe' },
-    { id: '4', name: 'Madhur Pure Sugar (1kg)', cat: 'Pantry Staples', stock: 3, min: 25, price: 46, status: 'critical' },
-    { id: '5', name: 'Toor Dal Desi (1kg)', cat: 'Pulses', stock: 1, min: 10, price: 175, status: 'critical' },
-    { id: '6', name: 'Parle-G Gold Biscuits', cat: 'Packaged Foods', stock: 54, min: 20, price: 10, status: 'safe' },
-  ];
+  // New Product Form
+  const [name, setName] = useState('');
+  const [category, setCategory] = useState('Pantry Staples');
+  const [price, setPrice] = useState('');
+  const [costPrice, setCostPrice] = useState('');
+  const [unit, setUnit] = useState('packet');
+  const [stock, setStock] = useState('20');
+  const [minStock, setMinStock] = useState('10');
 
-  const displayed = inventoryItems.filter((it) => {
+  const displayed = inventory.filter((it) => {
     const matchesFilter = filter === 'all' || it.status !== 'safe';
-    const matchesSearch = it.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch =
+      it.name.toLowerCase().includes(search.toLowerCase()) ||
+      it.category.toLowerCase().includes(search.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
+  const totalValuation = inventory.reduce((sum, it) => sum + it.price * it.stock, 0);
+
+  const handleAddProduct = () => {
+    if (!name.trim() || !price.trim()) {
+      Alert.alert('Required Fields', 'Please enter product name and selling price.');
+      return;
+    }
+
+    addProduct({
+      name: name.trim(),
+      nameHi: name.trim(),
+      category,
+      unit,
+      price: parseFloat(price) || 0,
+      costPrice: parseFloat(costPrice) || Math.round((parseFloat(price) || 0) * 0.85),
+      stock: parseInt(stock, 10) || 0,
+      minStock: parseInt(minStock, 10) || 10,
+    });
+
+    setName('');
+    setPrice('');
+    setCostPrice('');
+    setStock('20');
+    setAddModalVisible(false);
+
+    Alert.alert('✅ Product Added', `${name} has been added to shop inventory.`);
+  };
+
   return (
     <View style={styles.container}>
-      <Header title="Inventory & Stock" subtitle="Items, Batches & Reorders" />
+      <Header
+        title={language === 'hi' ? 'दुकान का सामान (Stock & Items)' : 'Inventory & Stock'}
+        subtitle="Catalog & Reorder Management"
+      />
 
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* KPI Card */}
-        <View style={styles.kpiCard}>
-          <View style={styles.kpiTop}>
+        {/* Inventory Summary Card */}
+        <View style={styles.summaryCard}>
+          <View style={styles.summaryTop}>
             <View>
-              <Text style={styles.kpiLabel}>Total Inventory Value</Text>
-              <Text style={styles.kpiVal}>₹4,82,000</Text>
+              <Text style={styles.summaryLabel}>Total Stock Valuation</Text>
+              <Text style={styles.summaryAmount}>₹{totalValuation.toLocaleString('en-IN')}</Text>
             </View>
-            <View style={styles.lowStockBadge}>
-              <MaterialIcons name="warning" size={14} color={theme.colors.secondary} />
-              <Text style={styles.lowStockText}>5 Low Stock</Text>
-            </View>
+            <TouchableOpacity
+              style={styles.addBtn}
+              onPress={() => setAddModalVisible(true)}
+              activeOpacity={0.8}
+            >
+              <MaterialIcons name="add" size={20} color="#FFF" />
+              <Text style={styles.addBtnText}>+ Add Item</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.kpiRow}>
-            <Text style={styles.kpiSub}>142 Registered Items · Pune Central Godown</Text>
-          </View>
+          <Text style={styles.summarySub}>
+            {inventory.length} total products · {lowStockCount} need reordering
+          </Text>
         </View>
 
-        {/* Filter & Search */}
-        <View style={styles.searchRow}>
-          <View style={styles.searchBox}>
-            <MaterialIcons name="search" size={20} color={theme.colors.textMuted} />
-            <TextInput
-              placeholder="Search items, brand or category..."
-              placeholderTextColor={theme.colors.textMuted}
-              style={styles.searchInput}
-              value={search}
-              onChangeText={setSearch}
-            />
-          </View>
-          <TouchableOpacity style={styles.scanBtn}>
-            <MaterialIcons name="qr-code-scanner" size={20} color={theme.colors.primary} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Filter Toggle */}
-        <View style={styles.tabRow}>
+        {/* Filter Chips */}
+        <View style={styles.filterRow}>
           <TouchableOpacity
-            style={[styles.tabBtn, filter === 'all' && styles.tabBtnActive]}
+            style={[styles.filterChip, filter === 'all' && styles.filterChipActive]}
             onPress={() => setFilter('all')}
+            activeOpacity={0.8}
           >
-            <Text style={[styles.tabText, filter === 'all' && styles.tabTextActive]}>
-              All Items (142)
+            <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>
+              All Items ({inventory.length})
             </Text>
           </TouchableOpacity>
+
           <TouchableOpacity
-            style={[styles.tabBtn, filter === 'low' && styles.tabBtnActive]}
+            style={[styles.filterChip, filter === 'low' && styles.filterChipWarningActive]}
             onPress={() => setFilter('low')}
+            activeOpacity={0.8}
           >
-            <Text style={[styles.tabText, filter === 'low' && styles.tabTextActive]}>
-              ⚠️ Low Stock Alert (5)
+            <MaterialIcons
+              name="warning"
+              size={14}
+              color={filter === 'low' ? '#FFF' : theme.colors.warning}
+            />
+            <Text
+              style={[
+                styles.filterText,
+                filter === 'low' && styles.filterTextActive,
+                filter !== 'low' && { color: theme.colors.warning },
+              ]}
+            >
+              Low Stock Alert ({lowStockCount})
             </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Item Cards */}
-        <View style={styles.itemList}>
-          {displayed.map((it) => (
-            <View key={it.id} style={styles.itemCard}>
-              <View style={styles.itemMain}>
-                <View style={styles.itemLeft}>
-                  <Text style={styles.itemName}>{it.name}</Text>
-                  <Text style={styles.itemCat}>{it.cat} · ₹{it.price}/unit</Text>
-                </View>
+        {/* Search Input */}
+        <View style={styles.searchBar}>
+          <MaterialIcons name="search" size={20} color={theme.colors.textMuted} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search products by name or category..."
+            placeholderTextColor={theme.colors.textMuted}
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
 
-                <View style={styles.itemRight}>
+        {/* Inventory Items List */}
+        {displayed.map((item) => (
+          <View key={item.id} style={styles.itemCard}>
+            <View style={styles.itemTop}>
+              <View style={styles.itemInfo}>
+                <View style={styles.categoryPill}>
+                  <Text style={styles.categoryText}>{item.category}</Text>
+                </View>
+                <Text style={styles.itemName}>{item.name}</Text>
+                <Text style={styles.itemPrices}>
+                  Sell: ₹{item.price}/{item.unit} · Cost: ₹{item.costPrice}
+                </Text>
+              </View>
+
+              <View style={styles.itemStatusWrap}>
+                <View
+                  style={[
+                    styles.statusPill,
+                    {
+                      backgroundColor:
+                        item.status === 'safe'
+                          ? theme.colors.successBg
+                          : item.status === 'low'
+                          ? theme.colors.warningBg
+                          : theme.colors.errorBg,
+                    },
+                  ]}
+                >
                   <Text
                     style={[
-                      styles.stockCount,
-                      it.status === 'critical'
-                        ? { color: theme.colors.error }
-                        : it.status === 'low'
-                        ? { color: theme.colors.warning }
-                        : { color: theme.colors.success },
+                      styles.statusPillText,
+                      {
+                        color:
+                          item.status === 'safe'
+                            ? theme.colors.success
+                            : item.status === 'low'
+                            ? theme.colors.warning
+                            : theme.colors.error,
+                      },
                     ]}
                   >
-                    {it.stock} in stock
+                    {item.status.toUpperCase()}
                   </Text>
-                  <Text style={styles.minStock}>Min {it.min}</Text>
+                </View>
+                <Text style={styles.currentStockText}>
+                  {item.stock} {item.unit}s
+                </Text>
+              </View>
+            </View>
+
+            {/* Quick Adjust & Reorder Controls */}
+            <View style={styles.actionsRow}>
+              <View style={styles.adjustStockBox}>
+                <Text style={styles.adjustLabel}>Quick Adjust:</Text>
+                <TouchableOpacity
+                  style={styles.adjustBtn}
+                  onPress={() => updateStock(item.id, -1)}
+                  activeOpacity={0.7}
+                >
+                  <MaterialIcons name="remove" size={16} color={theme.colors.primary} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.adjustBtn}
+                  onPress={() => updateStock(item.id, 1)}
+                  activeOpacity={0.7}
+                >
+                  <MaterialIcons name="add" size={16} color={theme.colors.primary} />
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity
+                style={styles.reorderBtn}
+                onPress={() => reorderStock(item.id, 10)}
+                activeOpacity={0.8}
+              >
+                <MaterialIcons name="local-shipping" size={16} color={theme.colors.secondary} />
+                <Text style={styles.reorderBtnText}>+10 Reorder</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+
+      {/* Add Product Modal */}
+      <Modal
+        visible={addModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setAddModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Add New Product (नया सामान)</Text>
+              <TouchableOpacity onPress={() => setAddModalVisible(false)} style={styles.closeBtn}>
+                <MaterialIcons name="close" size={24} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={{ maxHeight: 420 }} showsVerticalScrollIndicator={false}>
+              <Text style={styles.inputLabel}>Product Name (नाम):</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="e.g. Fortune Mustard Oil (1L)"
+                placeholderTextColor={theme.colors.textMuted}
+                value={name}
+                onChangeText={setName}
+              />
+
+              <View style={styles.formRow}>
+                <View style={{ flex: 1, marginRight: 8 }}>
+                  <Text style={styles.inputLabel}>Selling Price (बिक्री दर):</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    placeholder="₹ 150"
+                    placeholderTextColor={theme.colors.textMuted}
+                    keyboardType="numeric"
+                    value={price}
+                    onChangeText={setPrice}
+                  />
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.inputLabel}>Cost Price (खरीद दर):</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    placeholder="₹ 130"
+                    placeholderTextColor={theme.colors.textMuted}
+                    keyboardType="numeric"
+                    value={costPrice}
+                    onChangeText={setCostPrice}
+                  />
                 </View>
               </View>
 
-              {it.status !== 'safe' && (
-                <View style={styles.reorderBar}>
-                  <Text style={styles.reorderAlert}>⚠️ Running short of buffer</Text>
-                  <TouchableOpacity style={styles.reorderBtn}>
-                    <Text style={styles.reorderText}>+ Reorder</Text>
-                  </TouchableOpacity>
+              <View style={styles.formRow}>
+                <View style={{ flex: 1, marginRight: 8 }}>
+                  <Text style={styles.inputLabel}>Opening Stock (प्रारंभिक):</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    placeholder="20"
+                    placeholderTextColor={theme.colors.textMuted}
+                    keyboardType="numeric"
+                    value={stock}
+                    onChangeText={setStock}
+                  />
                 </View>
-              )}
-            </View>
-          ))}
+
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.inputLabel}>Unit (इकाई):</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    placeholder="packet / kg / bag"
+                    placeholderTextColor={theme.colors.textMuted}
+                    value={unit}
+                    onChangeText={setUnit}
+                  />
+                </View>
+              </View>
+
+              <Text style={styles.inputLabel}>Category (श्रेणी):</Text>
+              <View style={styles.categoryChips}>
+                {[
+                  'Edible Oils',
+                  'Flour & Grains',
+                  'Pulses',
+                  'Pantry Staples',
+                  'Beverages',
+                  'Spices',
+                ].map((c) => (
+                  <TouchableOpacity
+                    key={c}
+                    style={[styles.catChip, category === c && styles.catChipActive]}
+                    onPress={() => setCategory(c)}
+                  >
+                    <Text style={[styles.catChipText, category === c && styles.catChipTextActive]}>
+                      {c}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <TouchableOpacity
+                style={styles.saveProductBtn}
+                onPress={handleAddProduct}
+                activeOpacity={0.85}
+              >
+                <MaterialIcons name="check" size={20} color="#FFF" />
+                <Text style={styles.saveProductBtnText}>Save Product to Stock</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
         </View>
-      </ScrollView>
+      </Modal>
     </View>
   );
 };
@@ -141,175 +354,284 @@ const styles = StyleSheet.create({
     padding: theme.spacing.lg,
     paddingBottom: 40,
   },
-  kpiCard: {
-    backgroundColor: theme.colors.primary,
+  summaryCard: {
+    backgroundColor: theme.colors.surfaceWhite,
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.borderGold,
+    marginBottom: theme.spacing.lg,
   },
-  kpiTop: {
+  summaryTop: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    justifyContent: 'space-between',
+    marginBottom: 4,
   },
-  kpiLabel: {
-    fontSize: 12,
-    color: theme.colors.primaryDim,
+  summaryLabel: {
+    fontSize: 13,
+    color: theme.colors.textMuted,
+    fontWeight: '500',
+  },
+  summaryAmount: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: theme.colors.primary,
+  },
+  summarySub: {
+    fontSize: 11,
+    color: theme.colors.secondary,
     fontWeight: '600',
   },
-  kpiVal: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#FFF',
-    letterSpacing: -0.3,
-  },
-  lowStockBadge: {
+  addBtn: {
+    backgroundColor: theme.colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: theme.colors.secondaryLight,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: theme.borderRadius.full,
   },
-  lowStockText: {
-    fontSize: 11,
+  addBtnText: {
+    color: '#FFF',
+    fontSize: 13,
     fontWeight: '700',
-    color: theme.colors.secondary,
   },
-  kpiRow: {
-    marginTop: 4,
-  },
-  kpiSub: {
-    fontSize: 11,
-    color: theme.colors.primaryDim,
-  },
-  searchRow: {
+  filterRow: {
     flexDirection: 'row',
-    gap: theme.spacing.sm,
-    marginBottom: theme.spacing.sm,
+    gap: 8,
+    marginBottom: theme.spacing.md,
   },
-  searchBox: {
-    flex: 1,
+  filterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.surfaceContainerLow,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  filterChipActive: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  filterChipWarningActive: {
+    backgroundColor: theme.colors.warning,
+    borderColor: theme.colors.warning,
+  },
+  filterText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: theme.colors.textMuted,
+  },
+  filterTextActive: {
+    color: '#FFF',
+  },
+  searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surfaceWhite,
     borderRadius: theme.borderRadius.md,
-    paddingHorizontal: theme.spacing.md,
-    height: 42,
+    paddingHorizontal: 12,
+    height: 44,
     borderWidth: 1,
     borderColor: theme.colors.border,
     gap: 8,
+    marginBottom: theme.spacing.lg,
   },
   searchInput: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 14,
     color: theme.colors.textPrimary,
-  },
-  scanBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: theme.borderRadius.md,
-    backgroundColor: theme.colors.surfaceWhite,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  tabRow: {
-    flexDirection: 'row',
-    backgroundColor: theme.colors.surfaceContainerHighest,
-    borderRadius: theme.borderRadius.md,
-    padding: 3,
-    marginBottom: theme.spacing.md,
-  },
-  tabBtn: {
-    flex: 1,
-    paddingVertical: 6,
-    alignItems: 'center',
-    borderRadius: theme.borderRadius.sm,
-  },
-  tabBtnActive: {
-    backgroundColor: theme.colors.surfaceWhite,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  tabText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: theme.colors.textMuted,
-  },
-  tabTextActive: {
-    color: theme.colors.primary,
-    fontWeight: '700',
-  },
-  itemList: {
-    gap: theme.spacing.sm,
   },
   itemCard: {
     backgroundColor: theme.colors.surfaceWhite,
-    borderRadius: theme.borderRadius.md,
+    borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.md,
     borderWidth: 1,
     borderColor: theme.colors.border,
+    marginBottom: 8,
   },
-  itemMain: {
+  itemTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    marginBottom: 10,
   },
-  itemLeft: {
+  itemInfo: {
     flex: 1,
+    marginRight: 8,
+  },
+  categoryPill: {
+    backgroundColor: theme.colors.surfaceContainerLow,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginBottom: 4,
+  },
+  categoryText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: theme.colors.textMuted,
   },
   itemName: {
     fontSize: 14,
     fontWeight: '700',
-    color: theme.colors.primary,
+    color: theme.colors.textPrimary,
   },
-  itemCat: {
-    fontSize: 11,
+  itemPrices: {
+    fontSize: 12,
     color: theme.colors.textMuted,
     marginTop: 2,
   },
-  itemRight: {
+  itemStatusWrap: {
     alignItems: 'flex-end',
   },
-  stockCount: {
-    fontSize: 14,
+  statusPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
+    marginBottom: 4,
+  },
+  statusPillText: {
+    fontSize: 10,
     fontWeight: '800',
   },
-  minStock: {
-    fontSize: 10,
-    color: theme.colors.textMuted,
-    marginTop: 2,
+  currentStockText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: theme.colors.primary,
   },
-  reorderBar: {
+  actionsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 8,
     paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
   },
-  reorderAlert: {
+  adjustStockBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  adjustLabel: {
     fontSize: 11,
-    color: theme.colors.error,
-    fontWeight: '600',
+    color: theme.colors.textMuted,
+    fontWeight: '500',
+  },
+  adjustBtn: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: theme.colors.surfaceContainerLow,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   reorderBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     backgroundColor: theme.colors.secondaryLight,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: theme.borderRadius.full,
   },
-  reorderText: {
+  reorderBtnText: {
     fontSize: 11,
     fontWeight: '700',
     color: theme.colors.secondary,
+  },
+
+  // Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: theme.colors.surfaceWhite,
+    borderTopLeftRadius: theme.borderRadius.xl,
+    borderTopRightRadius: theme.borderRadius.xl,
+    padding: theme.spacing.xl,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: theme.spacing.lg,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: theme.colors.primary,
+  },
+  closeBtn: {
+    padding: 6,
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    marginBottom: 4,
+  },
+  formInput: {
+    backgroundColor: theme.colors.surfaceContainerLow,
+    borderRadius: theme.borderRadius.md,
+    paddingHorizontal: 12,
+    height: 44,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    fontSize: 14,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.md,
+  },
+  formRow: {
+    flexDirection: 'row',
+  },
+  categoryChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: theme.spacing.lg,
+  },
+  catChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.surfaceContainerLow,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  catChipActive: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  catChipText: {
+    fontSize: 11,
+    color: theme.colors.textMuted,
+    fontWeight: '600',
+  },
+  catChipTextActive: {
+    color: '#FFF',
+  },
+  saveProductBtn: {
+    backgroundColor: theme.colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: theme.borderRadius.md,
+    marginTop: 8,
+  },
+  saveProductBtnText: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '700',
   },
 });

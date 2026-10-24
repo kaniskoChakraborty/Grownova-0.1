@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, BackHandler, Platform } from 'react-native';
+import { View, StyleSheet, BackHandler } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 import { theme } from './src/constants/theme';
+import { AppProvider, useApp } from './src/context/AppContext';
 import { BottomNavBar, TabKey } from './src/components/BottomNavBar';
 
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -14,7 +15,7 @@ import { AccountsScreen } from './src/screens/AccountsScreen';
 import { CreateBillScreen } from './src/screens/CreateBillScreen';
 import { AttendanceScreen } from './src/screens/AttendanceScreen';
 
-export default function App() {
+function MainNavigator() {
   const [currentTab, setCurrentTab] = useState<TabKey>('home');
   const [overlayScreen, setOverlayScreen] = useState<'create_bill' | 'attendance' | null>(null);
 
@@ -96,21 +97,28 @@ export default function App() {
   };
 
   return (
-    <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <View style={styles.container}>
-          <View style={styles.screenWrapper}>{renderContent()}</View>
-          {/* Hide bottom bar when in full-screen overlay mode (POS / Attendance) */}
-          {!overlayScreen && (
-            <BottomNavBar
-              currentTab={currentTab}
-              onSelectTab={handleSelectTab}
-            />
-          )}
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <View style={styles.container}>
+        <View style={styles.screenWrapper}>{renderContent()}</View>
+        {!overlayScreen && (
+          <BottomNavBar
+            currentTab={currentTab}
+            onSelectTab={handleSelectTab}
+          />
+        )}
+      </View>
+    </SafeAreaView>
+  );
+}
+
+export default function App() {
+  return (
+    <AppProvider>
+      <SafeAreaProvider>
+        <StatusBar style="dark" />
+        <MainNavigator />
+      </SafeAreaProvider>
+    </AppProvider>
   );
 }
 

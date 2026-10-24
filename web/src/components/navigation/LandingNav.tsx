@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GrowNovaCompassLogo } from '../GrowNovaCompassLogo';
-import { ArrowRight, Menu, X, LayoutDashboard } from 'lucide-react';
+import { ArrowRight, Menu, X, LayoutDashboard, Globe } from 'lucide-react';
+import { useGrahakLanguage } from '../../context/GrahakLanguageContext';
 
 interface LandingNavProps {
   onGetStartedClick?: () => void;
@@ -12,6 +13,7 @@ export const LandingNav = ({
   onGetStartedClick,
   onSignInClick,
 }: LandingNavProps) => {
+  const { languageInfo, openLanguageModal } = useGrahakLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -78,6 +80,25 @@ export const LandingNav = ({
 
       {/* Top Right: Dashboard, Sign in & Get Started */}
       <div className="hidden sm:flex items-center gap-2.5 p-1.5 rounded-full bg-white/45 backdrop-blur-md border border-white/80 shadow-2xs">
+        {/* Language Selector Pill */}
+        <button
+          type="button"
+          onClick={openLanguageModal}
+          className="rounded-full px-3 py-1.5 text-[12px] font-bold text-[#102B4E] hover:text-[#C69A43] bg-white/70 hover:bg-white/95 backdrop-blur-md border border-white/90 shadow-2xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+          title="Change Language"
+        >
+          <Globe className="w-3.5 h-3.5 text-[#C69A43]" />
+          <span>{languageInfo.nativeName}</span>
+        </button>
+
+        {/* Link to Grahak B2C Experience */}
+        <Link
+          to="/grahak"
+          className="rounded-full px-3 py-1.5 text-[12px] font-bold text-amber-900 bg-amber-100/90 hover:bg-amber-200/80 border border-amber-300/60 shadow-2xs transition-all duration-200 flex items-center gap-1 cursor-pointer"
+        >
+          <span>ग्राहक B2C</span>
+        </Link>
+
         {/* Direct Link to Dashboard */}
         <Link
           to="/dashboard"

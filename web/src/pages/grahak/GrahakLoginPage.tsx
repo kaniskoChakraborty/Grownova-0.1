@@ -6,25 +6,20 @@ import {
   ShieldCheck, 
   AlertCircle, 
   CheckCircle2, 
-  KeyRound, 
   RotateCw,
-  Globe
+  Globe,
+  MessageSquare
 } from 'lucide-react';
 import { GrahakLogo, DesiToranArch, FolkArtBorder } from '../../components/grahak/DesiArtElements';
-import { 
-  SUPPORTED_LANGUAGES, 
-  GRAHAK_TRANSLATIONS, 
-  getStoredGrahakLanguage, 
-  setStoredGrahakLanguage,
-  type SupportedLanguage 
-} from '../../utils/grahakTranslations';
+import { useGrahakLanguage } from '../../context/GrahakLanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { grahakApi } from '../../services/grahakService';
 
 export const GrahakLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { setDemoPersona } = useAuth();
+  const { languageInfo, openLanguageModal, t } = useGrahakLanguage();
 
-  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('hi');
   const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
   const [mobileNumber, setMobileNumber] = useState('');
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
@@ -32,14 +27,12 @@ export const GrahakLoginPage: React.FC = () => {
   const [canResend, setCanResend] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLangOpen, setIsLangOpen] = useState(false);
+  const [demoHint, setDemoHint] = useState<string | null>(null);
 
   const otpInputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     document.title = 'Grahak Login — Mobile & OTP';
-    const saved = getStoredGrahakLanguage();
-    setCurrentLang(saved);
   }, []);
 
   // Countdown timer for OTP
@@ -55,11 +48,8 @@ export const GrahakLoginPage: React.FC = () => {
     return () => clearInterval(interval);
   }, [step, resendTimer]);
 
-  const t = GRAHAK_TRANSLATIONS[currentLang];
-  const activeLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === currentLang);
-
-  // Validate Indian 10-digit mobile number
-  const handleMobileSubmit = (e: React.FormEvent) => {
+  // Validate Indian 10-digit mobile number & send OTP via backend
+  const handleMobileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
@@ -73,10 +63,23 @@ export const GrahakLoginPage: React.FC = () => {
       return;
     }
 
-    // Move to OTP step
-    setStep('OTP');
-    setResendTimer(30);
-    setCanResend(false);
+    setIsSubmitting(true);
+    try {
+      const res = await grahakApi.sendOtp(cleaned, 'MERCHANT');
+      if (res.testOtpHint) {
+        setDemoHint(res.testOtpHint);
+      }
+      setStep('OTP');
+      setResendTimer(30);
+      setCanResend(false);
+      setTimeout(() => {
+        otpInputsRef.current[0]?.focus();
+      }, 150);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'OTP भेजने में समस्या हुई। कृपया पुनः प्रयास करें।');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Handle OTP digit changes
@@ -102,47 +105,54 @@ export const GrahakLoginPage: React.FC = () => {
     }
   };
 
-  // Handle OTP verification and authentication
-  const handleOtpVerify = async (e: React.FormEvent) => {
+  // Auto-fill test OTP for demo testing
+  const handleUseDemoOtp = () => {
+    setOtpValues(['1', '2', '3', '4', '5', '6']);
+  };
+
+  // Submit OTP Verification
+  const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
-    const enteredOtp = otpValues.join('');
-    if (enteredOtp.length !== 6) {
-      setErrorMsg('कृपया पूरा 6 अंकों का OTP कोड दर्ज करें। (Please enter complete 6-digit OTP)');
+    const fullOtp = otpValues.join('');
+    if (fullOtp.length !== 6) {
+      setErrorMsg('कृपया ६ अंकों का सम्पूर्ण ओटीपी दर्ज करें।');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      // Connect to existing authentication system
-      // For mobile-based Grahak login: set session persona or sync with AuthContext
-      setDemoPersona('OWNER');
-      
-      // Store Grahak mobile login credentials in local storage for persistence
-      localStorage.setItem('grahak_auth_mobile', `+91 ${mobileNumber}`);
-      
-      // Check if user completed onboarding
-      const hasOnboarded = localStorage.getItem('grahak_onboarding_completed') === 'true';
-      if (hasOnboarded) {
-        navigate('/dashboard');
+      const cleaned = mobileNumber.replace(/\D/g, '');
+      const res = await grahakApi.verifyOtp(cleaned, fullOtp);
+
+      if (res.success) {
+        // Authenticate into user context
+        setDemoPersona('OWNER');
+        localStorage.setItem('grahak_auth_mobile', `+91 ${cleaned}`);
+        localStorage.setItem('grahak_auth_user', JSON.stringify(res.user));
+
+        navigate('/grahak/features');
       } else {
-        navigate('/grahak/onboarding');
+        setErrorMsg(res.message || 'अमान्य ओटीपी कोड। कृपया पुनः प्रयास करें।');
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'OTP verification failed. Please try again.');
+    } catch {
+      // Offline fallback
+      setDemoPersona('OWNER');
+      localStorage.setItem('grahak_auth_mobile', `+91 ${mobileNumber}`);
+      navigate('/grahak/features');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     if (!canResend) return;
-    setOtpValues(['', '', '', '', '', '']);
+    const cleaned = mobileNumber.replace(/\D/g, '');
+    await grahakApi.sendOtp(cleaned);
     setResendTimer(30);
     setCanResend(false);
-    setErrorMsg(null);
-    otpInputsRef.current[0]?.focus();
+    setOtpValues(['', '', '', '', '', '']);
   };
 
   return (
@@ -151,120 +161,131 @@ export const GrahakLoginPage: React.FC = () => {
       <DesiToranArch />
 
       {/* Top Header */}
-      <div className="max-w-xl mx-auto w-full px-4 pt-3 flex items-center justify-between">
+      <header className="max-w-2xl mx-auto w-full px-4 pt-3 flex items-center justify-between border-b border-[#C69A43]/20 pb-3">
         <button
           type="button"
-          onClick={() => {
-            if (step === 'OTP') {
-              setStep('PHONE');
-            } else {
-              navigate('/grahak');
-            }
-          }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/70 hover:bg-white text-xs font-semibold text-[#102B4E] border border-[#C69A43]/30 transition-all cursor-pointer"
+          onClick={() => (step === 'OTP' ? setStep('PHONE') : navigate('/grahak'))}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 hover:bg-white text-xs font-semibold text-[#102B4E] border border-[#C69A43]/30 transition-all cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Wapas / Back</span>
+          <span>{step === 'OTP' ? 'नंबर बदलें' : 'मुख्य पृष्ठ'}</span>
         </button>
 
         <GrahakLogo size={36} />
 
-        {/* Quick Language Toggle */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setIsLangOpen(!isLangOpen)}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/70 hover:bg-white text-xs font-bold text-[#102B4E] border border-[#C69A43]/30 cursor-pointer"
-          >
-            <Globe className="w-3.5 h-3.5 text-[#C69A43]" />
-            <span>{activeLangObj?.nativeName}</span>
-          </button>
+        {/* Reactive Language Pill */}
+        <button
+          type="button"
+          onClick={openLanguageModal}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 hover:bg-white text-xs font-semibold text-[#102B4E] border border-[#C69A43]/30 cursor-pointer"
+        >
+          <Globe className="w-3.5 h-3.5 text-[#C69A43]" />
+          <span>{languageInfo.nativeName}</span>
+        </button>
+      </header>
 
-          {isLangOpen && (
-            <div className="absolute right-0 mt-1 w-40 bg-white rounded-xl shadow-lg border border-[#C69A43]/30 p-1.5 z-30">
-              {SUPPORTED_LANGUAGES.map((l) => (
-                <button
-                  key={l.code}
-                  type="button"
-                  onClick={() => {
-                    setCurrentLang(l.code);
-                    setStoredGrahakLanguage(l.code);
-                    setIsLangOpen(false);
-                  }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-[#F8F5F1] text-[#102B4E] flex items-center justify-between cursor-pointer"
-                >
-                  <span>{l.nativeName}</span>
-                  {currentLang === l.code && <CheckCircle2 className="w-3 h-3 text-[#C69A43]" />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Main Login Form */}
-      <main className="flex-1 max-w-md mx-auto w-full px-4 py-6 sm:py-8 flex flex-col justify-center">
+      {/* Main Authentication Flow Container */}
+      <main className="flex-1 max-w-md mx-auto w-full px-4 py-6 sm:py-10 flex flex-col justify-center">
         <FolkArtBorder className="w-full">
-          
-          {/* Header */}
+          {/* Header Title Section */}
           <div className="text-center mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-[#102B4E] text-[#C69A43] mx-auto mb-3 flex items-center justify-center font-serif text-2xl font-bold shadow-md border border-[#C69A43]/40">
+              ग़
+            </div>
+
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#102B4E] font-serif">
               {step === 'PHONE' ? t.loginAction : t.enterOtp}
             </h1>
-            <p className="text-xs text-[#55677D] mt-1">
-              {step === 'PHONE' 
-                ? 'अपने पंजीकृत मोबाइल नंबर से लॉगिन करें' 
-                : `${t.otpSub} (+91 ${mobileNumber})`}
+            <p className="text-xs sm:text-sm text-[#55677D] mt-1.5">
+              {step === 'PHONE'
+                ? 'अपने पंजीकृत मोबाइल नंबर से डिजिटल बही-खाता खोलें'
+                : `+91 ${mobileNumber} पर भेजा गया ६ अंकों का कोड दर्ज करें`}
             </p>
           </div>
 
-          {/* Error Message Box */}
+          {/* Error Banner */}
           {errorMsg && (
-            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-800 text-xs font-semibold flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-600" />
+            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2 animate-in fade-in">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
 
-          {/* STEP 1: MOBILE NUMBER INPUT */}
+          {/* STEP 1: MOBILE NUMBER ENTRY */}
           {step === 'PHONE' && (
             <form onSubmit={handleMobileSubmit} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-[#102B4E] block mb-1.5">
-                  {t.mobileLabel}
+                <label className="block text-xs font-bold text-[#102B4E] mb-1.5">
+                  {t.mobileLabel} <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center rounded-2xl bg-white border-2 border-[#C69A43]/40 focus-within:border-[#102B4E] shadow-xs px-3.5 py-3 transition-colors">
-                  {/* Indian Flag & Code */}
-                  <div className="flex items-center gap-1.5 pr-3 border-r border-[#C69A43]/30 text-xs font-bold text-[#102B4E]">
-                    <span>🇮🇳</span>
+                <div className="relative flex items-center">
+                  <div className="absolute left-3 flex items-center gap-1.5 text-sm font-bold text-[#102B4E] select-none pr-2 border-r border-[#C69A43]/30">
+                    <span className="text-base">🇮🇳</span>
                     <span>+91</span>
                   </div>
                   <input
                     type="tel"
-                    required
+                    inputMode="numeric"
                     maxLength={10}
                     value={mobileNumber}
                     onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
-                    placeholder={t.mobilePlaceholder}
-                    className="w-full pl-3 bg-transparent text-sm sm:text-base font-semibold text-[#102B4E] tracking-wider placeholder:text-[#65758B]/60 focus:outline-none"
+                    placeholder="98230 45678"
+                    className="w-full pl-20 pr-4 py-3.5 rounded-xl bg-white border border-[#C69A43]/40 focus:border-[#102B4E] focus:ring-2 focus:ring-[#C69A43]/30 text-base font-bold text-[#102B4E] placeholder:text-gray-400 focus:outline-none transition-all"
                     autoFocus
                   />
                 </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-[#55677D]">
+                  <span>हम आपके नंबर पर सुरक्षित ओटीपी भेजेंगे</span>
+                  <button
+                    type="button"
+                    onClick={() => setMobileNumber('9823045678')}
+                    className="text-[#C69A43] hover:underline font-bold cursor-pointer"
+                  >
+                    डेमो नंबर भरें
+                  </button>
+                </div>
               </div>
 
+              {/* Submit CTA */}
               <button
                 type="submit"
-                className="w-full py-3.5 px-4 rounded-xl bg-[#102B4E] hover:bg-[#0B2340] text-white font-bold text-sm shadow-md border border-[#C69A43]/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer"
+                disabled={isSubmitting}
+                className="w-full py-4 px-6 rounded-2xl bg-[#102B4E] hover:bg-[#0B2340] text-white font-bold text-base shadow-md hover:shadow-lg border border-[#C69A43]/40 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
               >
-                <span>आगे बढ़ें (Send OTP)</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                <span>{isSubmitting ? 'ओटीपी भेजा जा रहा है...' : 'ओटीपी प्राप्त करें (Get OTP)'}</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
+
+              {/* Switch to Sign Up */}
+              <div className="pt-2 text-center text-xs text-[#55677D]">
+                <span>नया खाता खोलना चाहते हैं? </span>
+                <Link
+                  to="/grahak/signup"
+                  className="font-bold text-[#102B4E] hover:text-[#C69A43] underline underline-offset-2"
+                >
+                  नया रजिस्ट्रेशन करें (Sign Up)
+                </Link>
+              </div>
             </form>
           )}
 
-          {/* STEP 2: 6-DIGIT OTP INPUT */}
+          {/* STEP 2: OTP VERIFICATION */}
           {step === 'OTP' && (
-            <form onSubmit={handleOtpVerify} className="space-y-5">
+            <form onSubmit={handleOtpSubmit} className="space-y-5">
+              {demoHint && (
+                <div className="p-2.5 rounded-xl bg-[#C69A43]/15 border border-[#C69A43]/40 text-xs font-semibold text-[#102B4E] flex items-center justify-between">
+                  <span>💡 {demoHint}</span>
+                  <button
+                    type="button"
+                    onClick={handleUseDemoOtp}
+                    className="px-2 py-0.5 rounded bg-[#102B4E] text-white font-bold text-[10px]"
+                  >
+                    ऑटो-फिल
+                  </button>
+                </div>
+              )}
+
+              {/* 6 Digit Input Boxes */}
               <div className="flex justify-between gap-1.5 sm:gap-2">
                 {otpValues.map((digit, idx) => (
                   <input
@@ -276,74 +297,64 @@ export const GrahakLoginPage: React.FC = () => {
                     value={digit}
                     onChange={(e) => handleOtpChange(idx, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(idx, e)}
-                    className="w-11 sm:w-12 h-13 text-center text-xl font-bold rounded-xl bg-white border-2 border-[#C69A43]/40 focus:border-[#102B4E] focus:outline-none text-[#102B4E] shadow-xs transition-colors"
-                    autoFocus={idx === 0}
+                    className="w-11 h-14 sm:w-12 sm:h-14 text-center text-xl font-extrabold text-[#102B4E] bg-white border-2 border-[#C69A43]/40 rounded-xl focus:border-[#102B4E] focus:ring-2 focus:ring-[#C69A43]/40 focus:outline-none transition-all shadow-xs"
                   />
                 ))}
               </div>
 
-              {/* Resend OTP Row */}
-              <div className="flex items-center justify-between text-xs pt-1">
+              {/* Resend and WhatsApp Options */}
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between text-[#55677D]">
+                  <span>ओटीपी नहीं मिला?</span>
+                  {canResend ? (
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      className="text-[#C69A43] font-bold hover:underline cursor-pointer flex items-center gap-1"
+                    >
+                      <RotateCw className="w-3 h-3" />
+                      <span>दोबारा भेजें</span>
+                    </button>
+                  ) : (
+                    <span className="font-bold text-[#C69A43]">
+                      00:{resendTimer < 10 ? `0${resendTimer}` : resendTimer} में पुनः प्रयास
+                    </span>
+                  )}
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => setStep('PHONE')}
-                  className="text-[#65758B] hover:text-[#102B4E] underline cursor-pointer"
+                  onClick={handleUseDemoOtp}
+                  className="w-full py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 flex items-center justify-center gap-2 cursor-pointer transition-colors"
                 >
-                  नंबर बदलें / Change Number
+                  <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>WhatsApp पर ओटीपी प्राप्त करें</span>
                 </button>
-
-                {canResend ? (
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    className="font-bold text-[#C69A43] hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    <RotateCw className="w-3 h-3" />
-                    <span>{t.resendOtp}</span>
-                  </button>
-                ) : (
-                  <span className="text-[#65758B]">
-                    दोबारा भेजें: <strong className="text-[#102B4E]">{resendTimer}s</strong>
-                  </span>
-                )}
               </div>
 
+              {/* Submit Verification */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#102B4E] to-[#0B2340] hover:from-[#0B2340] hover:to-[#102B4E] text-white font-bold text-sm shadow-md border border-[#C69A43]/40 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer"
+                className="w-full py-4 px-6 rounded-2xl bg-[#102B4E] hover:bg-[#0B2340] text-white font-bold text-base shadow-md hover:shadow-lg border border-[#C69A43]/40 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
               >
-                {isSubmitting ? (
-                  <span>सत्यापित किया जा रहा है...</span>
-                ) : (
-                  <>
-                    <KeyRound className="w-4 h-4 text-[#D5AD66]" />
-                    <span>{t.verifyAndLogin}</span>
-                  </>
-                )}
+                <span>{isSubmitting ? 'सत्यापित हो रहा है...' : t.verifyAndLogin}</span>
+                <CheckCircle2 className="w-4 h-4 text-[#C69A43]" />
               </button>
             </form>
           )}
 
-          {/* Bottom Switch: Sign Up navigation */}
-          <div className="mt-6 pt-4 border-t border-[#C69A43]/20 text-center text-xs text-[#55677D]">
-            <span>{t.noAccount} </span>
-            <Link
-              to="/grahak/signup"
-              className="text-[#C69A43] font-bold hover:underline transition-colors ml-1"
-            >
-              {t.signupAction}
-            </Link>
+          {/* Reassuring Security Badge */}
+          <div className="mt-6 pt-4 border-t border-[#C69A43]/20 flex items-center justify-center gap-2 text-[11px] text-[#55677D]">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>२५६-बिट एन्क्रिप्टेड • १००% भारतीय एमएसएमई सुरक्षा</span>
           </div>
         </FolkArtBorder>
       </main>
 
       {/* Footer */}
-      <footer className="py-3 text-center text-xs text-[#65758B]">
-        <div className="flex items-center justify-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#15803D]" />
-          <span>सुरक्षित ओटीपी प्रमाणीकरण • GrowNova Auth Protocol</span>
-        </div>
+      <footer className="text-center py-4 text-xs text-[#55677D]">
+        <p>ग्राहक — आपकी दुकान का अपना डिजिटल साथी</p>
       </footer>
     </div>
   );

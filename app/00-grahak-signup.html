@@ -1,115 +1,443 @@
 <!DOCTYPE html>
-<html lang="hi" class="h-full bg-[#FCF9F5]">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grahak Sign Up — Naya Khata</title>
+  <title>Grahak - Merchant Sign Up & New Account</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rozha+One&family=Yatra+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ivory: '#F8F5F1',
+            'ivory-card': '#FFFFFF',
+            navy: {
+              DEFAULT: '#102B4E',
+              dark: '#0B2340',
+              deep: '#061628',
+              light: '#1c4273'
+            },
+            gold: {
+              DEFAULT: '#C69A43',
+              warm: '#D5AD66',
+              light: '#F4E8D1',
+              subtle: '#FAF3E7'
+            },
+            sage: '#2E7D32',
+            terracotta: '#C85A32'
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+            serif: ['Rozha One', 'serif'],
+            folk: ['Yatra One', 'cursive', 'sans-serif']
+          },
+          boxShadow: {
+            'gold-glow': '0 8px 24px -4px rgba(198, 154, 67, 0.35)',
+            'card-warm': '0 6px 20px -2px rgba(16, 43, 78, 0.06), 0 2px 6px -1px rgba(198, 154, 67, 0.08)'
+          }
+        }
+      }
+    }
+  </script>
   <style>
     body {
-      background-color: #FCF9F5;
-      color: #102B4E;
+      background-color: #F8F5F1;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Toran Garland Pattern */
+    .toran-border {
+      background-image: radial-gradient(circle at 10px 0, transparent 8px, #C69A43 8.5px, #C69A43 10px, transparent 10.5px);
+      background-size: 20px 14px;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      display: none;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-[#C69A43] selection:text-white p-4">
+<body class="bg-ivory text-navy-dark min-h-screen flex flex-col justify-between selection:bg-gold-light selection:text-navy">
 
-  <!-- Header -->
-  <header class="flex items-center justify-between pb-3 border-b border-[#C69A43]/20">
-    <a href="./00-grahak-language.html" class="flex items-center gap-1 text-xs font-bold text-[#102B4E]">
-      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-      <span>पीछे</span>
-    </a>
-    <span class="font-serif font-bold text-base text-[#102B4E]">दुकान का रजिस्ट्रेशन</span>
-    <div class="w-8"></div>
-  </header>
+  <!-- Mobile Screen Container (390px max mobile wrapper) -->
+  <div class="w-full max-w-[420px] mx-auto min-h-screen bg-ivory flex flex-col relative shadow-2xl overflow-hidden border-x border-[#E9E4DC]">
 
-  <!-- Content -->
-  <main class="flex-grow py-3 flex flex-col justify-center max-w-sm mx-auto w-full">
-    
-    <div class="text-center mb-4">
-      <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#C69A43]/20 text-[#102B4E]">
-        चरण २: बुनियादी जानकारी
-      </span>
-      <h1 class="font-serif text-2xl font-bold text-[#102B4E] mt-1.5">दुकान का खाता बनाएं</h1>
-      <p class="text-xs text-[#55677D] mt-0.5">सिर्फ १ मिनट में अपना डिजिटल बही-खाता शुरू करें</p>
-    </div>
-
-    <form action="./00-grahak-onboarding.html" class="bg-white p-4.5 rounded-2xl border-1.5 border-[#C69A43]/30 shadow-sm space-y-3.5">
-      <div>
-        <label class="text-xs font-bold text-[#102B4E] block mb-1">आपका पूरा नाम (Full Name) *</label>
-        <div class="flex items-center rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 px-3 py-2">
-          <span class="material-symbols-outlined text-[#C69A43] text-[18px] mr-2">person</span>
-          <input
-            type="text"
-            required
-            value="रमेश कुमार गुप्ता"
-            class="w-full bg-transparent text-xs font-bold text-[#102B4E] focus:outline-none"
-          />
-        </div>
+    <!-- Decorative Top Toran Marigold & Mango Leaf Arch -->
+    <div class="relative w-full overflow-hidden bg-ivory pt-2 pb-1">
+      <!-- Auspicious Festoon Toran Art -->
+      <div class="w-full flex items-center justify-between px-3">
+        <!-- Leaf Garland Repeat SVG -->
+        <svg class="w-full h-7 text-gold opacity-90" viewBox="0 0 360 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Central Lotus Motif -->
+          <path d="M180 3C177 10 173 14 168 16C174 16 178 18 180 24C182 18 186 16 192 16C187 14 183 10 180 3Z" fill="#C69A43"/>
+          <circle cx="180" cy="25" r="2" fill="#C85A32"/>
+          
+          <!-- Scalloped Toran Garland Cords -->
+          <path d="M0 4 Q 45 22 90 4 Q 135 22 180 4 Q 225 22 270 4 Q 315 22 360 4" stroke="#C69A43" stroke-width="1.75" stroke-linecap="round" fill="none"/>
+          <path d="M0 7 Q 45 25 90 7 Q 135 25 180 7 Q 225 25 270 7 Q 315 25 360 7" stroke="#D5AD66" stroke-width="0.8" stroke-dasharray="3 3" fill="none"/>
+          
+          <!-- Marigold Flower Beads hanging -->
+          <circle cx="45" cy="18" r="3" fill="#D5AD66" stroke="#C69A43" stroke-width="1"/>
+          <circle cx="45" cy="23" r="1.5" fill="#C85A32"/>
+          <circle cx="90" cy="5" r="3" fill="#C69A43"/>
+          
+          <circle cx="135" cy="18" r="3" fill="#D5AD66" stroke="#C69A43" stroke-width="1"/>
+          <circle cx="135" cy="23" r="1.5" fill="#C85A32"/>
+          
+          <circle cx="225" cy="18" r="3" fill="#D5AD66" stroke="#C69A43" stroke-width="1"/>
+          <circle cx="225" cy="23" r="1.5" fill="#C85A32"/>
+          
+          <circle cx="270" cy="5" r="3" fill="#C69A43"/>
+          <circle cx="315" cy="18" r="3" fill="#D5AD66" stroke="#C69A43" stroke-width="1"/>
+          <circle cx="315" cy="23" r="1.5" fill="#C85A32"/>
+        </svg>
       </div>
 
-      <div>
-        <label class="text-xs font-bold text-[#102B4E] block mb-1">मोबाइल नंबर (Mobile Number) *</label>
-        <div class="flex items-center rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 px-3 py-2">
-          <div class="flex items-center gap-1 pr-2 border-r border-[#C69A43]/30 text-xs font-bold text-[#102B4E]">
-            <span>🇮🇳</span>
-            <span>+91</span>
+      <!-- App Header Bar -->
+      <div class="px-5 pt-1 pb-2 flex items-center justify-between">
+        <button class="w-10 h-10 rounded-full bg-white/80 border border-gold/30 flex items-center justify-center text-navy shadow-sm active:scale-95 transition-transform cursor-pointer" onclick="window.location.href='00-grahak-entry.html'" aria-label="Back">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </button>
+
+        <!-- Brand Emblem & Wordmark -->
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-gold font-serif font-bold text-lg shadow-sm border border-gold/40">
+            ग़
           </div>
-          <input
-            type="tel"
-            required
-            maxlength="10"
-            value="9876543210"
-            class="w-full pl-2 bg-transparent text-xs font-bold text-[#102B4E] focus:outline-none"
-          />
+          <div class="flex flex-col">
+            <span class="font-bold text-navy text-sm tracking-wide leading-tight">ग्राहक <span class="text-xs font-serif font-normal text-gold uppercase tracking-wider">GRAHAK</span></span>
+            <span class="text-[10px] text-slate-500 font-medium">Digital Vyapar Saathi</span>
+          </div>
         </div>
+
+        <!-- Language Pill -->
+        <button onclick="window.location.href='00-grahak-language.html'" class="px-2.5 py-1 rounded-full bg-white border border-gold/40 text-navy font-semibold text-xs flex items-center gap-1.5 shadow-sm hover:bg-gold-subtle transition-colors cursor-pointer">
+          <i class="fa-solid fa-language text-gold text-xs"></i>
+          <span>हिंदी / Eng</span>
+        </button>
       </div>
-
-      <div>
-        <label class="text-xs font-bold text-[#102B4E] block mb-1">दुकान / व्यापार का नाम (Shop Name) *</label>
-        <div class="flex items-center rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 px-3 py-2">
-          <span class="material-symbols-outlined text-[#C69A43] text-[18px] mr-2">storefront</span>
-          <input
-            type="text"
-            required
-            value="श्री गणेश किराना स्टोर"
-            class="w-full bg-transparent text-xs font-bold text-[#102B4E] focus:outline-none"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label class="text-xs font-bold text-[#102B4E] block mb-1">व्यापार का प्रकार (Business Type)</label>
-        <select class="w-full bg-[#FCF9F5] border-2 border-[#C69A43]/40 rounded-xl px-3 py-2 text-xs font-bold text-[#102B4E] focus:outline-none cursor-pointer">
-          <option selected>किराना & जनरल स्टोर (Kirana & FMCG)</option>
-          <option>कपड़ा एवं वस्त्र (Clothing & Textiles)</option>
-          <option>हार्डवेयर एवं इलेक्ट्रिकल (Hardware)</option>
-          <option>मेडिकल स्टोर (Pharmacy)</option>
-          <option>डेयरी एवं स्वीट्स (Dairy & Sweets)</option>
-          <option>मोबाइल & इलेक्ट्रॉनिक्स (Electronics)</option>
-          <option>अन्य खुदरा व्यापार (Other)</option>
-        </select>
-      </div>
-
-      <button
-        type="submit"
-        class="w-full mt-2 py-3 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:bg-[#0B2340] cursor-pointer"
-      >
-        <span>खाता बनाएं और ऑनबोर्डिंग शुरू करें</span>
-        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-      </button>
-    </form>
-
-    <div class="mt-4 text-center text-xs text-[#55677D]">
-      <span>पहले से खाता है? </span>
-      <a href="./00-grahak-login.html" class="text-[#C69A43] font-bold underline">लॉगिन करें (Sign In)</a>
     </div>
-  </main>
 
+    <!-- Main Content Scroll Area -->
+    <main class="flex-1 px-5 pt-1 pb-6 overflow-y-auto custom-scroll">
+
+      <!-- Header Title & Desi Blessing -->
+      <div class="mb-4">
+        <!-- Sub-tag auspicious pill -->
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-subtle border border-gold/30 mb-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-terracotta"></span>
+          <span class="text-[11px] font-bold text-navy tracking-wide">शुभ आरम्भ • SHUBH AARAMBH</span>
+        </div>
+
+        <h1 class="text-2xl font-serif text-navy font-bold leading-tight flex items-baseline gap-2">
+          नया खाता खोलें
+          <span class="text-base font-sans font-semibold text-slate-500">/ Sign Up</span>
+        </h1>
+        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+          Bas 1 minute mein apni dukaan ka digital bahi-khata shuru karein. No paperwork needed.
+        </p>
+      </div>
+
+      <!-- Sign Up Form Card -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-gold/20 shadow-card-warm relative">
+
+        <!-- Corner Traditional Motif Accent -->
+        <div class="absolute top-0 right-0 w-12 h-12 overflow-hidden pointer-events-none">
+          <div class="absolute -top-6 -right-6 w-12 h-12 bg-gold-subtle rotate-45 border-b border-l border-gold/30"></div>
+        </div>
+
+        <form class="space-y-4" onsubmit="event.preventDefault();">
+
+          <!-- 1. Full Name (Aapka Naam) -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-bold text-navy flex items-center gap-1.5">
+                <i class="fa-regular fa-user text-gold text-xs"></i>
+                <span>पूरा नाम / Full Name</span>
+              </label>
+              <span class="text-[10px] text-slate-400 font-medium">As on Aadhar/PAN</span>
+            </div>
+            <div class="relative">
+              <input 
+                id="signup-fullname"
+                type="text" 
+                value="Rajesh Gupta" 
+                placeholder="उदा. राजेश गुप्ता"
+                class="w-full px-3.5 py-2.5 bg-ivory/60 rounded-xl border border-slate-200 text-sm font-medium text-navy placeholder:text-slate-400 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+              />
+              <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-sage text-xs">
+                <i class="fa-solid fa-circle-check"></i>
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Dukaan ke maalik ka naam (Proprietor Name)</p>
+          </div>
+
+          <!-- 2. Shop / Business Name (Dukaan ka Naam) -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-bold text-navy flex items-center gap-1.5">
+                <i class="fa-solid fa-shop text-gold text-xs"></i>
+                <span>दुकान या व्यापार का नाम / Shop Name</span>
+              </label>
+              <span class="text-[10px] text-gold font-semibold">Bill par aayega</span>
+            </div>
+            <div class="relative">
+              <input 
+                id="signup-shopname"
+                type="text" 
+                value="Shree Ganesh Kirana & General Store" 
+                placeholder="उदा. श्री गणेश ट्रेडर्स"
+                class="w-full px-3.5 py-2.5 bg-ivory/60 rounded-xl border border-slate-200 text-sm font-medium text-navy placeholder:text-slate-400 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+              />
+              <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Yeh naam aapke grahakon ko bill aur WhatsApp par dikhega.</p>
+          </div>
+
+          <!-- 3. Mobile Number (+91) -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-bold text-navy flex items-center gap-1.5">
+                <i class="fa-solid fa-mobile-screen-button text-gold text-xs"></i>
+                <span>मोबाइल नंबर / Mobile Number</span>
+              </label>
+              <span class="text-[10px] text-slate-500 font-medium">OTP verification</span>
+            </div>
+            <div class="flex items-center rounded-xl border border-slate-200 bg-ivory/60 overflow-hidden focus-within:border-gold focus-within:ring-2 focus-within:ring-gold/20 transition-all">
+              <div class="flex items-center gap-1.5 px-3 py-2.5 bg-white border-r border-slate-200 text-xs font-bold text-navy">
+                <span class="text-sm">🇮🇳</span>
+                <span>+91</span>
+              </div>
+              <input 
+                id="signup-phone"
+                type="tel" 
+                maxlength="10" 
+                value="9823045678" 
+                placeholder="10 digit number"
+                class="w-full px-3 py-2.5 bg-transparent text-sm font-semibold tracking-wider text-navy placeholder:text-slate-400 focus:outline-none"
+              />
+              <div class="pr-3 text-slate-400 text-xs">
+                <i class="fa-solid fa-lock text-[11px]"></i>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Isi number par OTP aur rozana hisab summary aayegi.</p>
+          </div>
+
+          <!-- 4. Business Category Selection Chips -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="text-xs font-bold text-navy flex items-center gap-1.5">
+                <i class="fa-solid fa-tags text-gold text-xs"></i>
+                <span>व्यापार का प्रकार / Business Category</span>
+              </label>
+              <span class="text-[10px] text-slate-400">Select one</span>
+            </div>
+
+            <!-- Chips Grid -->
+            <div class="grid grid-cols-3 gap-2" id="category-chips-group">
+              
+              <!-- Option 1: Kirana (Selected) -->
+              <button type="button" data-cat="Kirana Store" class="category-chip flex flex-col items-center justify-center p-2 rounded-xl bg-gold-subtle border-2 border-gold text-navy shadow-sm transition-all text-center cursor-pointer">
+                <span class="text-base mb-0.5">🛒</span>
+                <span class="text-xs font-bold leading-tight">किराना / FMCG</span>
+                <span class="text-[9px] text-slate-500 font-medium mt-0.5">Kirana Store</span>
+              </button>
+
+              <!-- Option 2: Wholesaler -->
+              <button type="button" data-cat="Wholesaler" class="category-chip flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-slate-200 text-navy/80 hover:border-gold/50 transition-all text-center cursor-pointer">
+                <span class="text-base mb-0.5">📦</span>
+                <span class="text-xs font-semibold leading-tight">होलसेल / मंडी</span>
+                <span class="text-[9px] text-slate-400 font-medium mt-0.5">Wholesaler</span>
+              </button>
+
+              <!-- Option 3: Electronics -->
+              <button type="button" data-cat="Electronics" class="category-chip flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-slate-200 text-navy/80 hover:border-gold/50 transition-all text-center cursor-pointer">
+                <span class="text-base mb-0.5">⚡</span>
+                <span class="text-xs font-semibold leading-tight">इलेक्ट्रॉनिक्स</span>
+                <span class="text-[9px] text-slate-400 font-medium mt-0.5">Electronics</span>
+              </button>
+
+              <!-- Option 4: Clothing -->
+              <button type="button" data-cat="Clothing" class="category-chip flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-slate-200 text-navy/80 hover:border-gold/50 transition-all text-center cursor-pointer">
+                <span class="text-base mb-0.5">👕</span>
+                <span class="text-xs font-semibold leading-tight">कपड़ा व रेडीमेड</span>
+                <span class="text-[9px] text-slate-400 font-medium mt-0.5">Clothing / Wear</span>
+              </button>
+
+              <!-- Option 5: Hardware -->
+              <button type="button" data-cat="Hardware" class="category-chip flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-slate-200 text-navy/80 hover:border-gold/50 transition-all text-center cursor-pointer">
+                <span class="text-base mb-0.5">🔧</span>
+                <span class="text-xs font-semibold leading-tight">हार्डवेयर व पेंट</span>
+                <span class="text-[9px] text-slate-400 font-medium mt-0.5">Hardware</span>
+              </button>
+
+              <!-- Option 6: Other / Other Service -->
+              <button type="button" data-cat="Other Retail" class="category-chip flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-slate-200 text-navy/80 hover:border-gold/50 transition-all text-center cursor-pointer">
+                <span class="text-base mb-0.5">🏪</span>
+                <span class="text-xs font-semibold leading-tight">अन्य दुकान</span>
+                <span class="text-[9px] text-slate-400 font-medium mt-0.5">Other Retail</span>
+              </button>
+
+            </div>
+          </div>
+
+          <!-- 5. GSTIN / PAN (Optional) -->
+          <div class="pt-1">
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-bold text-navy flex items-center gap-1.5">
+                <i class="fa-solid fa-file-invoice text-gold text-xs"></i>
+                <span>GSTIN या PAN नंबर</span>
+              </label>
+              <span class="text-[10px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">ऐच्छिक / Optional</span>
+            </div>
+            <div class="relative">
+              <input 
+                id="signup-gstin"
+                type="text" 
+                placeholder="27AAAAA0000A1Z5 (GST Bill ke liye)"
+                class="w-full px-3.5 py-2.5 bg-ivory/60 rounded-xl border border-slate-200 text-xs font-mono uppercase text-navy placeholder:text-slate-400 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+              />
+              <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">
+                <i class="fa-regular fa-circle-question"></i>
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Agar GST nahi hai toh ise khali chhod sakte hain.</p>
+          </div>
+
+          <!-- Trust & Consent Check -->
+          <div class="pt-2 border-t border-slate-100">
+            <label class="flex items-start gap-2.5 cursor-pointer">
+              <input type="checkbox" checked class="mt-0.5 rounded text-gold focus:ring-gold border-slate-300 w-4 h-4 accent-navy">
+              <span class="text-[11px] text-slate-600 leading-snug">
+                Mujhe WhatsApp par rozana <strong class="text-navy font-semibold">Dukaan ki Hisab Parchi</strong> aur mahatvapurna updates bhejein.
+              </span>
+            </label>
+          </div>
+
+          <!-- Primary Action CTA Button with subtle Gold Glow -->
+          <div class="pt-2">
+            <button 
+              id="signup-submit-btn"
+              type="button" 
+              class="w-full py-3.5 px-4 rounded-xl bg-navy hover:bg-navy-dark text-white font-bold text-sm tracking-wide shadow-gold-glow border border-gold/40 flex items-center justify-center gap-2 group active:scale-[0.99] transition-all relative overflow-hidden cursor-pointer"
+            >
+              <!-- Subtle Gold Shimmer Gradient Accent -->
+              <span class="absolute inset-0 bg-gradient-to-r from-transparent via-gold/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+              
+              <span class="font-serif text-gold-warm text-base">✦</span>
+              <span>खाता खोलें • Create Account</span>
+              <i class="fa-solid fa-arrow-right text-xs text-gold group-hover:translate-x-1 transition-transform"></i>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+      <!-- Government MSME & Data Trust Badge -->
+      <div class="mt-4 p-3 rounded-xl bg-white/70 border border-gold/30 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-gold/15 flex items-center justify-center text-navy shrink-0 border border-gold/40">
+          <i class="fa-solid fa-shield-halved text-gold text-base"></i>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-bold text-navy">100% सुरक्षित • MSME & DPDP Compliant</span>
+            <span class="text-xs">🇮🇳</span>
+          </div>
+          <p class="text-[10px] text-slate-500 leading-tight mt-0.5">
+            Aapka dukaan data poori tarah Bharat mein encrypted aur private hai. Grahak kabhi bank PIN nahi mangta.
+          </p>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer: Switch to Login & Help link -->
+    <footer class="px-5 py-3.5 bg-white border-t border-[#EAE5DC] flex flex-col items-center gap-1.5">
+      <div class="flex items-center gap-1.5 text-xs text-slate-600">
+        <span>पहले से खाता है? (Already have an account?)</span>
+        <a href="00-grahak-login.html" class="font-bold text-navy hover:text-gold transition-colors underline decoration-gold/60 underline-offset-2">
+          लॉग इन करें (Login)
+        </a>
+      </div>
+
+      <div class="flex items-center gap-2 text-[10px] text-slate-400">
+        <span>24×7 Vyapari Helpline:</span>
+        <span class="font-semibold text-slate-600 flex items-center gap-1">
+          <i class="fa-solid fa-phone text-[9px] text-gold"></i> 1800-GRAHAK (Free)
+        </span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    (function() {
+      let selectedCategory = 'Kirana Store';
+      const chips = document.querySelectorAll('.category-chip');
+      chips.forEach(chip => {
+        chip.addEventListener('click', function() {
+          chips.forEach(c => {
+            c.className = 'category-chip flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-slate-200 text-navy/80 hover:border-gold/50 transition-all text-center cursor-pointer';
+            const catLabel = c.querySelector('span:nth-child(2)');
+            if (catLabel) catLabel.className = 'text-xs font-semibold leading-tight';
+          });
+          chip.className = 'category-chip flex flex-col items-center justify-center p-2 rounded-xl bg-gold-subtle border-2 border-gold text-navy shadow-sm transition-all text-center cursor-pointer';
+          const activeLabel = chip.querySelector('span:nth-child(2)');
+          if (activeLabel) activeLabel.className = 'text-xs font-bold leading-tight';
+          selectedCategory = chip.getAttribute('data-cat') || 'Kirana Store';
+        });
+      });
+
+      const submitBtn = document.getElementById('signup-submit-btn');
+      if (submitBtn) {
+        submitBtn.addEventListener('click', async function() {
+          const fullName = document.getElementById('signup-fullname')?.value || 'Rajesh Gupta';
+          const shopName = document.getElementById('signup-shopname')?.value || 'Shree Ganesh Kirana Store';
+          const phone = (document.getElementById('signup-phone')?.value || '9823045678').replace(/\\s+/g, '');
+          const gstin = document.getElementById('signup-gstin')?.value || '';
+
+          const profile = {
+            fullName,
+            shopName,
+            phone,
+            category: selectedCategory,
+            gstin,
+            signupDate: new Date().toISOString()
+          };
+
+          try {
+            localStorage.setItem('grahak_shop_profile', JSON.stringify(profile));
+            localStorage.setItem('grahak_auth_token', 'token_demo_' + Date.now());
+          } catch(e) {}
+
+          // Also attempt registration on backend
+          try {
+            fetch('http://localhost:3000/grahak/account/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                phone,
+                shopName,
+                ownerName: fullName,
+                businessType: selectedCategory,
+                role: 'RETAILER'
+              })
+            }).catch(() => {});
+          } catch(e) {}
+
+          submitBtn.innerHTML = '<span class="font-serif text-gold-warm text-base">✦</span><span>खाता तैयार हो रहा है...</span>';
+          setTimeout(() => {
+            window.location.href = '00-grahak-onboarding.html';
+          }, 400);
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

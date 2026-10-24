@@ -14,21 +14,16 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { GrahakLogo, DesiToranArch, FolkArtBorder } from '../../components/grahak/DesiArtElements';
-import { 
-  SUPPORTED_LANGUAGES, 
-  GRAHAK_TRANSLATIONS, 
-  getStoredGrahakLanguage, 
-  setStoredGrahakLanguage,
-  type SupportedLanguage 
-} from '../../utils/grahakTranslations';
+import { useGrahakLanguage } from '../../context/GrahakLanguageContext';
+import { type SupportedLanguage } from '../../utils/grahakTranslations';
 import { useAuth } from '../../context/AuthContext';
 import fixtures from '../../data/grahakFixtures.json';
 
 export const GrahakSettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { currentLang, setLanguage, t, supportedLanguages } = useGrahakLanguage();
 
-  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('hi');
   const [activeTab, setActiveTab] = useState<'profile' | 'language' | 'attendance' | 'bank' | 'sync' | 'support'>('profile');
   
   // Shop details
@@ -55,8 +50,6 @@ export const GrahakSettingsPage: React.FC = () => {
 
   useEffect(() => {
     document.title = 'Grahak Settings — Dukaan & Bhasha Niyantran';
-    const saved = getStoredGrahakLanguage();
-    setCurrentLang(saved);
 
     const savedSetup = localStorage.getItem('grahak_shop_full_setup');
     if (savedSetup) {
@@ -78,9 +71,9 @@ export const GrahakSettingsPage: React.FC = () => {
   };
 
   const handleLanguageChange = (lang: SupportedLanguage) => {
-    setCurrentLang(lang);
-    setStoredGrahakLanguage(lang);
-    triggerToast(`भाषा बदलकर ${SUPPORTED_LANGUAGES.find(l => l.code === lang)?.nativeName} कर दी गई है।`);
+    setLanguage(lang);
+    const langObj = supportedLanguages.find((l) => l.code === lang);
+    triggerToast(`भाषा बदलकर ${langObj?.nativeName || lang} कर दी गई है।`);
   };
 
   const handleSaveProfile = (e: React.FormEvent) => {
@@ -114,8 +107,6 @@ export const GrahakSettingsPage: React.FC = () => {
       navigate('/grahak');
     }
   };
-
-  const t = GRAHAK_TRANSLATIONS[currentLang];
 
   return (
     <div className="min-h-screen bg-[#F8F5F1] text-[#102B4E] flex flex-col justify-between selection:bg-[#C69A43] selection:text-white">
@@ -188,7 +179,7 @@ export const GrahakSettingsPage: React.FC = () => {
             }`}
           >
             <Globe className="w-3.5 h-3.5" />
-            <span>भाषा (Language - {SUPPORTED_LANGUAGES.find(l => l.code === currentLang)?.nativeName})</span>
+            <span>भाषा (Language - {supportedLanguages.find((l: any) => l.code === currentLang)?.nativeName})</span>
           </button>
 
           <button
@@ -347,7 +338,7 @@ export const GrahakSettingsPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {SUPPORTED_LANGUAGES.map((lang) => {
+              {supportedLanguages.map((lang: any) => {
                 const isSelected = currentLang === lang.code;
                 return (
                   <button

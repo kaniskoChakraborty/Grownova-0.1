@@ -1,119 +1,297 @@
 <!DOCTYPE html>
-<html lang="hi" class="h-full bg-[#FCF9F5]">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grahak Login — Mobile & OTP</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_blank" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fcf9f5;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-container-high": "#eae8e4", "on-surface-variant": "#44474e", "surface-container-lowest": "#ffffff", "on-tertiary-fixed-variant": "#005312", "surface-container": "#f0ede9", "tertiary-fixed": "#a3f69c", "on-secondary": "#ffffff", "surface-container-low": "#f6f3ef", "secondary-fixed": "#ffdea6", "tertiary-container": "#003307", "outline": "#74777f", "error-container": "#ffdad6", "on-secondary-container": "#785500", "on-secondary-fixed": "#271900", "inverse-surface": "#31302e", "surface-container-highest": "#e5e2de", "primary": "#001633", "inverse-primary": "#afc7f3", "on-error-container": "#93000a", "surface": "#fcf9f5", "surface-tint": "#475f85", "on-primary-container": "#7b93bc", "secondary": "#7c5800", "secondary-fixed-dim": "#efbf64", "error": "#ba1a1a", "primary-container": "#102b4e", "on-background": "#1c1c1a", "on-tertiary": "#ffffff", "on-primary-fixed-variant": "#2f476c", "tertiary": "#001c03", "surface-variant": "#e5e2de", "surface-dim": "#dcdad6", "secondary-container": "#fecd70", "on-primary-fixed": "#001b3c", "surface-bright": "#fcf9f5", "on-tertiary-fixed": "#002204", "on-tertiary-container": "#54a353", "background": "#fcf9f5", "inverse-on-surface": "#f3f0ec", "tertiary-fixed-dim": "#88d982", "primary-fixed-dim": "#afc7f3", "on-primary": "#ffffff", "on-error": "#ffffff", "on-secondary-fixed-variant": "#5e4200", "primary-fixed": "#d5e3ff", "outline-variant": "#c4c6cf", "on-surface": "#1c1c1a" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-lg": "1.5rem", "gutter": "1rem", "margin": "1rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "space-xl": "2rem", "space-xs": "0.25rem", "space-md": "1rem", "gutter-sm": "0.75rem" }, "fontFamily": { "headline-sm": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "currency-display": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "currency-headline": ["Plus Jakarta Sans"], "display-lg-mobile": ["Playfair Display"], "body-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "display-lg": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"] }, "fontSize": { "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "700" }], "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "600" }], "currency-display": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.03em", "fontWeight": "700" }], "body-lg": ["15px", { "lineHeight": "22px", "fontWeight": "400" }], "currency-headline": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-lg-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "600" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "22px", "fontWeight": "600" }], "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }] } } } }</script><style>
     body {
-      background-color: #FCF9F5;
-      color: #102B4E;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: max(884px, 100dvh);
     }
   </style>
-</head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-[#C69A43] selection:text-white p-4">
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col relative"><header class="w-full pt-safe bg-transparent"><div class="h-16 px-space-sm flex items-center justify-between"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-surface-container text-primary transition-colors" onclick="window.location.href='00-grahak-entry.html'"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex items-center gap-space-xs"><div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center"><span class="font-headline-sm text-headline-sm text-secondary-fixed leading-none">ग</span></div><span class="font-title-md text-title-md text-primary font-bold">ग्राहक</span><span class="font-label-md text-label-md text-secondary uppercase tracking-widest font-bold">GRAHAK</span></div><div class="flex items-center"><button class="h-9 px-space-sm rounded-full bg-surface-container-low hover:bg-surface-container flex items-center gap-1 transition-colors min-w-[44px] justify-center"><span class="material-symbols-outlined text-[16px] text-secondary">translate</span><span class="font-label-md text-label-md text-primary font-semibold">हिंदी / Eng</span></button></div></div><div class="flex justify-center -mt-2 opacity-30 pointer-events-none"><svg fill="none" height="12" viewbox="0 0 120 12" width="120" xmlns="http://www.w3.org/2000/svg"><path d="M0 12C20 12 40 0 60 0C80 0 100 12 120 12" fill="none" stroke="#7c5800" stroke-width="1.5"></path></svg></div></header><main class="flex-1 flex flex-col w-full bg-surface pb-safe"><div class="flex flex-col w-full px-margin pb-space-xl">
+<!-- Folk Art Arch Decorative Motif -->
+<div class="w-full flex flex-col items-center justify-center pt-space-xs pb-space-sm">
+<div class="w-full max-w-[340px] flex items-center justify-center opacity-85">
+<svg class="w-full h-8 text-secondary" fill="none" stroke="currentColor" viewbox="0 0 320 32">
+<path d="M10 24 C 60 2, 100 2, 140 16 C 150 20, 155 22, 160 22 C 165 22, 170 20, 180 16 C 220 2, 260 2, 310 24" stroke-linecap="round" stroke-width="1.8"></path>
+<circle cx="160" cy="8" fill="currentColor" r="3.5"></circle>
+<circle cx="140" cy="12" fill="currentColor" r="2"></circle>
+<circle cx="180" cy="12" fill="currentColor" r="2"></circle>
+<circle cx="120" cy="18" fill="currentColor" r="1.5"></circle>
+<circle cx="200" cy="18" fill="currentColor" r="1.5"></circle>
+<path d="M152 14 Q160 18 168 14" fill="none" stroke-width="1.5"></path>
+</svg>
+</div>
+<!-- Merchant Badge / Grahak Seal -->
+<div class="relative mt-space-xs mb-space-sm">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center shadow-sm">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-secondary-fixed text-[26px]">storefront</span>
+</div>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-secondary text-on-secondary w-6 h-6 rounded-full flex items-center justify-center shadow">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+</div>
+</div>
+<!-- Warm Welcome Copy -->
+<div class="text-center px-space-sm">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md mb-2">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>व्यापारी सुरक्षा पोर्टल • Trusted Ledger</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+        Aapka Swagat Hai!
+      </h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+        Apna 10-digit mobile number darj karein
+      </p>
+</div>
+</div>
+<!-- Interactive Stage Wrapper: Phone Step vs OTP Step -->
+<div class="w-full mt-space-md">
+<!-- STEP 1: MOBILE NUMBER INPUT FORM -->
+<div class="flex flex-col gap-space-md transition-all duration-300" id="step-phone">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<label class="font-label-lg text-label-lg text-primary flex items-center justify-between" for="mobile-input">
+<span>Mobile Number / मोबाइल नंबर</span>
+<span class="font-label-md text-label-md text-secondary uppercase font-semibold">Vyapar ID</span>
+</label>
+<div class="flex items-center gap-space-sm bg-surface-container-low px-space-md h-14 rounded-lg focus-within:bg-surface-container-lowest focus-within:shadow-md transition-all">
+<div class="flex items-center gap-1.5 pr-2 select-none">
+<span class="text-[18px]">🇮🇳</span>
+<span class="font-title-md text-title-md text-primary font-bold">+91</span>
+</div>
+<div class="w-px h-6 bg-surface-container-highest"></div>
+<input class="w-full bg-transparent font-currency-headline text-currency-headline text-primary placeholder:text-outline-variant focus:outline-none tracking-wider" id="mobile-input" inputmode="numeric" maxlength="10" pattern="[0-9]*" placeholder="98230 45678" type="tel"/>
+<button class="hidden text-on-surface-variant hover:text-primary p-1" id="clear-phone-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</button>
+</div>
+<!-- Quick Helper Chip -->
+<div class="flex items-center gap-2 px-space-sm py-2 bg-surface-container-low rounded-lg mt-1">
+<span class="material-symbols-outlined text-[18px] text-secondary">sms</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant">
+            Ek OTP aayega aapke number par login ke liye
+          </span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full h-14 bg-primary text-on-primary rounded-lg font-title-md text-title-md flex items-center justify-center gap-2 shadow-md active:scale-[0.99] transition-transform" id="send-otp-btn" type="button">
+<span>OTP Bhejein / Get OTP</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<div class="text-center pt-2 pb-1">
+  <span class="text-xs text-on-surface-variant">Naya vyapari khata kholna chahte hain? </span>
+  <a href="00-grahak-signup.html" class="text-xs font-bold text-primary underline underline-offset-2 hover:text-secondary">Naya Khata Banayein (Sign Up)</a>
+</div>
+<!-- Business Showcase Mini-Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex items-center gap-space-md mt-space-xs">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-[24px]">receipt_long</span>
+</div>
+<div class="min-w-0">
+<h4 class="font-title-md text-title-md text-primary font-semibold">100% Muft Digital Khata</h4>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Udhaar vasooli, GST bills, aur daily reports</p>
+</div>
+</div>
+</div>
+<!-- STEP 2: OTP VERIFICATION CARD (Seamlessly Integrated) -->
+<div class="hidden flex-col gap-space-md transition-all duration-300" id="step-otp">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-md flex flex-col gap-space-md relative overflow-hidden">
+<!-- Top folk edge hairline accent -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary-fixed via-secondary to-primary-container"></div>
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-secondary font-bold tracking-wider uppercase">Verification Code</span>
+<h2 class="font-headline-sm text-headline-sm text-primary mt-0.5">OTP Darj Karein</h2>
+</div>
+<button class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-container-low text-primary hover:bg-surface-container-high transition-colors" id="edit-phone-btn" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">edit</span>
+<span class="font-label-md text-label-md font-semibold">Badlein</span>
+</button>
+</div>
+<!-- Target Phone Notification Bar -->
+<div class="flex items-center gap-2 px-space-sm py-2 rounded-lg bg-surface-container-low text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-secondary">mark_chat_unread</span>
+<span class="font-body-md text-body-md text-on-surface">
+            Sent to: <span class="font-title-md text-title-md text-primary font-bold" id="display-phone-number">+91 98230 45678</span>
+</span>
+</div>
+<!-- 6 Digit Input Boxes -->
+<div class="flex flex-col gap-space-sm">
+<label class="font-label-md text-label-md text-on-surface-variant">6-ankon ka code bharein:</label>
+<div class="flex items-center justify-between gap-1.5 sm:gap-2">
+<input class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-currency-display text-currency-display text-primary bg-surface-container-low rounded-lg focus:bg-surface-container-lowest focus:shadow-md focus:outline-none transition-all" inputmode="numeric" maxlength="1" type="text" value=""/>
+<input class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-currency-display text-currency-display text-primary bg-surface-container-low rounded-lg focus:bg-surface-container-lowest focus:shadow-md focus:outline-none transition-all" inputmode="numeric" maxlength="1" type="text" value=""/>
+<input class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-currency-display text-currency-display text-primary bg-surface-container-low rounded-lg focus:bg-surface-container-lowest focus:shadow-md focus:outline-none transition-all" inputmode="numeric" maxlength="1" type="text" value=""/>
+<span class="text-outline-variant font-bold">-</span>
+<input class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-currency-display text-currency-display text-primary bg-surface-container-low rounded-lg focus:bg-surface-container-lowest focus:shadow-md focus:outline-none transition-all" inputmode="numeric" maxlength="1" type="text" value=""/>
+<input class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-currency-display text-currency-display text-primary bg-surface-container-low rounded-lg focus:bg-surface-container-lowest focus:shadow-md focus:outline-none transition-all" inputmode="numeric" maxlength="1" type="text" value=""/>
+<input class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-currency-display text-currency-display text-primary bg-surface-container-low rounded-lg focus:bg-surface-container-lowest focus:shadow-md focus:outline-none transition-all" inputmode="numeric" maxlength="1" type="text" value=""/>
+</div>
+</div>
+<!-- Timer & Resend Controls -->
+<div class="flex flex-col gap-2 pt-space-xs">
+<div class="flex items-center justify-between text-on-surface-variant font-body-md text-body-md">
+<span>OTP nahi mila?</span>
+<span class="font-title-md text-title-md text-secondary font-bold" id="countdown-text">00:45 mein dobara</span>
+</div>
+<!-- Secondary Channel Delivery -->
+<button class="w-full py-2.5 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-lg text-label-lg flex items-center justify-center gap-2 transition-colors" id="whatsapp-btn" type="button">
+<span class="text-[18px]">💬</span>
+<span>WhatsApp par OTP paayein</span>
+</button>
+</div>
+<!-- Verify Button -->
+<button class="w-full h-14 bg-primary text-on-primary rounded-lg font-title-md text-title-md flex items-center justify-center gap-2 shadow-md active:scale-[0.99] transition-transform mt-space-xs" id="verify-otp-btn" type="button">
+<span>Pushti Karein / Verify &amp; Enter</span>
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Trust Reassurance Badge -->
+<div class="mt-space-lg p-space-md rounded-xl bg-surface-container-low flex items-start gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-label-lg text-label-lg text-primary font-bold">100% Surakshit &amp; Niji</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Grahak kabhi aapka bank PIN ya password nahi mangta. Aapka khata poori tarah surakshit hai.
+      </p>
+</div>
+</div>
+<!-- Terms & Folk Flourish Footer -->
+<div class="mt-space-lg text-center flex flex-col items-center gap-2">
+<p class="font-label-md text-label-md text-on-surface-variant max-w-xs leading-normal">
+      Aage badhne par aap Grahak ke <a class="text-primary underline font-semibold" href="#">Niyam aur Shartein</a> tatha <a class="text-primary underline font-semibold" href="#">Privacy Policy</a> se sehmat hain.
+    </p>
+<!-- Decorative Brass Knot Icon -->
+<div class="flex items-center gap-2 text-secondary-fixed-dim opacity-70 mt-1">
+<span class="w-8 h-px bg-secondary-fixed-dim"></span>
+<span class="material-symbols-outlined text-[16px]">spa</span>
+<span class="w-8 h-px bg-secondary-fixed-dim"></span>
+</div>
+<span class="font-label-md text-label-md text-outline">Made with pride for Indian Retailers 🇮🇳</span>
+</div>
+</div>
+<script>
+  (function initLoginUX() {
+    const phoneInput = document.getElementById('mobile-input');
+    const sendOtpBtn = document.getElementById('send-otp-btn');
+    const stepPhone = document.getElementById('step-phone');
+    const stepOtp = document.getElementById('step-otp');
+    const displayPhone = document.getElementById('display-phone-number');
+    const editPhoneBtn = document.getElementById('edit-phone-btn');
+    const clearPhoneBtn = document.getElementById('clear-phone-btn');
+    const otpDigits = document.querySelectorAll('.otp-digit');
+    const countdownEl = document.getElementById('countdown-text');
+    const whatsappBtn = document.getElementById('whatsapp-btn');
+    const verifyOtpBtn = document.getElementById('verify-otp-btn');
 
-  <!-- Header -->
-  <header class="flex items-center justify-between pb-3 border-b border-[#C69A43]/20">
-    <a href="./00-grahak-entry.html" class="flex items-center gap-1 text-xs font-bold text-[#102B4E]">
-      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-      <span>पीछे</span>
-    </a>
-    <span class="font-serif font-bold text-base text-[#102B4E]">Grahak Login</span>
-    <div class="w-8"></div>
-  </header>
+    let timerInterval = null;
 
-  <!-- Content -->
-  <main class="flex-grow py-4 flex flex-col justify-center max-w-sm mx-auto w-full">
-    
-    <div class="text-center mb-6">
-      <div class="w-14 h-14 rounded-full bg-[#102B4E] border-2 border-[#C69A43] flex items-center justify-center text-[#D5AD66] mx-auto mb-2 shadow-xs">
-        <span class="material-symbols-outlined text-[28px]">storefront</span>
-      </div>
-      <h1 class="font-serif text-2xl font-bold text-[#102B4E]" id="screen-title">ग्राहक ऐप में लॉगिन करें</h1>
-      <p class="text-xs text-[#55677D] mt-1" id="screen-sub">अपने पंजीकृत मोबाइल नंबर से लॉगिन करें</p>
-    </div>
+    // Phone input auto formatting / validation
+    phoneInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length > 10) val = val.substring(0, 10);
+      e.target.value = val;
 
-    <!-- STEP 1: PHONE INPUT -->
-    <div id="step-phone" class="bg-white p-5 rounded-2xl border-1.5 border-[#C69A43]/30 shadow-sm space-y-4">
-      <div>
-        <label class="text-xs font-bold text-[#102B4E] block mb-1.5">मोबाइल नंबर (Mobile Number)</label>
-        <div class="flex items-center rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 px-3 py-2.5">
-          <div class="flex items-center gap-1 pr-2.5 border-r border-[#C69A43]/30 text-xs font-bold text-[#102B4E]">
-            <span>🇮🇳</span>
-            <span>+91</span>
-          </div>
-          <input
-            id="mobile-input"
-            type="tel"
-            maxlength="10"
-            value="9876543210"
-            placeholder="10 अंकों का नंबर"
-            class="w-full pl-2.5 bg-transparent text-sm font-bold text-[#102B4E] focus:outline-none"
-          />
-        </div>
-      </div>
+      if (val.length > 0) {
+        clearPhoneBtn.classList.remove('hidden');
+      } else {
+        clearPhoneBtn.classList.add('hidden');
+      }
+    });
 
-      <button
-        onclick="goToOtp()"
-        class="w-full py-3.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:bg-[#0B2340] cursor-pointer"
-      >
-        <span>OTP कोड प्राप्त करें (Send OTP)</span>
-        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-      </button>
-    </div>
+    clearPhoneBtn.addEventListener('click', () => {
+      phoneInput.value = '';
+      clearPhoneBtn.classList.add('hidden');
+      phoneInput.focus();
+    });
 
-    <!-- STEP 2: OTP VERIFICATION (Hidden by default) -->
-    <div id="step-otp" class="hidden bg-white p-5 rounded-2xl border-1.5 border-[#C69A43]/30 shadow-sm space-y-4">
-      <div class="flex justify-between gap-1.5">
-        <input type="text" maxlength="1" value="7" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
-        <input type="text" maxlength="1" value="4" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
-        <input type="text" maxlength="1" value="2" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
-        <input type="text" maxlength="1" value="9" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
-        <input type="text" maxlength="1" value="5" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
-        <input type="text" maxlength="1" value="1" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
-      </div>
+    function startTimer(durationSeconds) {
+      clearInterval(timerInterval);
+      let remaining = durationSeconds;
+      countdownEl.innerText = `00:${remaining < 10 ? '0' : ''}${remaining} mein dobara`;
+      countdownEl.classList.add('text-secondary');
+      countdownEl.classList.remove('cursor-pointer', 'underline');
 
-      <div class="flex items-center justify-between text-xs pt-1">
-        <button onclick="backToPhone()" class="text-[#65758B] underline cursor-pointer">नंबर बदलें</button>
-        <span class="text-[#C69A43] font-bold">दोबारा भेजें: 24s</span>
-      </div>
-
-      <a
-        href="./01-home-owner-desk.html"
-        class="w-full py-3.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:bg-[#0B2340]"
-      >
-        <span class="material-symbols-outlined text-[#D5AD66] text-[18px]">verified_user</span>
-        <span>सत्यापित करें और लॉगिन करें</span>
-      </a>
-    </div>
-
-    <!-- Signup Switch -->
-    <div class="mt-6 text-center text-xs text-[#55677D]">
-      <span>नया खाता बनाना चाहते हैं? </span>
-      <a href="./00-grahak-signup.html" class="text-[#C69A43] font-bold underline">नया रजिस्ट्रेशन (Sign Up)</a>
-    </div>
-  </main>
-
-  <script>
-    function goToOtp() {
-      document.getElementById('step-phone').classList.add('hidden');
-      document.getElementById('step-otp').classList.remove('hidden');
-      document.getElementById('screen-title').textContent = 'OTP सत्यापन';
-      const num = document.getElementById('mobile-input').value || '9876543210';
-      document.getElementById('screen-sub').textContent = `+91 ${num} पर भेजा गया ६ अंकों का कोड दर्ज करें`;
+      timerInterval = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(timerInterval);
+          countdownEl.innerText = 'Dobara Bhejein (Resend OTP)';
+          countdownEl.classList.remove('text-secondary');
+          countdownEl.classList.add('cursor-pointer', 'underline', 'text-primary');
+        } else {
+          countdownEl.innerText = `00:${remaining < 10 ? '0' : ''}${remaining} mein dobara`;
+        }
+      }, 1000);
     }
-    function backToPhone() {
-      document.getElementById('step-otp').classList.add('hidden');
-      document.getElementById('step-phone').classList.remove('hidden');
-      document.getElementById('screen-title').textContent = 'ग्राहक ऐप में लॉगिन करें';
-      document.getElementById('screen-sub').textContent = 'अपने पंजीकृत मोबाइल नंबर से लॉगिन करें';
-    }
-  </script>
-</body>
-</html>
+
+    sendOtpBtn.addEventListener('click', () => {
+      const val = phoneInput.value.trim();
+      const formatted = val.length === 10 ? `+91 ${val.slice(0, 5)} ${val.slice(5)}` : '+91 98230 45678';
+      displayPhone.innerText = formatted;
+
+      stepPhone.classList.add('hidden');
+      stepOtp.classList.remove('hidden');
+      stepOtp.classList.add('flex');
+
+      // Focus first digit
+      setTimeout(() => {
+        if (otpDigits[0]) otpDigits[0].focus();
+      }, 100);
+
+      startTimer(45);
+    });
+
+    editPhoneBtn.addEventListener('click', () => {
+      stepOtp.classList.add('hidden');
+      stepOtp.classList.remove('flex');
+      stepPhone.classList.remove('hidden');
+      phoneInput.focus();
+    });
+
+    // OTP Box Navigation
+    otpDigits.forEach((input, idx) => {
+      input.addEventListener('input', (e) => {
+        const val = e.target.value.replace(/\D/g, '');
+        e.target.value = val ? val[0] : '';
+        if (val && idx < otpDigits.length - 1) {
+          otpDigits[idx + 1].focus();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && idx > 0) {
+          otpDigits[idx - 1].focus();
+        }
+      });
+    });
+
+    countdownEl.addEventListener('click', () => {
+      if (countdownEl.innerText.includes('Dobara Bhejein')) {
+        startTimer(45);
+      }
+    });
+
+    whatsappBtn.addEventListener('click', () => {
+      whatsappBtn.innerHTML = '<span>⏳ Bheja ja raha hai...</span>';
+      setTimeout(() => {
+        whatsappBtn.innerHTML = '<span class="text-[18px]">✅</span><span>WhatsApp par OTP bheja gaya!</span>';
+      }, 800);
+    });
+
+    verifyOtpBtn.addEventListener('click', () => {
+      verifyOtpBtn.innerHTML = '<span>Pushti ho rahi hai...</span>';
+      setTimeout(() => {
+        verifyOtpBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">task_alt</span><span>Safal! Pravesh kiya gaya</span>';
+        verifyOtpBtn.classList.add('bg-tertiary-container', 'text-tertiary-fixed');
+        setTimeout(() => {
+          window.location.href = '01-home-owner-desk.html';
+        }, 500);
+      }, 700);
+    });
+  })();
+</script></main></body></html>

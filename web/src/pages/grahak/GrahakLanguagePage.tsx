@@ -1,36 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, CheckCircle2, Globe } from 'lucide-react';
 import { GrahakLogo, DesiToranArch, FolkArtBorder } from '../../components/grahak/DesiArtElements';
-import { 
-  SUPPORTED_LANGUAGES, 
-  GRAHAK_TRANSLATIONS, 
-  getStoredGrahakLanguage, 
-  setStoredGrahakLanguage,
-  type SupportedLanguage 
-} from '../../utils/grahakTranslations';
+import { useGrahakLanguage } from '../../context/GrahakLanguageContext';
+import { type SupportedLanguage } from '../../utils/grahakTranslations';
 
 export const GrahakLanguagePage: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedLang, setSelectedLang] = useState<SupportedLanguage>('hi');
+  const { currentLang, setLanguage, t, supportedLanguages } = useGrahakLanguage();
 
   useEffect(() => {
     document.title = 'Bhasha Chuniye — Choose Language | Grahak';
-    const saved = getStoredGrahakLanguage();
-    setSelectedLang(saved);
   }, []);
 
   const handleSelect = (code: SupportedLanguage) => {
-    setSelectedLang(code);
-    setStoredGrahakLanguage(code);
+    setLanguage(code);
   };
 
   const handleContinue = () => {
-    setStoredGrahakLanguage(selectedLang);
     navigate('/grahak/signup');
   };
-
-  const t = GRAHAK_TRANSLATIONS[selectedLang];
 
   return (
     <div className="min-h-screen bg-[#F8F5F1] text-[#102B4E] flex flex-col justify-between selection:bg-[#C69A43] selection:text-white">
@@ -70,8 +59,8 @@ export const GrahakLanguagePage: React.FC = () => {
 
           {/* 9 Language Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {SUPPORTED_LANGUAGES.map((lang) => {
-              const isSelected = selectedLang === lang.code;
+            {supportedLanguages.map((lang) => {
+              const isSelected = currentLang === lang.code;
               return (
                 <button
                   key={lang.code}
@@ -102,30 +91,32 @@ export const GrahakLanguagePage: React.FC = () => {
             })}
           </div>
 
-          {/* Action Row */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[#C69A43]/20">
-            <Link
-              to="/grahak/login"
-              className="text-xs font-bold text-[#102B4E] hover:text-[#C69A43] transition-colors order-2 sm:order-1"
-            >
-              {t.loginReturning}
-            </Link>
-
+          {/* Primary CTA */}
+          <div className="mt-8 flex flex-col gap-3">
             <button
               type="button"
               onClick={handleContinue}
-              className="w-full sm:w-auto py-3 px-8 rounded-xl bg-gradient-to-r from-[#102B4E] to-[#0B2340] hover:from-[#0B2340] hover:to-[#102B4E] text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.02] cursor-pointer order-1 sm:order-2 border border-[#C69A43]/40"
+              className="w-full py-3.5 px-6 rounded-2xl bg-[#102B4E] hover:bg-[#0B2340] text-white font-bold text-base shadow-md hover:shadow-lg border border-[#C69A43]/40 flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               <span>{t.continueBtn}</span>
-              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              <ArrowRight className="w-4 h-4" />
             </button>
+
+            <div className="text-center">
+              <Link
+                to="/grahak/login"
+                className="text-xs text-[#55677D] hover:text-[#102B4E] font-medium"
+              >
+                {t.loginReturning}
+              </Link>
+            </div>
           </div>
         </FolkArtBorder>
       </main>
 
       {/* Footer */}
-      <footer className="py-3 text-center text-xs text-[#65758B]">
-        <span>Grahak • Contemporary Desi Art Mobile Experience</span>
+      <footer className="text-center py-4 text-xs text-[#55677D]">
+        <p>100% निजता व सुरक्षा • भारत में निर्मित</p>
       </footer>
     </div>
   );

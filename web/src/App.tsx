@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
+import { GrahakLanguageProvider } from './context/GrahakLanguageContext';
 import { LandingPage } from './pages/LandingPage';
 import { ProductPage } from './pages/ProductPage';
 import { SolutionsPage } from './pages/SolutionsPage';
@@ -35,9 +36,10 @@ function ScrollToTop() {
 export function App() {
   return (
     <AuthProvider>
-      <Router>
-        <ScrollToTop />
-        <Routes>
+      <GrahakLanguageProvider>
+        <Router>
+          <ScrollToTop />
+          <Routes>
           {/* Public Marketing Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/product" element={<ProductPage />} />
@@ -80,7 +82,8 @@ export function App() {
           {/* 404 Dedicated Not Found Route */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </Router>
+        </Router>
+      </GrahakLanguageProvider>
     </AuthProvider>
   );
 }

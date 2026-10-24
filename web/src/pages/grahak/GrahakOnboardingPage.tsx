@@ -10,15 +10,11 @@ import {
   Check 
 } from 'lucide-react';
 import { GrahakLogo, DesiToranArch, FolkArtBorder } from '../../components/grahak/DesiArtElements';
-import { 
-  GRAHAK_TRANSLATIONS, 
-  getStoredGrahakLanguage, 
-  type SupportedLanguage 
-} from '../../utils/grahakTranslations';
+import { useGrahakLanguage } from '../../context/GrahakLanguageContext';
 
 export const GrahakOnboardingPage: React.FC = () => {
   const navigate = useNavigate();
-  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('hi');
+  const { t } = useGrahakLanguage();
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   // Form states from previous registration or defaults
@@ -33,8 +29,6 @@ export const GrahakOnboardingPage: React.FC = () => {
 
   useEffect(() => {
     document.title = 'Grahak Onboarding — Dukaan Ki Taiyyari';
-    const saved = getStoredGrahakLanguage();
-    setCurrentLang(saved);
 
     // Read stored registration profile if present
     const profileJson = localStorage.getItem('grahak_shop_profile');
@@ -49,8 +43,6 @@ export const GrahakOnboardingPage: React.FC = () => {
       }
     }
   }, []);
-
-  const t = GRAHAK_TRANSLATIONS[currentLang];
 
   // Geolocation detector
   const handleDetectLocation = () => {

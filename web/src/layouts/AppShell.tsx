@@ -25,8 +25,10 @@ import {
   Shield,
   Briefcase,
   User,
-  Check
+  Check,
+  Globe
 } from 'lucide-react';
+import { useGrahakLanguage } from '../context/GrahakLanguageContext';
 import { QuickActionModals, type ActionModalType } from '../components/dashboard/QuickActionModals';
 
 interface AppShellProps {
@@ -37,6 +39,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout, switchBusiness, isDemoMode } = useAuth();
+  const { languageInfo, openLanguageModal } = useGrahakLanguage();
 
   // Floating states
   const [searchOpen, setSearchOpen] = useState(false);
@@ -267,6 +270,26 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             >
               <Search className="w-4 h-4 text-[#C69A43]" />
             </button>
+
+            {/* Language Switcher Pill */}
+            <button
+              type="button"
+              onClick={openLanguageModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/70 hover:bg-white/95 border border-white/80 shadow-2xs text-xs font-bold text-[#102B4E] hover:text-[#C69A43] transition-all cursor-pointer"
+              title="Change Language"
+            >
+              <Globe className="w-3.5 h-3.5 text-[#C69A43]" />
+              <span className="hidden sm:inline">{languageInfo.nativeName}</span>
+            </button>
+
+            {/* Direct Grahak B2C App Link */}
+            <Link
+              to="/grahak"
+              className="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-100/80 hover:bg-amber-100 border border-amber-300/50 shadow-2xs text-xs font-bold text-amber-900 transition-all cursor-pointer"
+              title="Grahak B2C Customer & POS View"
+            >
+              <span>ग्राहक B2C</span>
+            </Link>
 
             {/* Notifications Bell */}
             <div className="relative">

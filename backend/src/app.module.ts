@@ -34,6 +34,7 @@ import { UpiModule } from './integrations/upi/upi.module';
 import { OndcModule } from './integrations/ondc/ondc.module';
 import { TallyModule } from './integrations/tally/tally.module';
 import { TranslationModule } from './integrations/translation/translation.module';
+import { GrahakModule } from './grahak/grahak.module';
 import configuration from './config/configuration';
 import { ApiResponseInterceptor } from './common/interceptors/api-response.interceptor';
 
@@ -81,6 +82,7 @@ import { ApiResponseInterceptor } from './common/interceptors/api-response.inter
     TallyModule,
     MigrationModule,
     TranslationModule,
+    GrahakModule,
   ],
   providers: [
     ApiResponseInterceptor,

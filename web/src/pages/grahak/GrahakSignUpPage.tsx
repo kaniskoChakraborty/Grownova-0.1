@@ -5,55 +5,43 @@ import {
   ArrowRight, 
   User, 
   Store, 
-  Briefcase, 
   ShieldCheck, 
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Globe,
+  FileText
 } from 'lucide-react';
 import { GrahakLogo, DesiToranArch, FolkArtBorder } from '../../components/grahak/DesiArtElements';
-import { 
-  SUPPORTED_LANGUAGES, 
-  GRAHAK_TRANSLATIONS, 
-  getStoredGrahakLanguage, 
-  setStoredGrahakLanguage,
-  type SupportedLanguage 
-} from '../../utils/grahakTranslations';
+import { useGrahakLanguage } from '../../context/GrahakLanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { grahakApi } from '../../services/grahakService';
 
-const BUSINESS_TYPES = [
-  { id: 'kirana', label: 'किराना एवं जनरल स्टोर (Kirana & General Store)' },
-  { id: 'textiles', label: 'कपड़ा एवं रेडीमेड (Clothing & Textiles)' },
-  { id: 'hardware', label: 'हार्डवेयर एवं इलेक्ट्रिकल (Hardware & Electricals)' },
-  { id: 'medical', label: 'मेडिकल स्टोर एवं फार्मेसी (Medical & Pharmacy)' },
-  { id: 'sweets', label: 'डेयरी, बेकरी एवं मिठाई (Dairy & Sweets)' },
-  { id: 'electronics', label: 'मोबाइल एवं इलेक्ट्रॉनिक्स (Mobile & Electronics)' },
-  { id: 'other', label: 'अन्य खुदरा / सेवा व्यापार (Other Retail / Service)' },
+const CATEGORY_CHIPS = [
+  { id: 'Kirana & FMCG', label: 'किराना & जनरल स्टोर', icon: '🛒' },
+  { id: 'Wholesaler / Mandi', label: 'थोक विक्रेता / मंडी', icon: '📦' },
+  { id: 'Clothing & Textiles', label: 'कपड़ा & रेडीमेड', icon: '👕' },
+  { id: 'Electronics & Mobile', label: 'इलेक्ट्रॉनिक्स & मोबाइल', icon: '📱' },
+  { id: 'Hardware & Paint', label: 'हार्डवेयर & पेंट', icon: '🔧' },
+  { id: 'Other Retail', label: 'अन्य खुदरा व्यापार', icon: '🏬' },
 ];
 
 export const GrahakSignUpPage: React.FC = () => {
   const navigate = useNavigate();
   const { signup, setDemoPersona } = useAuth();
+  const { currentLang, languageInfo, openLanguageModal, t } = useGrahakLanguage();
 
-  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('hi');
   const [fullName, setFullName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [shopName, setShopName] = useState('');
-  const [businessType, setBusinessType] = useState('kirana');
+  const [businessCategory, setBusinessCategory] = useState('Kirana & FMCG');
+  const [gstin, setGstin] = useState('');
+  const [whatsappOptIn, setWhatsappOptIn] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     document.title = 'Grahak Registration — Naya Khata Banayein';
-    const saved = getStoredGrahakLanguage();
-    setCurrentLang(saved);
   }, []);
-
-  const handleLangChange = (lang: SupportedLanguage) => {
-    setCurrentLang(lang);
-    setStoredGrahakLanguage(lang);
-  };
-
-  const t = GRAHAK_TRANSLATIONS[currentLang];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,19 +64,32 @@ export const GrahakSignUpPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // 1. Persist new Grahak shop profile to local storage
+      // 1. Register with backend Grahak API
+      await grahakApi.register({
+        fullName: fullName.trim(),
+        phone: cleanMobile,
+        shopName: shopName.trim(),
+        businessType: businessCategory,
+        gstin: gstin.trim() || undefined,
+        language: currentLang,
+        role: 'MERCHANT',
+      });
+
+      // 2. Persist shop profile locally
       const newShopProfile = {
         fullName: fullName.trim(),
         mobileNumber: `+91 ${cleanMobile}`,
         shopName: shopName.trim(),
-        businessType,
+        businessType: businessCategory,
+        gstin: gstin.trim() || undefined,
         language: currentLang,
+        whatsappOptIn,
         createdAt: new Date().toISOString(),
       };
       localStorage.setItem('grahak_shop_profile', JSON.stringify(newShopProfile));
       localStorage.setItem('grahak_auth_mobile', `+91 ${cleanMobile}`);
 
-      // 2. Register with existing AuthContext (attempt live signup or set authenticated OWNER persona)
+      // 3. Authenticate session
       try {
         await signup({
           name: fullName.trim(),
@@ -97,14 +98,13 @@ export const GrahakSignUpPage: React.FC = () => {
           password: `Grahak@${cleanMobile.slice(-4)}`,
         });
       } catch {
-        // Fallback to active OWNER persona if backend signup endpoint is offline
         setDemoPersona('OWNER');
       }
 
-      // 3. Navigate directly to guided first-time onboarding
+      // Navigate to onboarding tutorial
       navigate('/grahak/onboarding');
     } catch (err: any) {
-      setErrorMsg(err.message || 'Registration failed. Please check your details.');
+      setErrorMsg(err.message || 'रजिस्ट्रेशन में समस्या हुई। कृपया पुनः प्रयास करें।');
     } finally {
       setIsSubmitting(false);
     }
@@ -112,176 +112,215 @@ export const GrahakSignUpPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F5F1] text-[#102B4E] flex flex-col justify-between selection:bg-[#C69A43] selection:text-white">
-      {/* Top Toran Arch */}
+      {/* Top Auspicious Toran Arch */}
       <DesiToranArch />
 
-      {/* Top Header */}
-      <div className="max-w-xl mx-auto w-full px-4 pt-3 flex items-center justify-between">
+      {/* Header Bar */}
+      <header className="max-w-3xl mx-auto w-full px-4 pt-3 flex items-center justify-between border-b border-[#C69A43]/20 pb-3">
         <button
           type="button"
-          onClick={() => navigate('/grahak/language')}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/70 hover:bg-white text-xs font-semibold text-[#102B4E] border border-[#C69A43]/30 transition-all cursor-pointer"
+          onClick={() => navigate('/grahak')}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 hover:bg-white text-xs font-semibold text-[#102B4E] border border-[#C69A43]/30 transition-all cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Wapas / Back</span>
+          <span>मुख्य पृष्ठ</span>
         </button>
 
         <GrahakLogo size={36} />
 
-        {/* Language selector in header */}
-        <select
-          value={currentLang}
-          onChange={(e) => handleLangChange(e.target.value as SupportedLanguage)}
-          className="px-2.5 py-1 text-xs font-bold rounded-full bg-white border border-[#C69A43]/40 text-[#102B4E] cursor-pointer"
+        {/* Reactive Language Pill */}
+        <button
+          type="button"
+          onClick={openLanguageModal}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 hover:bg-white text-xs font-semibold text-[#102B4E] border border-[#C69A43]/30 cursor-pointer"
         >
-          {SUPPORTED_LANGUAGES.map((l) => (
-            <option key={l.code} value={l.code}>
-              {l.nativeName}
-            </option>
-          ))}
-        </select>
-      </div>
+          <Globe className="w-3.5 h-3.5 text-[#C69A43]" />
+          <span>{languageInfo.nativeName}</span>
+        </button>
+      </header>
 
-      {/* Main Sign Up Form */}
-      <main className="flex-1 max-w-lg mx-auto w-full px-4 py-6 sm:py-8 flex flex-col justify-center">
+      {/* Main Registration Form Card */}
+      <main className="flex-1 max-w-xl mx-auto w-full px-4 py-6 sm:py-8 flex flex-col justify-center">
         <FolkArtBorder className="w-full">
+          {/* Header Title Section */}
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#C69A43]/15 text-[#102B4E] text-xs font-bold mb-2">
-              <Sparkles className="w-3 h-3 text-[#C69A43]" />
-              <span>Step 2 of 3: Dukaan Ka Panjikaran</span>
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#C69A43]/15 text-[#102B4E] text-xs font-bold mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-[#C69A43]" />
+              <span>शुभ आरम्भ • नया खाता खोलें (Sign Up)</span>
             </div>
+
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#102B4E] font-serif">
-              {t.signupAction}
+              दुकान या व्यापार का रजिस्ट्रेशन
             </h1>
-            <p className="text-xs text-[#55677D] mt-1">
-              अपनी दुकान का डिजिटल खाता सिर्फ १ मिनट में शुरू करें
+            <p className="text-xs sm:text-sm text-[#55677D] mt-1">
+              सिर्फ १ मिनट में अपना डिजिटल बही-खाता और बिलिंग शुरू करें
             </p>
           </div>
 
-          {/* Error Banner */}
+          {/* Error Message */}
           {errorMsg && (
-            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-800 text-xs font-semibold flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-600" />
+            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* 1. Full Name */}
+            {/* Full Name */}
             <div>
-              <label className="text-xs font-bold text-[#102B4E] block mb-1">
-                {t.fullNameLabel} <span className="text-[#C05A3E]">*</span>
+              <label className="block text-xs font-bold text-[#102B4E] mb-1">
+                {t.fullNameLabel} (Proprietor Name) <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center rounded-xl bg-white border border-[#C69A43]/40 focus-within:border-[#102B4E] px-3 py-2.5 shadow-2xs">
-                <User className="w-4 h-4 text-[#C69A43] mr-2.5 flex-shrink-0" />
+              <div className="relative">
                 <input
                   type="text"
-                  required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="उदा. रमेश कुमार गुप्ता"
-                  className="w-full bg-transparent text-sm font-medium text-[#102B4E] placeholder:text-[#65758B]/60 focus:outline-none"
+                  placeholder="उदा. रमेश कुमार शर्मा"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-[#C69A43]/40 focus:border-[#102B4E] focus:ring-2 focus:ring-[#C69A43]/30 text-sm font-semibold text-[#102B4E] placeholder:text-gray-400 focus:outline-none"
+                  required
                 />
+                <User className="w-4 h-4 text-[#C69A43] absolute left-3.5 top-3.5" />
               </div>
             </div>
 
-            {/* 2. Indian Mobile Number */}
+            {/* Shop Name */}
             <div>
-              <label className="text-xs font-bold text-[#102B4E] block mb-1">
-                {t.mobileLabel} <span className="text-[#C05A3E]">*</span>
+              <label className="block text-xs font-bold text-[#102B4E] mb-1">
+                {t.shopNameLabel} <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center rounded-xl bg-white border border-[#C69A43]/40 focus-within:border-[#102B4E] px-3 py-2.5 shadow-2xs">
-                <div className="flex items-center gap-1 pr-2.5 border-r border-[#C69A43]/30 text-xs font-bold text-[#102B4E]">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={shopName}
+                  onChange={(e) => setShopName(e.target.value)}
+                  placeholder="उदा. श्री गणेश किराना स्टोर"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-[#C69A43]/40 focus:border-[#102B4E] focus:ring-2 focus:ring-[#C69A43]/30 text-sm font-semibold text-[#102B4E] placeholder:text-gray-400 focus:outline-none"
+                  required
+                />
+                <Store className="w-4 h-4 text-[#C69A43] absolute left-3.5 top-3.5" />
+              </div>
+              <p className="mt-1 text-[11px] text-[#55677D]">
+                यही नाम आपके ग्राहक के बिल और व्हाट्सऐप रसीद पर प्रिंट होगा।
+              </p>
+            </div>
+
+            {/* Mobile Number */}
+            <div>
+              <label className="block text-xs font-bold text-[#102B4E] mb-1">
+                {t.mobileLabel} <span className="text-red-500">*</span>
+              </label>
+              <div className="relative flex items-center">
+                <div className="absolute left-3 flex items-center gap-1.5 text-xs font-bold text-[#102B4E] select-none pr-2 border-r border-[#C69A43]/30">
                   <span>🇮🇳</span>
                   <span>+91</span>
                 </div>
                 <input
                   type="tel"
-                  required
+                  inputMode="numeric"
                   maxLength={10}
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
-                  placeholder={t.mobilePlaceholder}
-                  className="w-full pl-2.5 bg-transparent text-sm font-semibold text-[#102B4E] placeholder:text-[#65758B]/60 focus:outline-none"
+                  placeholder="98230 45678"
+                  className="w-full pl-20 pr-4 py-3 rounded-xl bg-white border border-[#C69A43]/40 focus:border-[#102B4E] focus:ring-2 focus:ring-[#C69A43]/30 text-sm font-bold text-[#102B4E] placeholder:text-gray-400 focus:outline-none"
+                  required
                 />
               </div>
             </div>
 
-            {/* 3. Shop Name */}
+            {/* Business Category Selection Chips */}
             <div>
-              <label className="text-xs font-bold text-[#102B4E] block mb-1">
-                {t.shopNameLabel} <span className="text-[#C05A3E]">*</span>
+              <label className="block text-xs font-bold text-[#102B4E] mb-1.5">
+                व्यापार का प्रकार (Category)
               </label>
-              <div className="flex items-center rounded-xl bg-white border border-[#C69A43]/40 focus-within:border-[#102B4E] px-3 py-2.5 shadow-2xs">
-                <Store className="w-4 h-4 text-[#C69A43] mr-2.5 flex-shrink-0" />
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {CATEGORY_CHIPS.map((cat) => {
+                  const isSelected = businessCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setBusinessCategory(cat.id)}
+                      className={`p-2.5 rounded-xl border text-left text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#102B4E] text-white border-[#C69A43] shadow-xs'
+                          : 'bg-white hover:bg-[#F3ECE0] text-[#102B4E] border-[#C69A43]/20'
+                      }`}
+                    >
+                      <span>{cat.icon}</span>
+                      <span className="truncate">{cat.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Optional GSTIN / PAN */}
+            <div>
+              <label className="block text-xs font-bold text-[#102B4E] mb-1">
+                जीएसटीआईएन या पैन (GSTIN / PAN) <span className="text-gray-500 font-normal">ऐच्छिक (Optional)</span>
+              </label>
+              <div className="relative">
                 <input
                   type="text"
-                  required
-                  value={shopName}
-                  onChange={(e) => setShopName(e.target.value)}
-                  placeholder="उदा. श्री गणेश किराना स्टोर"
-                  className="w-full bg-transparent text-sm font-medium text-[#102B4E] placeholder:text-[#65758B]/60 focus:outline-none"
+                  maxLength={15}
+                  value={gstin}
+                  onChange={(e) => setGstin(e.target.value.toUpperCase())}
+                  placeholder="उदा. 23AAAAA0000A1Z5"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-[#C69A43]/30 focus:border-[#102B4E] focus:outline-none text-xs font-semibold uppercase text-[#102B4E] placeholder:normal-case placeholder:text-gray-400"
                 />
+                <FileText className="w-4 h-4 text-[#C69A43] absolute left-3.5 top-3" />
               </div>
             </div>
 
-            {/* 4. Business Type */}
-            <div>
-              <label className="text-xs font-bold text-[#102B4E] block mb-1">
-                {t.businessTypeLabel}
+            {/* WhatsApp Daily Summary Opt-in */}
+            <div className="flex items-center gap-2.5 p-3 rounded-xl bg-[#F0EDE9] border border-[#C69A43]/20">
+              <input
+                type="checkbox"
+                id="whatsapp-opt"
+                checked={whatsappOptIn}
+                onChange={(e) => setWhatsappOptIn(e.target.checked)}
+                className="w-4 h-4 rounded text-[#102B4E] focus:ring-[#C69A43] accent-[#102B4E] cursor-pointer"
+              />
+              <label htmlFor="whatsapp-opt" className="text-xs text-[#102B4E] font-medium cursor-pointer">
+                व्हाट्सऐप पर रोज़ाना का हिसाब और लेन-देन पर्ची प्राप्त करें
               </label>
-              <div className="flex items-center rounded-xl bg-white border border-[#C69A43]/40 focus-within:border-[#102B4E] px-3 py-2.5 shadow-2xs">
-                <Briefcase className="w-4 h-4 text-[#C69A43] mr-2.5 flex-shrink-0" />
-                <select
-                  value={businessType}
-                  onChange={(e) => setBusinessType(e.target.value)}
-                  className="w-full bg-transparent text-xs sm:text-sm font-medium text-[#102B4E] focus:outline-none cursor-pointer"
-                >
-                  {BUSINESS_TYPES.map((bt) => (
-                    <option key={bt.id} value={bt.id}>
-                      {bt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#102B4E] to-[#0B2340] hover:from-[#0B2340] hover:to-[#102B4E] text-white font-bold text-sm shadow-md border border-[#C69A43]/40 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer"
+              className="w-full py-4 px-6 rounded-2xl bg-[#102B4E] hover:bg-[#0B2340] text-white font-bold text-base shadow-md hover:shadow-lg border border-[#C69A43]/40 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
             >
-              {isSubmitting ? (
-                <span>खाता बनाया जा रहा है...</span>
-              ) : (
-                <>
-                  <span>खाता बनाएं और ऑनबोर्डिंग शुरू करें</span>
-                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-                </>
-              )}
+              <span>{isSubmitting ? 'खाता खोला जा रहा है...' : 'खाता खोलें • Create Account'}</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
+
+            {/* Switch to Login */}
+            <div className="pt-2 text-center text-xs text-[#55677D]">
+              <span>पहले से खाता है? </span>
+              <Link
+                to="/grahak/login"
+                className="font-bold text-[#102B4E] hover:text-[#C69A43] underline underline-offset-2"
+              >
+                {t.loginReturning}
+              </Link>
+            </div>
           </form>
 
-          {/* Bottom Switch: Login for existing users */}
-          <div className="mt-5 pt-4 border-t border-[#C69A43]/20 text-center text-xs text-[#55677D]">
-            <span>{t.alreadyHaveAccount} </span>
-            <Link
-              to="/grahak/login"
-              className="text-[#C69A43] font-bold hover:underline transition-colors ml-1"
-            >
-              {t.loginAction}
-            </Link>
+          {/* Trust Footnote */}
+          <div className="mt-6 pt-4 border-t border-[#C69A43]/20 flex items-center justify-center gap-2 text-[11px] text-[#55677D]">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>१००% सुरक्षित • भारत सरकार डीपीएसपी नियमों के अनुकूल</span>
           </div>
         </FolkArtBorder>
       </main>
 
       {/* Footer */}
-      <footer className="py-3 text-center text-xs text-[#65758B]">
-        <div className="flex items-center justify-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#15803D]" />
-          <span>सुरक्षित एवं गोपनीय डेटा • GrowNova Enterprise Architecture</span>
-        </div>
+      <footer className="text-center py-4 text-xs text-[#55677D]">
+        <p>24x7 निःशुल्क व्यापारी सहायता: 1800-GRAHAK</p>
       </footer>
     </div>
   );

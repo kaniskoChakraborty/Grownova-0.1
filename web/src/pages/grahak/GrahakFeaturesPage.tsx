@@ -14,15 +14,11 @@ import {
   Upload 
 } from 'lucide-react';
 import { GrahakLogo, DesiToranArch, FolkArtBorder } from '../../components/grahak/DesiArtElements';
-import { 
-  getStoredGrahakLanguage, 
-  GRAHAK_TRANSLATIONS, 
-  type SupportedLanguage 
-} from '../../utils/grahakTranslations';
+import { useGrahakLanguage } from '../../context/GrahakLanguageContext';
 import fixtures from '../../data/grahakFixtures.json';
 
 export const GrahakFeaturesPage: React.FC = () => {
-  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('hi');
+  const { t } = useGrahakLanguage();
   const [activeSection, setActiveSection] = useState<'dashboard' | 'attendance' | 'inventory_ai' | 'offline_billing' | 'salary'>('dashboard');
 
   // Dynamic Home / Today's stats state
@@ -68,15 +64,12 @@ export const GrahakFeaturesPage: React.FC = () => {
 
   useEffect(() => {
     document.title = 'Grahak Features — Geotag Haziri, AI Stock & Bills';
-    setCurrentLang(getStoredGrahakLanguage());
   }, []);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3200);
   };
-
-  const t = GRAHAK_TRANSLATIONS[currentLang];
 
   // Geotag Attendance check-in
   const handleGeotagCheckIn = () => {

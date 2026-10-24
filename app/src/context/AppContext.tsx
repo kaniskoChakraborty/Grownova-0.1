@@ -173,6 +173,19 @@ interface AppContextType {
   setStaffStatus: (staffId: string, status: 'present' | 'absent' | 'half_day') => void;
   addStaff: (data: { name: string; role: string; phone: string }) => void;
 
+  // Dual-Mode Experience (Ghrahak Customer vs Merchant Desk)
+  appMode: 'customer' | 'merchant';
+  setAppMode: (mode: 'customer' | 'merchant') => void;
+  toggleAppMode: () => void;
+  activeCustomerId: string;
+  setActiveCustomerId: (id: string) => void;
+  activeCustomer: Customer;
+  customerCart: BillItem[];
+  addToCustomerCart: (item: InventoryItem) => void;
+  updateCustomerCartQty: (id: string, delta: number) => void;
+  clearCustomerCart: () => void;
+  sendParchiOrder: (items: BillItem[], note?: string) => void;
+
   // Dashboard Aggregates
   todaySales: number;
   todayCash: number;
@@ -369,6 +382,89 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [isOwnerPunchedIn, setIsOwnerPunchedIn] = useState<boolean>(true);
   const [ownerPunchTime, setOwnerPunchTime] = useState<string | null>('08:30 AM');
+
+  // Dual-mode state (Ghrahak Customer vs Merchant Desk)
+  const [appMode, setAppMode] = useState<'customer' | 'merchant'>('customer');
+  const [activeCustomerId, setActiveCustomerId] = useState<string>('c1');
+  const [customerCart, setCustomerCart] = useState<BillItem[]>([
+    { id: '1', name: 'Fortune Sunflower Oil (1L)', price: 145, qty: 1, unit: 'pouch' },
+    { id: '3', name: 'Tata Tea Premium (500g)', price: 160, qty: 1, unit: 'packet' },
+  ]);
+
+  const toggleAppMode = () => {
+    setAppMode((prev) => (prev === 'customer' ? 'merchant' : 'customer'));
+  };
+
+  const activeCustomer = useMemo(() => {
+    return (
+      customers.find((c) => c.id === activeCustomerId) ||
+      customers[0] || {
+        id: 'c1',
+        name: 'Amit Sharma',
+        phone: '98230-84192',
+        due: 3200,
+        limit: 15000,
+        status: 'active' as const,
+        lastTransaction: 'Today, 10m ago',
+      }
+    );
+  }, [customers, activeCustomerId]);
+
+  const addToCustomerCart = (item: InventoryItem) => {
+    setCustomerCart((prev) => {
+      const existing = prev.find((it) => it.id === item.id);
+      if (existing) {
+        return prev.map((it) => (it.id === item.id ? { ...it, qty: it.qty + 1 } : it));
+      }
+      return [...prev, { id: item.id, name: item.name, price: item.price, qty: 1, unit: item.unit }];
+    });
+    Alert.alert('✅ Added to Basket', `${item.name} added to your Ghrahak basket.`);
+  };
+
+  const updateCustomerCartQty = (id: string, delta: number) => {
+    setCustomerCart((prev) =>
+      prev
+        .map((it) => (it.id === id ? { ...it, qty: Math.max(0, it.qty + delta) } : it))
+        .filter((it) => it.qty > 0)
+    );
+  };
+
+  const clearCustomerCart = () => {
+    setCustomerCart([]);
+  };
+
+  const sendParchiOrder = (items: BillItem[], note?: string) => {
+    if (items.length === 0) {
+      Alert.alert('Basket is empty', 'Please add some items to your order or write a parchi.');
+      return;
+    }
+
+    const itemsList = items
+      .map((it) => `• ${it.name} x${it.qty} = ₹${(it.price * it.qty).toLocaleString('en-IN')}`)
+      .join('\n');
+    const totalEst = items.reduce((sum, it) => sum + it.price * it.qty, 0);
+
+    const text =
+      `🛒 *New Order from Ghrahak (ग्राहक पर्ची)*\n` +
+      `Customer: ${activeCustomer.name} (${activeCustomer.phone})\n` +
+      `To Store: ${store.name}\n` +
+      `--------------------------------\n` +
+      `${itemsList}\n` +
+      `--------------------------------\n` +
+      `*Estimated Total: ₹${totalEst.toLocaleString('en-IN')}*\n` +
+      (note ? `Note: ${note}\n` : '') +
+      `\nPlease pack and confirm when ready. Thank you! 🙏`;
+
+    Share.share({
+      message: text,
+      title: 'Ghrahak Grocery Order',
+    }).catch(() => {
+      const url = `whatsapp://send?phone=${store.phone}&text=${encodeURIComponent(text)}`;
+      Linking.canOpenURL(url).then((supported: boolean) => {
+        if (supported) Linking.openURL(url);
+      });
+    });
+  };
 
   // Toggle Language
   const toggleLanguage = () => {
@@ -798,6 +894,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toggleOwnerPunch,
         setStaffStatus,
         addStaff,
+        appMode,
+        setAppMode,
+        toggleAppMode,
+        activeCustomerId,
+        setActiveCustomerId,
+        activeCustomer,
+        customerCart,
+        addToCustomerCart,
+        updateCustomerCartQty,
+        clearCustomerCart,
+        sendParchiOrder,
         todaySales,
         todayCash,
         todayUdhaar,

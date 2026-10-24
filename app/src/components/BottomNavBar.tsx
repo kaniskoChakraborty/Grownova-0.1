@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { theme } from '../constants/theme';
+import { useApp } from '../context/AppContext';
 
-export type TabKey = 'home' | 'sales' | 'purchase' | 'stock' | 'accounts';
+export type TabKey = 'ghrahak' | 'home' | 'sales' | 'purchase' | 'stock' | 'accounts';
 
 interface BottomNavBarProps {
   currentTab: TabKey;
@@ -11,17 +12,36 @@ interface BottomNavBarProps {
 }
 
 export const BottomNavBar: React.FC<BottomNavBarProps> = ({ currentTab, onSelectTab }) => {
-  const tabs: { key: TabKey; label: string; icon: keyof typeof MaterialIcons.glyphMap }[] = [
-    { key: 'home', label: 'Home', icon: 'storefront' },
-    { key: 'sales', label: 'Sales', icon: 'point-of-sale' },
-    { key: 'purchase', label: 'Purchase', icon: 'shopping-bag' },
-    { key: 'stock', label: 'My Stock', icon: 'inventory-2' },
-    { key: 'accounts', label: 'Money (खाता)', icon: 'account-balance-wallet' },
+  const { appMode, toggleAppMode } = useApp();
+
+  const customerTabs: {
+    key: TabKey;
+    label: string;
+    icon: keyof typeof MaterialIcons.glyphMap;
+    action?: () => void;
+  }[] = [
+    { key: 'ghrahak', label: 'ग्राहक Home', icon: 'home' },
+    { key: 'stock', label: 'दुकान Items', icon: 'local-mall' },
+    { key: 'accounts', label: 'मेरा खाता', icon: 'account-balance-wallet' },
   ];
+
+  const merchantTabs: {
+    key: TabKey;
+    label: string;
+    icon: keyof typeof MaterialIcons.glyphMap;
+  }[] = [
+    { key: 'home', label: 'Desk', icon: 'storefront' },
+    { key: 'sales', label: 'Sales', icon: 'point-of-sale' },
+    { key: 'purchase', label: 'Buy Stock', icon: 'shopping-bag' },
+    { key: 'stock', label: 'Inventory', icon: 'inventory-2' },
+    { key: 'accounts', label: 'खाता', icon: 'account-balance-wallet' },
+  ];
+
+  const activeTabsList = appMode === 'customer' ? customerTabs : merchantTabs;
 
   return (
     <View style={styles.navBar}>
-      {tabs.map((tab) => {
+      {activeTabsList.map((tab) => {
         const isActive = currentTab === tab.key;
         return (
           <TouchableOpacity
@@ -47,6 +67,22 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({ currentTab, onSelect
           </TouchableOpacity>
         );
       })}
+
+      {/* Switch Mode Tab */}
+      <TouchableOpacity
+        onPress={toggleAppMode}
+        style={[styles.tabItem, styles.modeSwitchTab]}
+        activeOpacity={0.7}
+      >
+        <MaterialIcons
+          name={appMode === 'customer' ? 'storefront' : 'shopping-bag'}
+          size={22}
+          color={theme.colors.secondary}
+        />
+        <Text style={styles.modeSwitchLabel}>
+          {appMode === 'customer' ? 'व्यापारी' : 'ग्राहक'}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -74,6 +110,11 @@ const styles = StyleSheet.create({
     height: '100%',
     paddingTop: 4,
   },
+  modeSwitchTab: {
+    backgroundColor: '#FFFDF9',
+    borderLeftWidth: 1,
+    borderLeftColor: theme.colors.border,
+  },
   tabLabel: {
     fontSize: 11,
     fontWeight: '600',
@@ -89,6 +130,12 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     backgroundColor: theme.colors.secondaryAccent,
+    marginTop: 2,
+  },
+  modeSwitchLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: theme.colors.secondary,
     marginTop: 2,
   },
 });

@@ -7,6 +7,7 @@ import { theme } from './src/constants/theme';
 import { AppProvider, useApp } from './src/context/AppContext';
 import { BottomNavBar, TabKey } from './src/components/BottomNavBar';
 
+import { GhrahakHomeScreen } from './src/screens/GhrahakHomeScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { SalesScreen } from './src/screens/SalesScreen';
 import { PurchaseScreen } from './src/screens/PurchaseScreen';
@@ -16,8 +17,18 @@ import { CreateBillScreen } from './src/screens/CreateBillScreen';
 import { AttendanceScreen } from './src/screens/AttendanceScreen';
 
 function MainNavigator() {
-  const [currentTab, setCurrentTab] = useState<TabKey>('home');
+  const { appMode, setAppMode } = useApp();
+  const [currentTab, setCurrentTab] = useState<TabKey>(appMode === 'customer' ? 'ghrahak' : 'home');
   const [overlayScreen, setOverlayScreen] = useState<'create_bill' | 'attendance' | null>(null);
+
+  // Sync tab when switching between Customer (Ghrahak) and Merchant mode
+  useEffect(() => {
+    if (appMode === 'customer') {
+      setCurrentTab('ghrahak');
+    } else {
+      setCurrentTab('home');
+    }
+  }, [appMode]);
 
   // Hardware back button handler for Android
   useEffect(() => {
@@ -26,8 +37,9 @@ function MainNavigator() {
         setOverlayScreen(null);
         return true;
       }
-      if (currentTab !== 'home') {
-        setCurrentTab('home');
+      const homeTab = appMode === 'customer' ? 'ghrahak' : 'home';
+      if (currentTab !== homeTab) {
+        setCurrentTab(homeTab);
         return true;
       }
       return false;
@@ -35,7 +47,7 @@ function MainNavigator() {
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => subscription.remove();
-  }, [overlayScreen, currentTab]);
+  }, [overlayScreen, currentTab, appMode]);
 
   const handleSelectTab = (tab: TabKey) => {
     setOverlayScreen(null);
@@ -61,6 +73,15 @@ function MainNavigator() {
     }
 
     switch (currentTab) {
+      case 'ghrahak':
+        return (
+          <GhrahakHomeScreen
+            onSwitchToMerchant={() => {
+              setAppMode('merchant');
+              setCurrentTab('home');
+            }}
+          />
+        );
       case 'home':
         return (
           <HomeScreen
@@ -85,12 +106,11 @@ function MainNavigator() {
         return <AccountsScreen />;
       default:
         return (
-          <HomeScreen
-            onNavigateToBill={() => setOverlayScreen('create_bill')}
-            onNavigateToSales={() => setCurrentTab('sales')}
-            onNavigateToPurchase={() => setCurrentTab('purchase')}
-            onNavigateToStock={() => setCurrentTab('stock')}
-            onNavigateToAttendance={() => setOverlayScreen('attendance')}
+          <GhrahakHomeScreen
+            onSwitchToMerchant={() => {
+              setAppMode('merchant');
+              setCurrentTab('home');
+            }}
           />
         );
     }

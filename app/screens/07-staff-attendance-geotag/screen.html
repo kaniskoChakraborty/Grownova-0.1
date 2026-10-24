@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed-variant": "#5e4200", "on-tertiary-container": "#54a353", "on-secondary-fixed": "#271900", "primary-fixed-dim": "#afc7f3", "on-secondary": "#ffffff", "inverse-surface": "#31302e", "inverse-on-surface": "#f3f0ec", "inverse-primary": "#afc7f3", "surface-variant": "#e5e2de", "on-primary-fixed-variant": "#2f476c", "outline-variant": "#c4c6cf", "error-container": "#ffdad6", "on-tertiary": "#ffffff", "on-tertiary-fixed": "#002204", "tertiary-fixed-dim": "#88d982", "secondary-fixed-dim": "#efbf64", "tertiary-fixed": "#a3f69c", "error": "#ba1a1a", "on-primary": "#ffffff", "on-surface": "#1c1c1a", "on-primary-fixed": "#001b3c", "on-tertiary-fixed-variant": "#005312", "surface-container": "#f0ede9", "background": "#fcf9f5", "surface": "#fcf9f5", "tertiary-container": "#003307", "surface-dim": "#dcdad6", "outline": "#74777f", "surface-container-low": "#f6f3ef", "on-secondary-container": "#785500", "primary": "#001633", "surface-container-highest": "#e5e2de", "primary-container": "#102b4e", "tertiary": "#001c03", "primary-fixed": "#d5e3ff", "on-background": "#1c1c1a", "surface-bright": "#fcf9f5", "secondary-container": "#fecd70", "on-error-container": "#93000a", "secondary-fixed": "#ffdea6", "on-primary-container": "#7b93bc", "surface-tint": "#475f85", "secondary": "#7c5800", "on-error": "#ffffff", "surface-container-high": "#eae8e4", "on-surface-variant": "#44474e", "surface-container-lowest": "#ffffff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter": "1rem", "gutter-sm": "0.75rem", "space-md": "1rem", "space-sm": "0.5rem", "margin": "1rem", "space-lg": "1.5rem", "space-xl": "2rem", "space-xs": "0.25rem", "margin-lg": "1.5rem" }, fontFamily: { "display-lg-mobile": ["Playfair Display"], "display-lg": ["Playfair Display"], "currency-display": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"], "currency-headline": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"] }, fontSize: { "display-lg-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "600" }], "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" }], "currency-display": ["28px", { lineHeight: "34px", letterSpacing: "-0.03em", fontWeight: "700" }], "headline-lg": ["24px", { lineHeight: "32px", fontWeight: "600" }], "body-lg": ["15px", { lineHeight: "22px", fontWeight: "400" }], "title-md": ["16px", { lineHeight: "22px", fontWeight: "600" }], "currency-headline": ["20px", { lineHeight: "26px", letterSpacing: "-0.02em", fontWeight: "700" }], "label-md": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "700" }], "label-lg": ["13px", { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased min-h-full flex flex-col"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go Back" class="w-11 h-11 flex items-center justify-center rounded-lg text-primary hover:bg-surface-variant transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><img alt="GrowNova OS Emblem" class="h-7 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiN2NnNoXNLSDjK2kKo89DOHEFqkjPVdSirSq5yQV3QGP8bnPvRCgPvH2-Z_i-LA2kVPqhomMhyKCi79jA8-bkZfucEF0xe6Gziw99UveQGEAIXszxSXaJAgoNugHN6xujJKedXqVtEt_ocRiw3Jkp1bzAfBu8RD7wTN-YFJD8HTw6-W0ODdXp9NLIlpCQEd88BmlCLLfRTFW0ss7ax-PoPgF9B0r7YVp6qAQgOip7Vom-QAYLq3HM"/><div class="flex flex-col min-w-0"><h1 class="font-title-md text-title-md text-primary leading-tight truncate">Staff Attendance</h1><span class="font-label-md text-label-md text-on-surface-variant leading-none truncate">GrowNova OS</span></div></div><div class="flex items-center gap-space-xs flex-shrink-0"><div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed/30 text-tertiary text-label-md font-label-md"><span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="hidden xs:inline">Synced</span></div><button aria-label="Profile" class="relative p-1 rounded-full active:scale-95 transition-transform" type="button"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4BYrsEl7-r5Ky4OByjhRiJajjSepL4bjZ_Cw9QfJHYSY2Dqa1cQSL7HxJm_RRv93pBEFdZxQ2GttiOSzu7eDIvqwi4RMk3HKqu6qN1kPcWtxN1573dk5GtIlFMmIq5jp2MZcjCQz_53u-c5YX8PfpTUcM1mt_zHHvzBYLi_CJ8pYDVR717F1kcoyUO_xm3EFAWBL_Zqv-FC_IWCH6njLrU7HQLHn9B7tzB5AgMxD6KeB6mResUTFY"/></button></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe px-margin bg-surface flex-grow"><div class="flex flex-col w-full pb-10 space-y-space-md">
+<!-- Top Location & Date Ledger Banner -->
+<div class="flex flex-col bg-surface-container-lowest p-space-md rounded-xl shadow-sm space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<span class="font-title-md text-title-md text-primary font-bold tracking-tight">Counter 01 · Shree Ganesh Traders</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Pune Mandi</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant pt-1">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Today, Friday, 24 Oct 2025</span>
+</div>
+<div class="flex items-center space-x-1 bg-secondary-fixed/40 text-on-secondary-fixed-variant px-2.5 py-1 rounded-full font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Muster Open</span>
+</div>
+</div>
+<!-- Attendance Quick Stat Ribbon -->
+<div class="grid grid-cols-3 gap-space-xs pt-1">
+<div class="bg-surface-container-low p-2.5 rounded-lg flex flex-col items-center justify-center text-center">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Present</span>
+<div class="flex items-center space-x-1 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+<span class="font-currency-headline text-currency-headline text-primary">3</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-lg flex flex-col items-center justify-center text-center">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Absent</span>
+<div class="flex items-center space-x-1 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-currency-headline text-currency-headline text-error">1</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-lg flex flex-col items-center justify-center text-center">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">On Leave</span>
+<div class="flex items-center space-x-1 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="font-currency-headline text-currency-headline text-on-surface">0</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Geofenced Punch Action Card -->
+<div class="bg-primary-container text-on-primary rounded-xl p-space-md shadow-md relative overflow-hidden">
+<div class="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-secondary/10 pointer-events-none blur-2xl"></div>
+<div class="relative z-10 flex flex-col space-y-space-md">
+<!-- Geotag verification tag -->
+<div class="flex items-start justify-between">
+<div class="flex items-center space-x-2">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed/20 flex items-center justify-center text-secondary-fixed">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">pin_drop</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-white leading-tight">Shop Geofence Active</h2>
+<p class="font-label-md text-label-md text-secondary-fixed flex items-center mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim inline-block mr-1"></span>
+              Within 50m radius (Counter 01 verified)
+            </p>
+</div>
+</div>
+<div class="bg-primary/60 px-2 py-1 rounded text-right">
+<span class="font-label-md text-label-md text-on-primary-container tracking-wider font-mono">18.5204° N</span>
+<span class="font-label-md text-label-md text-on-primary-container tracking-wider font-mono block">73.8567° E</span>
+</div>
+</div>
+<!-- Staff Member Selector -->
+<div class="flex flex-col space-y-1.5">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-primary-container">Select Counter Staff Member</label>
+<div class="relative">
+<select class="w-full h-12 bg-white/10 text-white rounded-lg px-3 pr-10 appearance-none font-title-md text-title-md focus:outline-none focus:bg-white/20 transition-colors" id="staffSelect">
+<option class="text-primary bg-surface" value="vikas">Vikas Shinde — Counter Sales &amp; Cashier</option>
+<option class="text-primary bg-surface" value="santosh">Santosh Ghadge — Delivery &amp; Inward</option>
+<option class="text-primary bg-surface" value="sunita">Sunita Bai — Packaging Staff</option>
+<option class="text-primary bg-surface" value="manoj">Manoj Kamble — Mandi Logistics Driver</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white pointer-events-none text-[22px]">unfold_more</span>
+</div>
+</div>
+<!-- Action Punch Triggers -->
+<div class="grid grid-cols-2 gap-space-sm pt-1">
+<button class="h-12 rounded-lg bg-tertiary-container hover:bg-tertiary text-white font-title-md text-title-md flex items-center justify-center space-x-2 shadow-sm active:scale-95 transition-all" id="checkInBtn" type="button">
+<span class="material-symbols-outlined text-tertiary-fixed text-[20px]" style="font-variation-settings: 'FILL' 1;">login</span>
+<span>Tap Check In</span>
+</button>
+<button class="h-12 rounded-lg bg-white/10 hover:bg-white/20 text-white font-title-md text-title-md flex items-center justify-center space-x-2 active:scale-95 transition-all" id="checkOutBtn" type="button">
+<span class="material-symbols-outlined text-error-container text-[20px]">logout</span>
+<span>Check Out</span>
+</button>
+</div>
+<!-- Discretionary Privacy Note -->
+<div class="flex items-center space-x-1.5 pt-0.5 text-on-primary-container">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+<span class="font-label-md text-label-md">GPS coordinates logged strictly at punch time. No background tracking.</span>
+</div>
+</div>
+</div>
+<!-- Real-time Shift Log Header -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center space-x-2">
+<h3 class="font-headline-sm text-headline-sm text-primary">Daily Roster</h3>
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold">4 Registered</span>
+</div>
+<button class="text-secondary font-label-lg text-label-lg flex items-center space-x-1 py-1 hover:underline active:opacity-75" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Add Temporary Staff</span>
+</button>
+</div>
+<!-- Employee Attendance Cards List -->
+<div class="flex flex-col space-y-space-sm">
+<!-- Staff Card 1: Vikas Shinde -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col space-y-space-sm transition-all hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center space-x-3">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-inner" data-alt="Close up realistic portrait photo of a young smiling Indian retail shop salesman named Vikas Shinde wearing an apron at a grocery store counter, warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlvLyAPNxBWnuoj1bFbOA8t3X5VltTkm47vRKc1ubdRc-zNEp8gw299bbXStHkhhm0XFAm5LykU5276h5HEgcJ27KjsiUczpbDBEJ06l0hgf3DjzVST4sfw5fzPUBq9miDr8OEwQmDcrWtXMQ-yXA3j73vFKhpUGcdYnsaeGqUQqPCqTHDbnYo0DnJy3ogPp4QeifNXlHLIOBEXaHkTcDAoiRZ0Dq6WgKP-BF0LwdkfYdb8b_5LUM5"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-on-tertiary-container shadow-sm"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center space-x-1.5">
+<span class="font-title-md text-title-md text-primary font-bold">Vikas Shinde</span>
+<span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;" title="ID Verified">verified</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Counter Sales &amp; Billing</span>
+</div>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed/30 text-tertiary font-label-md text-label-md font-semibold">
+          On Time
+        </span>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-lg flex items-center justify-between">
+<div class="flex items-center space-x-2 text-on-surface">
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]">alarm_on</span>
+<span class="font-label-lg text-label-lg font-medium">In: <strong class="text-primary font-bold">08:55 AM</strong></span>
+</div>
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-tertiary">near_me</span>
+<span>Verified GPS Geofence</span>
+</div>
+</div>
+</div>
+<!-- Staff Card 2: Santosh Ghadge -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col space-y-space-sm transition-all hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center space-x-3">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-inner" data-alt="Portrait photo of Santosh Ghadge, an experienced middle-aged Indian warehouse supervisor inside a distribution godown, wearing a checked shirt, warm natural sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi_68lcr8Fse1_dElWSieF6L-8HD69hkscy2EZcIQ0CkK35249OLHh8J3mAdkhza_KxOP6TLedUwlPNnr7-eN-d9_9zN5Dor6VD1LtrcnIx8IGEx2_rv7I6xI5Snfk-VpkhsMuGzLYW6ZxCF6wwB_X3gAZIyf_nPaQNoYgI97_lq0sa6uAQRkWp6Ej9_pkYcQSqe49FzHQgRXIPw-9lddlBmbIfb3TkvFObhmML5KR0K975s4qcFXg"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-on-tertiary-container shadow-sm"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center space-x-1.5">
+<span class="font-title-md text-title-md text-primary font-bold">Santosh Ghadge</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Delivery &amp; Godown Inward</span>
+</div>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed/30 text-tertiary font-label-md text-label-md font-semibold">
+          Present
+        </span>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-lg flex items-center justify-between">
+<div class="flex items-center space-x-2 text-on-surface">
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]">alarm_on</span>
+<span class="font-label-lg text-label-lg font-medium">In: <strong class="text-primary font-bold">09:15 AM</strong></span>
+</div>
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-tertiary">near_me</span>
+<span>Verified GPS Geofence</span>
+</div>
+</div>
+</div>
+<!-- Staff Card 3: Sunita Bai -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col space-y-space-sm transition-all hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center space-x-3">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-inner" data-alt="Warm documentary style photo of Sunita Bai, a middle aged Indian female worker in traditional saree smiling gently in an artisanal packing department, natural daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZtD2a87cmbd64RUZd5My0_t61PjsxnUVnkKdWcxlowhI_Y-sfgiWL3dEKcdo-2UoVgnvcf1qXIY9x5ylPYWdnsKIZ_GqX0YZ6z4hKSOdUVQG_0OvDb4Vd9MkpwyrWEIeub0OTjJoxjRaP6kZ8ptXzQcb9q2KvngQuqbS3e-iLb1pm4ewnIVbnvYXss-4XYnerGQxZQ8MIkSPC69nB1CUi0kcyCE7qQwFeKqSGv-oOKszHyvGCcFUj"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-on-tertiary-container shadow-sm"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center space-x-1.5">
+<span class="font-title-md text-title-md text-primary font-bold">Sunita Bai</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Shop Maintenance &amp; Packaging</span>
+</div>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md font-semibold">
+          Manual Override
+        </span>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-lg flex items-center justify-between">
+<div class="flex items-center space-x-2 text-on-surface">
+<span class="material-symbols-outlined text-outline text-[18px]">verified</span>
+<span class="font-label-lg text-label-lg font-medium">In: <strong class="text-primary font-bold">08:30 AM</strong></span>
+</div>
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">person_check</span>
+<span>Signed by Proprietor</span>
+</div>
+</div>
+</div>
+<!-- Staff Card 4: Manoj Kamble (Absent/Pending) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col space-y-space-sm transition-all hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center space-x-3">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover grayscale opacity-75 shadow-inner" data-alt="Authentic candid portrait of Manoj Kamble, an Indian logistics pickup driver seated near his vehicle in Pune market, warm ambient afternoon lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-wGa5jy2Cb0BOvcFbIJ8BwFsihRdYqf0ONfHYdQnww0oecX5kb5B_9zXei12jmwUZINrSAeOpfVBag389Jbfj1jAQYD19_PDL4j-ZZ6NrNibaTH_zMnKYrp4-S4m7QTh8ARCLcOJHSQyybxMIrr3wiDqa1GQlCaOABX8EJieQJcUtkE50wv9BuSHa4z3UsX2wJfQSAIj9lfGq0eXdDSTgK4ReJJ5IaQBaQH-InH-cPN1RqzsMDcdA"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-error shadow-sm"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center space-x-1.5">
+<span class="font-title-md text-title-md text-primary font-bold">Manoj Kamble</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Driver &amp; Mandi Logistics</span>
+</div>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-md text-label-md font-semibold">
+          Pending Punch
+        </span>
+</div>
+<div class="bg-error-container/20 p-2.5 rounded-lg flex items-center justify-between">
+<div class="flex items-center space-x-1.5 text-error font-body-md text-body-md font-medium">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span>No check-in recorded today</span>
+</div>
+<div class="flex items-center space-x-2">
+<button class="px-2.5 py-1 bg-surface-container-lowest text-primary hover:bg-surface-container text-label-md font-label-md font-semibold rounded flex items-center space-x-1 shadow-xs active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]">call</span>
+<span>Call</span>
+</button>
+<button class="px-2.5 py-1 bg-error-container text-on-error-container hover:bg-error/20 text-label-md font-label-md font-semibold rounded active:scale-95 transition-transform" type="button">
+            Mark Leave
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Monthly Salary & Khata Ledger Summary -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-xs flex flex-col space-y-space-sm mt-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<div class="w-7 h-7 rounded-full bg-secondary/15 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+</div>
+<span class="font-title-md text-title-md text-primary font-bold">October Muster Summary</span>
+</div>
+<span class="font-label-lg text-label-lg font-bold text-secondary">23/26 Logged</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+      Punch records automatically calibrate monthly hisab wage calculations. Deductions require proprietor digital authorization.
+    </p>
+<!-- Export Button -->
+<button class="w-full h-11 rounded-lg bg-surface-container-lowest hover:bg-surface-variant text-primary font-title-md text-title-md flex items-center justify-center space-x-2 active:scale-98 transition-all shadow-xs" type="button">
+<span class="material-symbols-outlined text-secondary text-[20px]">description</span>
+<span>Export Muster Sheet (PDF / WhatsApp)</span>
+</button>
+</div>
+<!-- Notification Toast Simulation -->
+<div class="fixed bottom-6 left-4 right-4 bg-primary text-white p-3 rounded-lg shadow-xl flex items-center justify-between transition-all duration-300 transform translate-y-32 opacity-0 pointer-events-none z-50" id="toastNotification">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-tertiary-fixed text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-md text-body-md" id="toastMessage">Check-in recorded successfully!</span>
+</div>
+<span class="font-label-md text-label-md text-on-primary-container">Just now</span>
+</div>
+</div>
+<script>
+  (function() {
+    const checkInBtn = document.getElementById('checkInBtn');
+    const checkOutBtn = document.getElementById('checkOutBtn');
+    const staffSelect = document.getElementById('staffSelect');
+    const toast = document.getElementById('toastNotification');
+    const toastMessage = document.getElementById('toastMessage');
+
+    function triggerToast(action) {
+      if (!toast || !staffSelect) return;
+      const staffName = staffSelect.options[staffSelect.selectedIndex].text.split('—')[0].trim();
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      toastMessage.textContent = `${action} marked for ${staffName} at ${time}`;
+      
+      toast.classList.remove('translate-y-32', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-32', 'opacity-0');
+      }, 3200);
+    }
+
+    if (checkInBtn) {
+      checkInBtn.addEventListener('click', () => triggerToast('Check-In (GPS Verified)'));
+    }
+
+    if (checkOutBtn) {
+      checkOutBtn.addEventListener('click', () => triggerToast('Check-Out'));
+    }
+  })();
+</script></main></body></html>

@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "GrowNova OS",
+    "slug": "grownova-os",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#102B4E"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.grownova.os"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#102B4E",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "package": "com.grownova.os",
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

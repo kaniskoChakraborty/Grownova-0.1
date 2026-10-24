@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed-variant": "#5e4200", "on-tertiary-container": "#54a353", "on-secondary-fixed": "#271900", "primary-fixed-dim": "#afc7f3", "on-secondary": "#ffffff", "inverse-surface": "#31302e", "inverse-on-surface": "#f3f0ec", "inverse-primary": "#afc7f3", "surface-variant": "#e5e2de", "on-primary-fixed-variant": "#2f476c", "outline-variant": "#c4c6cf", "error-container": "#ffdad6", "on-tertiary": "#ffffff", "on-tertiary-fixed": "#002204", "tertiary-fixed-dim": "#88d982", "secondary-fixed-dim": "#efbf64", "tertiary-fixed": "#a3f69c", "error": "#ba1a1a", "on-primary": "#ffffff", "on-surface": "#1c1c1a", "on-primary-fixed": "#001b3c", "on-tertiary-fixed-variant": "#005312", "surface-container": "#f0ede9", "background": "#fcf9f5", "surface": "#fcf9f5", "tertiary-container": "#003307", "surface-dim": "#dcdad6", "outline": "#74777f", "surface-container-low": "#f6f3ef", "on-secondary-container": "#785500", "primary": "#001633", "surface-container-highest": "#e5e2de", "primary-container": "#102b4e", "tertiary": "#001c03", "primary-fixed": "#d5e3ff", "on-background": "#1c1c1a", "surface-bright": "#fcf9f5", "secondary-container": "#fecd70", "on-error-container": "#93000a", "secondary-fixed": "#ffdea6", "on-primary-container": "#7b93bc", "surface-tint": "#475f85", "secondary": "#7c5800", "on-error": "#ffffff", "surface-container-high": "#eae8e4", "on-surface-variant": "#44474e", "surface-container-lowest": "#ffffff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter": "1rem", "gutter-sm": "0.75rem", "space-md": "1rem", "space-sm": "0.5rem", "margin": "1rem", "space-lg": "1.5rem", "space-xl": "2rem", "space-xs": "0.25rem", "margin-lg": "1.5rem" }, fontFamily: { "display-lg-mobile": ["Playfair Display"], "display-lg": ["Playfair Display"], "currency-display": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"], "currency-headline": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"] }, fontSize: { "display-lg-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "600" }], "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" }], "currency-display": ["28px", { lineHeight: "34px", letterSpacing: "-0.03em", fontWeight: "700" }], "headline-lg": ["24px", { lineHeight: "32px", fontWeight: "600" }], "body-lg": ["15px", { lineHeight: "22px", fontWeight: "400" }], "title-md": ["16px", { lineHeight: "22px", fontWeight: "600" }], "currency-headline": ["20px", { lineHeight: "26px", letterSpacing: "-0.02em", fontWeight: "700" }], "label-md": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "700" }], "label-lg": ["13px", { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased min-h-full flex flex-col"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-20 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="GrowNova OS Emblem" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiN2NnNoXNLSDjK2kKo89DOHEFqkjPVdSirSq5yQV3QGP8bnPvRCgPvH2-Z_i-LA2kVPqhomMhyKCi79jA8-bkZfucEF0xe6Gziw99UveQGEAIXszxSXaJAgoNugHN6xujJKedXqVtEt_ocRiw3Jkp1bzAfBu8RD7wTN-YFJD8HTw6-W0ODdXp9NLIlpCQEd88BmlCLLfRTFW0ss7ax-PoPgF9B0r7YVp6qAQgOip7Vom-QAYLq3HM"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-title-md text-title-md text-primary truncate leading-none">GrowNova OS</span><span class="hidden sm:inline-block font-label-md text-label-md text-secondary bg-secondary-fixed/40 px-1.5 py-0.5 rounded-full leading-none">v2.4</span></div><span class="font-label-md text-label-md text-on-surface-variant truncate leading-tight mt-0.5">Shree Ganesh Traders · Pune</span></div></div><div class="flex items-center gap-space-xs flex-shrink-0"><div class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary text-label-md font-label-md"><span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="hidden xs:inline">Online · </span>Synced</div><button aria-label="Notifications and Shop Profile" class="relative flex items-center justify-center p-1 rounded-full active:scale-95 transition-transform" type="button"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4BYrsEl7-r5Ky4OByjhRiJajjSepL4bjZ_Cw9QfJHYSY2Dqa1cQSL7HxJm_RRv93pBEFdZxQ2GttiOSzu7eDIvqwi4RMk3HKqu6qN1kPcWtxN1573dk5GtIlFMmIq5jp2MZcjCQz_53u-c5YX8PfpTUcM1mt_zHHvzBYLi_CJ8pYDVR717F1kcoyUO_xm3EFAWBL_Zqv-FC_IWCH6njLrU7HQLHn9B7tzB5AgMxD6KeB6mResUTFY"/><span class="absolute top-1 right-1 w-2.5 h-2.5 bg-secondary rounded-full ring-2 ring-surface"></span></button></div></div><div class="px-margin pb-2 flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar"><a class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high/80 text-on-surface text-label-md font-label-md hover:bg-surface-variant transition-colors" href="#"><span class="material-symbols-outlined text-[16px] text-secondary">receipt_long</span><span>Bills</span></a><a class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high/80 text-on-surface text-label-md font-label-md hover:bg-surface-variant transition-colors" href="#"><span class="material-symbols-outlined text-[16px] text-primary-container">badge</span><span>Attendance</span></a></div><span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold truncate">Inventory</span></div></header><main class="flex flex-col relative w-full pt-28 pb-24 px-margin bg-surface flex-grow"><div class="flex flex-col w-full gap-space-md">
+<!-- Top Search & Quick Barcode Utility -->
+<section class="flex flex-col gap-space-sm">
+<div class="relative flex items-center w-full">
+<span class="material-symbols-outlined absolute left-3.5 text-[20px] text-on-surface-variant pointer-events-none">search</span>
+<input class="w-full h-12 pl-10 pr-12 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/70 focus:outline-none focus:bg-surface-container-lowest shadow-sm transition-all" id="inventorySearch" placeholder="Search 280+ items by name, barcode..." type="search"/>
+<button aria-label="Scan barcode directly" class="absolute right-2 p-2 rounded-md text-primary hover:bg-surface-container-high transition-colors active:scale-95 flex items-center justify-center" id="cameraScanTrigger" type="button">
+<span class="material-symbols-outlined text-[20px]">barcode_scanner</span>
+</button>
+</div>
+<!-- Category Filter Chips -->
+<div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar py-0.5">
+<button class="category-chip active flex-shrink-0 px-3 py-1.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm" type="button">
+        All (284)
+      </button>
+<button class="category-chip flex-shrink-0 px-3 py-1.5 rounded-full bg-secondary-container/50 text-on-secondary-container font-label-lg text-label-lg hover:bg-secondary-container transition-colors flex items-center gap-1" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+        Low Stock (5)
+      </button>
+<button class="category-chip flex-shrink-0 px-3 py-1.5 rounded-full bg-error-container/60 text-on-error-container font-label-lg text-label-lg hover:bg-error-container transition-colors flex items-center gap-1" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+        Out of Stock (2)
+      </button>
+<button class="category-chip flex-shrink-0 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high transition-colors" type="button">
+        Grains &amp; Staples
+      </button>
+<button class="category-chip flex-shrink-0 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high transition-colors" type="button">
+        Dairy &amp; FMCG
+      </button>
+</div>
+</section>
+<!-- Metrics Tiles (3-Column compact layout) -->
+<section class="grid grid-cols-3 gap-space-xs">
+<div class="flex flex-col p-3 rounded-lg bg-surface-container-lowest shadow-sm">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-md text-label-md uppercase tracking-wider">Products</span>
+<span class="material-symbols-outlined text-[16px] text-primary">inventory</span>
+</div>
+<div class="mt-1 font-currency-display text-currency-display text-primary leading-tight">284</div>
+<span class="mt-0.5 font-label-md text-label-md text-on-tertiary-container flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">check_circle</span> 98% active
+      </span>
+</div>
+<div class="flex flex-col p-3 rounded-lg bg-surface-container-lowest shadow-sm">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-md text-label-md uppercase tracking-wider">Low Stock</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">warning</span>
+</div>
+<div class="mt-1 font-currency-display text-currency-display text-secondary leading-tight">05</div>
+<span class="mt-0.5 font-label-md text-label-md text-on-secondary-fixed-variant">Refill today</span>
+</div>
+<div class="flex flex-col p-3 rounded-lg bg-surface-container-lowest shadow-sm">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-md text-label-md uppercase tracking-wider">Empty</span>
+<span class="material-symbols-outlined text-[16px] text-error">remove_shopping_cart</span>
+</div>
+<div class="mt-1 font-currency-display text-currency-display text-error leading-tight">02</div>
+<span class="mt-0.5 font-label-md text-label-md text-error">Zero in godown</span>
+</div>
+</section>
+<!-- Primary Action Deck -->
+<section class="flex flex-col gap-space-xs">
+<div class="grid grid-cols-2 gap-space-xs">
+<button class="flex items-center justify-center gap-1.5 h-12 px-4 rounded-lg bg-primary text-on-primary font-title-md text-title-md shadow-sm active:scale-98 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+<span>Add Product</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 h-12 px-4 rounded-lg bg-surface-container-lowest text-primary font-title-md text-title-md shadow-sm active:scale-98 hover:bg-surface-container-low transition-all" type="button">
+<span class="material-symbols-outlined text-[20px] text-secondary">tune</span>
+<span>Update Stock</span>
+</button>
+</div>
+<!-- AI / Bill Scan Smart Utility Bar -->
+<button class="w-full flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-secondary-fixed/40 via-surface-container-low to-surface-container-low shadow-sm active:scale-98 transition-all text-left" type="button">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container flex-shrink-0">
+<span class="material-symbols-outlined text-[18px]">document_scanner</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface leading-tight">Scan Barcode / Inward Bill PDF</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Instant stock match &amp; auto-extract details</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-secondary">arrow_forward</span>
+</button>
+</section>
+<!-- Items List Container -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Inventory Catalog (284)</span>
+<span class="font-label-md text-label-md text-primary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">swap_vert</span> By Stock Level
+      </span>
+</div>
+<!-- Item 1: Fortune Sunflower Oil (Low Stock) -->
+<article class="flex flex-col p-3 rounded-xl bg-surface-container-lowest shadow-sm gap-space-sm" data-item-id="FS-1001">
+<div class="flex items-start gap-3">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Modern commercial packaging of Fortune Sunlite refined sunflower oil 1 liter packet against warm sunlight in an authentic Indian grocery store corner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_dJfEcP2Ga2HRwZC4Hs_1qegzPZdEZYpM1jq0FQFwf08q4wTi8mV0tb2TlkhHvwvkOFgixuYyClOA09tzIb9ITYjmacWamLbcCbNGyZbDOe91F08UGTpSMINGKFCKQZIvG9FpawaF-8CaM_FNzwEMgeV_cGK-bxVaj2GJFw0ixID3_VzIDTMNaxQz-HWj63ulfc32Nni__3hsA0mkMd0U5xjM080jcbjqX-72UZmsYMgoENuPglob"/>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-title-md text-title-md text-on-surface truncate">Fortune Sunlite Sunflower Oil 1L</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/70 text-on-secondary-container font-label-md text-label-md font-semibold whitespace-nowrap">
+              Low Stock
+            </span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 font-label-md text-label-md text-on-surface-variant">
+<span>SKU: FS-1001</span>
+<span>·</span>
+<span>Edible Oils</span>
+</div>
+<div class="flex items-center gap-3 mt-1.5 font-body-md text-body-md">
+<span class="font-bold text-primary font-currency-headline text-currency-headline">₹145</span>
+<span class="text-on-surface-variant text-label-md font-label-md">Cost ₹128 (Margin +13%)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 bg-surface-container-low/50 -mx-3 -mb-3 px-3 py-2 rounded-b-xl">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-secondary">inventory_2</span>
+<span class="font-headline-sm text-headline-sm text-on-surface" id="stock-count-1">14</span>
+<span class="font-label-md text-label-md text-on-surface-variant">pkts (Min: 20)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button class="h-8 px-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-lg text-label-lg active:scale-95 transition-transform flex items-center gap-1" onclick="updateItemStock('stock-count-1', -1)" type="button">
+<span class="material-symbols-outlined text-[14px]">remove</span> Sold
+          </button>
+<button class="h-8 px-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg active:scale-95 transition-transform flex items-center gap-1 shadow-sm" onclick="updateItemStock('stock-count-1', 5)" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span> Add Stock
+          </button>
+</div>
+</div>
+</article>
+<!-- Item 2: Aashirvaad Sharbati Atta (In Stock) -->
+<article class="flex flex-col p-3 rounded-xl bg-surface-container-lowest shadow-sm gap-space-sm" data-item-id="AA-5020">
+<div class="flex items-start gap-3">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Pack of Aashirvaad Sharbati Select whole wheat atta 10kg grain bag neatly stacked in an Indian retail store pantry shelf, bright morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgURX_HZ4ILjtVgt4lPVzeqCtE-4cPYiRT_N00zdjHbImZ1ERa2yc8RIQ0AAXOmTr7O7AQEFbVVeAaTbqalIysp36-a1VORC3iAqo8JIxdiag-IBobNmWamPlbiM5eWUSbtMZYgZeAooxjtd0I25LHfj2wdec6gR5eHjJFWbMk1vj6vo2IklVH06h-7QRDv7_44RipYpeWm-yjxi3aLjlTrgEatfjGuxP32CEJZKL6olQnQOvH9wq-"/>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-title-md text-title-md text-on-surface truncate">Aashirvaad Sharbati Atta 10kg</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed/40 text-tertiary font-label-md text-label-md font-semibold whitespace-nowrap">
+              In Stock
+            </span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 font-label-md text-label-md text-on-surface-variant">
+<span>SKU: AA-5020</span>
+<span>·</span>
+<span>Staples</span>
+</div>
+<div class="flex items-center gap-3 mt-1.5 font-body-md text-body-md">
+<span class="font-bold text-primary font-currency-headline text-currency-headline">₹480</span>
+<span class="text-on-surface-variant text-label-md font-label-md">Cost ₹425 (Margin +12.9%)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 bg-surface-container-low/50 -mx-3 -mb-3 px-3 py-2 rounded-b-xl">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary">inventory_2</span>
+<span class="font-headline-sm text-headline-sm text-on-surface" id="stock-count-2">38</span>
+<span class="font-label-md text-label-md text-on-surface-variant">bags</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button class="h-8 px-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-lg text-label-lg active:scale-95 transition-transform flex items-center gap-1" onclick="updateItemStock('stock-count-2', -1)" type="button">
+<span class="material-symbols-outlined text-[14px]">remove</span> Sold
+          </button>
+<button class="h-8 px-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg active:scale-95 transition-transform flex items-center gap-1 shadow-sm" onclick="updateItemStock('stock-count-2', 10)" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span> Add Stock
+          </button>
+</div>
+</div>
+</article>
+<!-- Item 3: Tata Salt Vacuum Evaporated (Normal Stock) -->
+<article class="flex flex-col p-3 rounded-xl bg-surface-container-lowest shadow-sm gap-space-sm" data-item-id="TS-0012">
+<div class="flex items-start gap-3">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Tata Salt iconic vacuum evaporated iodized salt packet on a tidy grocery shelf illuminated with warm indoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2Dx_A9TuuWDbOrE28gTvOS9Hfsq1cmLiZuonFISUDitg4ysrU7pKmYhqPAbIq39JrSOkorXDZsV043yOnjqRpPsSw0OVckqkwJ1EMhqHfp-ucXLZZ-jVhmn7XCBO6y3rSyVLa9tFp_S3pFvSZAym12P4spjvNrxdlJ0E3Ja4oH9idskTbsf41CCzmara00L8QFF1CZcS5e20jMPZnGfTgphbmMB9-zP_bGK7jOM-frQocfctIwc06"/>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-title-md text-title-md text-on-surface truncate">Tata Salt Vacuum Evaporated 1kg</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed/30 text-tertiary font-label-md text-label-md font-semibold whitespace-nowrap">
+              Normal
+            </span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 font-label-md text-label-md text-on-surface-variant">
+<span>SKU: TS-0012</span>
+<span>·</span>
+<span>Spices &amp; Salt</span>
+</div>
+<div class="flex items-center gap-3 mt-1.5 font-body-md text-body-md">
+<span class="font-bold text-primary font-currency-headline text-currency-headline">₹28</span>
+<span class="text-on-surface-variant text-label-md font-label-md">Cost ₹22 (Margin +27%)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 bg-surface-container-low/50 -mx-3 -mb-3 px-3 py-2 rounded-b-xl">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary">inventory_2</span>
+<span class="font-headline-sm text-headline-sm text-on-surface" id="stock-count-3">85</span>
+<span class="font-label-md text-label-md text-on-surface-variant">pkts</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button class="h-8 px-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-lg text-label-lg active:scale-95 transition-transform flex items-center gap-1" onclick="updateItemStock('stock-count-3', -1)" type="button">
+<span class="material-symbols-outlined text-[14px]">remove</span> Sold
+          </button>
+<button class="h-8 px-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg active:scale-95 transition-transform flex items-center gap-1 shadow-sm" onclick="updateItemStock('stock-count-3', 10)" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span> Add Stock
+          </button>
+</div>
+</div>
+</article>
+<!-- Item 4: Amul Butter 500g (Out of Stock & 1-Tap Reorder) -->
+<article class="flex flex-col p-3 rounded-xl bg-surface-container-lowest shadow-sm gap-space-sm" data-item-id="AM-9011">
+<div class="flex items-start gap-3">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden bg-surface-container-high flex-shrink-0 opacity-80">
+<img class="w-full h-full object-cover grayscale-[30%]" data-alt="Amul pasteurized butter 500 grams carton in classic yellow branding ready for cold refrigeration, crisp commercial shot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj2ihZWR_SHioa1yyo_ZP01iUXX_4s2nsdkxyNQWg6C3d4NKF_sVV9281eZkMoPxHJlW_GfmWwkaA7j0FpLiamu0uibreCtpq9Fj5t6HQvo_5nhj3Sy9zI0ov03xyY9K37yOOa2VvjOSSSSqi9zt6rL5pRCKY8RO-x39o17TGKdkwB2GGLBwafY7tuWlsfMvWuGdFXRSc1uzeC7jMPD6wyliB_hPS8F8FP86b0SbCkp0Yyres0l5av"/>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-title-md text-title-md text-on-surface truncate">Amul Butter 500g</span>
+<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-md text-label-md font-semibold whitespace-nowrap">
+              Out of Stock
+            </span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 font-label-md text-label-md text-on-surface-variant">
+<span>SKU: AM-9011</span>
+<span>·</span>
+<span>Dairy</span>
+</div>
+<div class="flex items-center gap-3 mt-1.5 font-body-md text-body-md">
+<span class="font-bold text-primary font-currency-headline text-currency-headline">₹275</span>
+<span class="text-on-surface-variant text-label-md font-label-md">Cost ₹250</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 bg-error-container/20 -mx-3 -mb-3 px-3 py-2 rounded-b-xl">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-error">error</span>
+<span class="font-headline-sm text-headline-sm text-error">0</span>
+<span class="font-label-md text-label-md text-on-surface-variant">pkts in stock</span>
+</div>
+<button class="h-8 px-3 rounded-lg bg-secondary text-on-primary font-label-lg text-label-lg active:scale-95 transition-transform flex items-center gap-1 shadow-sm" onclick="triggerReorder('Amul Butter 500g')" type="button">
+<span class="material-symbols-outlined text-[16px]">local_shipping</span>
+<span>1-Tap Reorder AMUL</span>
+</button>
+</div>
+</article>
+<!-- Item 5: Maggi Noodles 280g (In Stock) -->
+<article class="flex flex-col p-3 rounded-xl bg-surface-container-lowest shadow-sm gap-space-sm" data-item-id="MG-4410">
+<div class="flex items-start gap-3">
+<div class="relative w-14 h-14 rounded-lg overflow-hidden bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Pack of Maggi 2-Minute masala instant noodles 280 grams multi-pack packaging shown in high detail on grocery counter" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOy58S0JT2gNy91ND5mSAhNxz1ZwWBZEz76cDwI-o_ghE8LnAqgQ7mg-b91ehzC9b7H0b4RBO5DlEsoZ0LfytxXgiw790_rRAdBEIgiJapPHjPKFH25IiTfhbTl2Zwgc6UKfLxhxURmSW8CwdcCpCmSiHRY6DIydTec1-OdtP0Ty2GSAqcYGv4KzZtArRNLmf_aR0NSAmVMj3xocFtJm60FbkPGuuu4ZGb2ANw6JTwo0A6zHyaK1WC"/>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-title-md text-title-md text-on-surface truncate">Maggi 2-Minute Noodles 280g</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed/40 text-tertiary font-label-md text-label-md font-semibold whitespace-nowrap">
+              In Stock
+            </span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 font-label-md text-label-md text-on-surface-variant">
+<span>SKU: MG-4410</span>
+<span>·</span>
+<span>Snacks &amp; FMCG</span>
+</div>
+<div class="flex items-center gap-3 mt-1.5 font-body-md text-body-md">
+<span class="font-bold text-primary font-currency-headline text-currency-headline">₹40</span>
+<span class="text-on-surface-variant text-label-md font-label-md">Cost ₹34 (Margin +17.6%)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 bg-surface-container-low/50 -mx-3 -mb-3 px-3 py-2 rounded-b-xl">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary">inventory_2</span>
+<span class="font-headline-sm text-headline-sm text-on-surface" id="stock-count-5">52</span>
+<span class="font-label-md text-label-md text-on-surface-variant">pkts</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button class="h-8 px-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-lg text-label-lg active:scale-95 transition-transform flex items-center gap-1" onclick="updateItemStock('stock-count-5', -1)" type="button">
+<span class="material-symbols-outlined text-[14px]">remove</span> Sold
+          </button>
+<button class="h-8 px-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg active:scale-95 transition-transform flex items-center gap-1 shadow-sm" onclick="updateItemStock('stock-count-5', 12)" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span> Add Stock
+          </button>
+</div>
+</div>
+</article>
+</section>
+<!-- Recent Inward Stock & Purchase Integration Feed -->
+<section class="flex flex-col p-3.5 rounded-xl bg-surface-container-low shadow-sm gap-space-xs mt-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">local_shipping</span>
+<span class="font-label-lg text-label-lg text-primary uppercase tracking-wide">Purchase Sync Feed</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Today, 11:20 AM</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-snug">
+<span class="font-semibold text-tertiary">+48 pkts</span> Fortune Sunlite Oil added via purchase bill from 
+      <span class="font-semibold text-primary">Shree Balaji Wholesale</span>.
+    </p>
+<div class="flex items-center justify-between mt-1">
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">receipt</span> Inv #SB-8921 · Paid in Cash
+      </span>
+<a class="font-label-md text-label-md text-secondary hover:underline font-semibold flex items-center gap-0.5" href="#">
+        View Bill <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- Interactive Toast Notification Element (Hidden by default) -->
+<div class="fixed bottom-20 left-4 right-4 z-50 flex items-center justify-between px-4 py-3 rounded-lg bg-inverse-surface text-inverse-on-surface shadow-xl opacity-0 pointer-events-none transition-opacity duration-300" id="actionToast">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-secondary-fixed-dim" id="toastIcon">check_circle</span>
+<span class="font-label-lg text-label-lg" id="toastMessage">Stock updated successfully</span>
+</div>
+<span class="font-label-md text-label-md text-inverse-primary uppercase tracking-wider font-semibold">Undo</span>
+</div>
+</div>
+<script>
+  function updateItemStock(counterId, delta) {
+    const el = document.getElementById(counterId);
+    if (!el) return;
+    let currentVal = parseInt(el.textContent, 10) || 0;
+    const newVal = Math.max(0, currentVal + delta);
+    el.textContent = newVal;
+    
+    showToast(delta > 0 ? `Added +${delta} to stock` : `Recorded sale (-1 pkt)`);
+  }
+
+  function triggerReorder(itemName) {
+    showToast(`PO generated for ${itemName}. Sent to distributor via WhatsApp.`);
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('actionToast');
+    const msgEl = document.getElementById('toastMessage');
+    if (!toast || !msgEl) return;
+    
+    msgEl.textContent = msg;
+    toast.classList.remove('opacity-0', 'pointer-events-none');
+    toast.classList.add('opacity-100');
+    
+    setTimeout(() => {
+      toast.classList.remove('opacity-100');
+      toast.classList.add('opacity-0', 'pointer-events-none');
+    }, 2800);
+  }
+
+  // Filter chips interaction
+  document.querySelectorAll('.category-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('.category-chip').forEach(c => {
+        c.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+        if (!c.classList.contains('bg-secondary-container/50') && !c.classList.contains('bg-error-container/60')) {
+          c.classList.add('bg-surface-container', 'text-on-surface-variant');
+        }
+      });
+      this.classList.remove('bg-surface-container', 'text-on-surface-variant');
+      this.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+    });
+  });
+
+  // Highlight bottom bar current page
+  const inventoryTab = document.querySelector('nav a[data-path="inventory"]');
+  if (inventoryTab) {
+    inventoryTab.classList.add('text-primary', 'font-bold');
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(16,43,78,0.04)]" data-active-classes="text-primary font-bold after:content-[''] after:block after:w-1 after:h-1 after:bg-secondary after:rounded-full after:mt-0.5"><div class="h-16 px-space-xs flex items-center justify-around"><a class="flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="home" href="01-home-owner-desk.html"><span class="material-symbols-outlined text-[22px]">storefront</span><span class="font-label-md text-label-md mt-0.5">Home</span></a><a class="flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="sales" href="02-sales-management.html"><span class="material-symbols-outlined text-[22px]">point_of_sale</span><span class="font-label-md text-label-md mt-0.5">Sales</span></a><a class="flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="purchase" href="03-purchase-suppliers.html"><span class="material-symbols-outlined text-[22px]">shopping_bag</span><span class="font-label-md text-label-md mt-0.5">Purchase</span></a><a aria-current="page" class="flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 transition-colors text-primary font-bold after:content-[''] after:block after:w-1 after:h-1 after:bg-secondary after:rounded-full after:mt-0.5" data-path="inventory" href="06-inventory-stock.html"><span class="material-symbols-outlined text-[22px]">inventory_2</span><span class="font-label-md text-label-md mt-0.5">Inventory</span></a><a class="flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="accounts" href="05-accounts-daily-cashflow.html"><span class="material-symbols-outlined text-[22px]">account_balance_wallet</span><span class="font-label-md text-label-md mt-0.5">Accounts</span></a></div></nav></body></html>

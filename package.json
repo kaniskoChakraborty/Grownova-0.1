@@ -5,11 +5,15 @@
   "private": true,
   "workspaces": [
     "backend",
-    "web"
+    "web",
+    "app"
   ],
   "scripts": {
     "dev": "npm --prefix web run dev",
     "dev:web": "npm --prefix web run dev",
+    "dev:app": "npm --prefix app run start",
+    "dev:mobile": "npm --prefix app run start",
+    "start:mobile": "npm --prefix app run start",
     "dev:backend": "npm --prefix backend run start:dev",
     "build": "npm --prefix backend run build && npm --prefix web run build",
     "build:backend": "npm --prefix backend run build",

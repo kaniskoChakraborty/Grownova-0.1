@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GrowNova OS - Mobile App Viewer & Runner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#102B4E',
+              darkNavy: '#0B2340',
+              gold: '#C69A43',
+              goldLight: '#D5AD66',
+              ivory: '#F8F5F1'
+            }
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Phone Mockup Styling */
+    .phone-frame {
+      width: 390px;
+      height: 844px;
+      border-radius: 54px;
+      background: #000;
+      box-shadow: 0 0 0 12px #262b33, 0 0 0 14px #424953, 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .phone-island {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 32px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      pointer-events: none;
+    }
+    .island-camera {
+      width: 10px;
+      height: 10px;
+      background: #111;
+      border: 1.5px solid #222;
+      border-radius: 50%;
+    }
+    .island-sensor {
+      width: 8px;
+      height: 8px;
+      background: #0d1527;
+      border-radius: 50%;
+    }
+    .screen-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 46px;
+      background: #FCF9F5;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(198, 154, 67, 0.4);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(198, 154, 67, 0.8);
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans overflow-x-hidden">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-brand-darkNavy/90 backdrop-blur-md border-b border-brand-gold/20 px-6 py-3.5 flex items-center justify-between shrink-0 z-40">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-gold to-brand-goldLight flex items-center justify-center text-brand-darkNavy font-black text-xl shadow-lg">
+        G
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-display font-bold text-lg text-white tracking-wide">GrowNova OS</span>
+          <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-brand-gold/20 text-brand-gold border border-brand-gold/40">
+            Mobile Runner
+          </span>
+          <span class="text-[11px] text-slate-400 hidden sm:inline">Project: 6027635227182408661</span>
+        </div>
+        <p class="text-xs text-slate-400">Merchant Operating System • 7 High-Fidelity Stitch Screens</p>
+      </div>
+    </div>
+
+    <!-- Right utility actions -->
+    <div class="flex items-center gap-3">
+      <a href="http://localhost:5174" target="_blank" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors">
+        <span class="material-symbols-outlined text-[16px] text-brand-gold">dashboard</span>
+        Web App (Port 5174)
+      </a>
+      <a href="./DESIGN.md" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-navy hover:bg-brand-navy/80 text-xs font-semibold text-brand-gold border border-brand-gold/30 transition-colors">
+        <span class="material-symbols-outlined text-[16px]">palette</span>
+        Design System
+      </a>
+      <button onclick="openCurrentScreenNewTab()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-gold hover:bg-brand-goldLight text-brand-darkNavy text-xs font-bold shadow-md transition-all active:scale-95">
+        <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+        Open Screen
+      </button>
+    </div>
+  </header>
+
+  <!-- Screen Selector Carousel Bar -->
+  <div class="bg-slate-950/80 border-b border-slate-800 px-6 py-2.5 overflow-x-auto shrink-0 flex items-center gap-2">
+    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-2 flex items-center gap-1">
+      <span class="material-symbols-outlined text-[15px] text-brand-gold">smartphone</span> Screens:
+    </span>
+    <div id="screen-pills" class="flex items-center gap-2">
+      <!-- Generated via JS -->
+    </div>
+  </div>
+
+  <!-- Main View Area -->
+  <main class="flex-grow flex flex-col lg:flex-row items-center justify-center p-6 gap-8 relative overflow-y-auto">
+
+    <!-- View Mode Toolbar -->
+    <div class="absolute top-6 left-6 z-20 flex flex-wrap items-center gap-2 bg-slate-800/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-700 shadow-xl">
+      <button id="btn-mode-interactive" onclick="setViewMode('interactive')" class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-brand-gold text-brand-darkNavy transition-all shadow-sm">
+        <span class="material-symbols-outlined text-[16px]">touch_app</span>
+        Interactive Live App
+      </button>
+      <button id="btn-mode-split" onclick="setViewMode('split')" class="px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white transition-all">
+        <span class="material-symbols-outlined text-[16px]">vertical_split</span>
+        Split View
+      </button>
+      <button id="btn-mode-spec" onclick="setViewMode('spec')" class="px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white transition-all">
+        <span class="material-symbols-outlined text-[16px]">image</span>
+        Stitch High-Res Design
+      </button>
+
+      <div class="h-4 w-px bg-slate-700 mx-1"></div>
+
+      <!-- Device Scale Controller -->
+      <select id="scale-select" onchange="changeScale(this.value)" class="bg-slate-900 text-slate-200 text-xs rounded-lg px-2 py-1 border border-slate-700 focus:outline-none">
+        <option value="1">100% Size</option>
+        <option value="0.9">90% Size</option>
+        <option value="0.8" selected>80% Size</option>
+        <option value="0.75">75% Size</option>
+      </select>
+
+      <button onclick="reloadScreen()" title="Reload Screen" class="w-7 h-7 rounded-lg bg-slate-900 hover:bg-slate-700 flex items-center justify-center text-slate-300 border border-slate-700 transition-colors">
+        <span class="material-symbols-outlined text-[15px]">refresh</span>
+      </button>
+    </div>
+
+    <!-- Simulator Stage Container -->
+    <div id="stage-container" class="flex flex-wrap items-center justify-center gap-10 mt-12 mb-6 transition-all duration-300">
+      
+      <!-- Interactive Mobile Device Frame -->
+      <div id="interactive-device" class="flex flex-col items-center">
+        <div class="phone-frame" id="phone-wrapper" style="transform: scale(0.8); transform-origin: top center;">
+          <div class="phone-island">
+            <div class="island-sensor"></div>
+            <div class="island-camera"></div>
+          </div>
+          <iframe id="app-iframe" src="./01-home-owner-desk.html" class="screen-iframe" title="Mobile App Screen"></iframe>
+        </div>
+        <div class="mt-2 text-center">
+          <span class="text-[11px] font-bold text-slate-400 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
+            Viewport: 390 × 844 px (iPhone 16 Pro Standard)
+          </span>
+        </div>
+      </div>
+
+      <!-- Stitch High-Res Design Comparison Frame -->
+      <div id="spec-device" class="hidden flex flex-col items-center">
+        <div class="phone-frame bg-slate-950 overflow-y-auto" id="spec-wrapper" style="transform: scale(0.8); transform-origin: top center;">
+          <img id="spec-img" src="./01-home-owner-desk.jpg" alt="Stitch Design Spec" class="w-full object-cover">
+        </div>
+        <div class="mt-2 text-center">
+          <span class="text-[11px] font-bold text-brand-gold bg-brand-navy/80 px-3 py-1 rounded-full border border-brand-gold/30">
+            Stitch 2x Render Spec (780px)
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Screen Meta Footer Bar -->
+  <footer class="bg-slate-950 border-t border-slate-800 px-6 py-2.5 flex flex-wrap items-center justify-between text-xs text-slate-400 shrink-0">
+    <div class="flex items-center gap-3">
+      <span class="flex items-center gap-1.5 text-emerald-400 font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        Interactive Runner Active (Port 5175)
+      </span>
+      <span class="text-slate-600">•</span>
+      <span id="footer-active-screen" class="font-bold text-slate-200">01. GrowNova OS - Home / Owner Desk</span>
+    </div>
+    <div class="flex items-center gap-4 text-slate-500">
+      <span>Color Theme: <strong class="text-brand-gold">Merchant Gold & Deep Navy</strong></span>
+      <span>Typography: <strong class="text-slate-300">Playfair Display & Plus Jakarta Sans</strong></span>
+      <span>Source: <strong class="text-slate-300">Google Stitch</strong></span>
+    </div>
+  </footer>
+
+  <script>
+    const screens = [
+      {
+        id: '92f2db9b01e74bd0ac752e63d7f49da4',
+        title: 'Home / Owner Desk',
+        hindi: 'होम डेस्क',
+        file: '01-home-owner-desk.html',
+        image: '01-home-owner-desk.jpg',
+        icon: 'storefront'
+      },
+      {
+        id: 'c9ca41100de84655bf332803707e3e9a',
+        title: 'Sales Management',
+        hindi: 'बिक्री प्रबंधन',
+        file: '02-sales-management.html',
+        image: '02-sales-management.jpg',
+        icon: 'point_of_sale'
+      },
+      {
+        id: '3f6d67aabdbf45ba9faddb9492249741',
+        title: 'Purchase & Suppliers',
+        hindi: 'खरीद व सप्लायर्स',
+        file: '03-purchase-suppliers.html',
+        image: '03-purchase-suppliers.jpg',
+        icon: 'shopping_bag'
+      },
+      {
+        id: 'abe355903b334352a626adbc2a2a2bbd',
+        title: 'Create Bill & POS',
+        hindi: '⚡ बिल बनाएं',
+        file: '04-create-bill-invoicing.html',
+        image: '04-create-bill-invoicing.jpg',
+        icon: 'receipt_long'
+      },
+      {
+        id: '5e6e153e04644a009bbc00aa21225bda',
+        title: 'Accounts & Cashflow',
+        hindi: 'खाता व रोकड़',
+        file: '05-accounts-daily-cashflow.html',
+        image: '05-accounts-daily-cashflow.jpg',
+        icon: 'account_balance_wallet'
+      },
+      {
+        id: '5d20e705bd634bb489ae7345915b4b3c',
+        title: 'Inventory & Stock',
+        hindi: 'स्टॉक व माल',
+        file: '06-inventory-stock.html',
+        image: '06-inventory-stock.jpg',
+        icon: 'inventory_2'
+      },
+      {
+        id: 'e8ea94dbcff549bd8c3ecf572937be6e',
+        title: 'Staff Attendance & Geotag',
+        hindi: 'स्टाफ हाजिरी',
+        file: '07-staff-attendance-geotag.html',
+        image: '07-staff-attendance-geotag.jpg',
+        icon: 'badge'
+      }
+    ];
+
+    let currentScreenIndex = 0;
+    let currentMode = 'interactive';
+
+    function renderScreenPills() {
+      const container = document.getElementById('screen-pills');
+      container.innerHTML = screens.map((screen, idx) => {
+        const isActive = idx === currentScreenIndex;
+        return `
+          <button onclick="selectScreen(${idx})" class="px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition-all flex items-center gap-1.5 ${
+            isActive 
+              ? 'bg-brand-gold text-brand-darkNavy font-bold shadow-md scale-102 ring-2 ring-brand-gold/50' 
+              : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/60'
+          }">
+            <span class="material-symbols-outlined text-[16px]">${screen.icon}</span>
+            <span>${idx + 1}. ${screen.title}</span>
+            <span class="text-[10px] opacity-75 hidden md:inline">(${screen.hindi})</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectScreen(index) {
+      currentScreenIndex = index;
+      const screen = screens[index];
+      const iframe = document.getElementById('app-iframe');
+      const specImg = document.getElementById('spec-img');
+      const footerText = document.getElementById('footer-active-screen');
+
+      iframe.src = `./${screen.file}`;
+      specImg.src = `./${screen.image}`;
+      footerText.textContent = `${String(index + 1).padStart(2, '0')}. GrowNova OS - ${screen.title}`;
+
+      renderScreenPills();
+    }
+
+    function setViewMode(mode) {
+      currentMode = mode;
+      const interactiveDev = document.getElementById('interactive-device');
+      const specDev = document.getElementById('spec-device');
+
+      const btnInteractive = document.getElementById('btn-mode-interactive');
+      const btnSplit = document.getElementById('btn-mode-split');
+      const btnSpec = document.getElementById('btn-mode-spec');
+
+      [btnInteractive, btnSplit, btnSpec].forEach(btn => {
+        btn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white transition-all";
+      });
+
+      if (mode === 'interactive') {
+        interactiveDev.classList.remove('hidden');
+        specDev.classList.add('hidden');
+        btnInteractive.className = "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-brand-gold text-brand-darkNavy transition-all shadow-sm";
+      } else if (mode === 'split') {
+        interactiveDev.classList.remove('hidden');
+        specDev.classList.remove('hidden');
+        btnSplit.className = "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-brand-gold text-brand-darkNavy transition-all shadow-sm";
+      } else if (mode === 'spec') {
+        interactiveDev.classList.add('hidden');
+        specDev.classList.remove('hidden');
+        btnSpec.className = "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-brand-gold text-brand-darkNavy transition-all shadow-sm";
+      }
+    }
+
+    function changeScale(val) {
+      const p1 = document.getElementById('phone-wrapper');
+      const p2 = document.getElementById('spec-wrapper');
+      p1.style.transform = `scale(${val})`;
+      p2.style.transform = `scale(${val})`;
+      
+      const height = 844 * parseFloat(val) + 40;
+      document.getElementById('interactive-device').style.height = `${height}px`;
+      document.getElementById('spec-device').style.height = `${height}px`;
+    }
+
+    function reloadScreen() {
+      const iframe = document.getElementById('app-iframe');
+      iframe.src = iframe.src;
+    }
+
+    function openCurrentScreenNewTab() {
+      const screen = screens[currentScreenIndex];
+      window.open(`./${screen.file}`, '_blank');
+    }
+
+    // Initialize
+    renderScreenPills();
+    changeScale('0.8');
+  </script>
+</body>
+</html>

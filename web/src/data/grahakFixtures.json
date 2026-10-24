@@ -1,0 +1,147 @@
+{
+  "shop": {
+    "name": "Shree Ganesh Kirana & General Store",
+    "owner": "Ravi Kumar Gupta",
+    "phone": "+91 98765 43210",
+    "businessType": "Kirana & FMCG Retail",
+    "language": "hi",
+    "address": "Shop No. 14, Main Market, Aminabad, Lucknow",
+    "pincode": "226018",
+    "gstin": "09AAAAA0000A1Z5",
+    "upiId": "shreeganesh@upi",
+    "qrCodeUrl": "/sample_upi_qr.png"
+  },
+  "todayStats": {
+    "salesAmount": 18450,
+    "cashSales": 9200,
+    "upiSales": 9250,
+    "paymentsReceived": 14200,
+    "pendingBillsCount": 8,
+    "pendingBillsAmount": 11340,
+    "lowStockCount": 4,
+    "totalBillsCreated": 34
+  },
+  "customers": [
+    {
+      "id": "cust-001",
+      "name": "Sunil Verma",
+      "phone": "+91 94150 11223",
+      "pendingBalance": 1250,
+      "lastPurchaseDate": "2026-10-24",
+      "creditLimit": 5000,
+      "status": "DUE"
+    },
+    {
+      "id": "cust-002",
+      "name": "Pooja Sharma",
+      "phone": "+91 98390 44556",
+      "pendingBalance": 450,
+      "lastPurchaseDate": "2026-10-23",
+      "creditLimit": 3000,
+      "status": "DUE"
+    },
+    {
+      "id": "cust-003",
+      "name": "Mohammad Rizwan",
+      "phone": "+91 88740 77889",
+      "pendingBalance": 0,
+      "lastPurchaseDate": "2026-10-24",
+      "creditLimit": 10000,
+      "status": "CLEAR"
+    },
+    {
+      "id": "cust-004",
+      "name": "Anita Devi",
+      "phone": "+91 79050 99881",
+      "pendingBalance": 2100,
+      "lastPurchaseDate": "2026-10-22",
+      "creditLimit": 4000,
+      "status": "OVERDUE"
+    }
+  ],
+  "employees": [
+    {
+      "id": "emp-001",
+      "name": "Manoj Tiwari",
+      "role": "Sales & Billing Assistant",
+      "phone": "+91 97920 12345",
+      "attendanceToday": "PRESENT",
+      "checkInTime": "09:12 AM",
+      "geotagLocation": "26.8467° N, 80.9462° E (In Shop Radius: 18m)",
+      "photoVerified": true,
+      "monthlySalary": 14000,
+      "salaryAdvance": 2000
+    },
+    {
+      "id": "emp-002",
+      "name": "Dinesh Yadav",
+      "role": "Delivery & Inventory Helper",
+      "phone": "+91 98890 54321",
+      "attendanceToday": "PRESENT",
+      "checkInTime": "09:28 AM",
+      "geotagLocation": "26.8465° N, 80.9460° E (In Shop Radius: 22m)",
+      "photoVerified": true,
+      "monthlySalary": 12000,
+      "salaryAdvance": 0
+    },
+    {
+      "id": "emp-003",
+      "name": "Vikram Singh",
+      "role": "Warehouse & Stock Keeper",
+      "phone": "+91 94500 87654",
+      "attendanceToday": "LEAVE",
+      "checkInTime": null,
+      "geotagLocation": null,
+      "photoVerified": false,
+      "monthlySalary": 13500,
+      "salaryAdvance": 1500
+    }
+  ],
+  "lowStockItems": [
+    {
+      "id": "stock-001",
+      "name": "Tata Salt (1kg)",
+      "currentQuantity": 6,
+      "minimumThreshold": 25,
+      "unit": "Packets",
+      "supplier": "Awadh Distributors",
+      "price": 28
+    },
+    {
+      "id": "stock-002",
+      "name": "Fortune Mustard Oil (1L Pouch)",
+      "currentQuantity": 4,
+      "minimumThreshold": 20,
+      "unit": "Pouches",
+      "supplier": "Kisan Agro Trading",
+      "price": 145
+    },
+    {
+      "id": "stock-003",
+      "name": "Aashirvaad Shudh Chakki Atta (10kg)",
+      "currentQuantity": 2,
+      "minimumThreshold": 15,
+      "unit": "Bags",
+      "supplier": "ITC Wholesale Depot",
+      "price": 420
+    },
+    {
+      "id": "stock-004",
+      "name": "Surf Excel Easy Wash (500g)",
+      "currentQuantity": 5,
+      "minimumThreshold": 30,
+      "unit": "Packets",
+      "supplier": "HUL Agency Hazratganj",
+      "price": 72
+    }
+  ],
+  "bankConnection": {
+    "status": "CONSENT_ACTIVE",
+    "bankName": "State Bank of India",
+    "accountMasked": "•••• •••• 4892",
+    "integrationType": "RBI-Approved Account Aggregator (Read-Only)",
+    "lastSyncTime": "Today at 07:45 PM",
+    "unreconciledUpiTransactions": 3,
+    "consentExpires": "2027-10-24"
+  }
+}

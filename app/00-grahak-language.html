@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full bg-[#FCF9F5]">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bhasha Chuniye — Choose Language | Grahak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #FCF9F5;
+      color: #102B4E;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-[#C69A43] selection:text-white p-4">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between pb-3 border-b border-[#C69A43]/20">
+    <a href="./00-grahak-entry.html" class="flex items-center gap-1 text-xs font-bold text-[#102B4E]">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+      <span>पीछे</span>
+    </a>
+    <span class="font-serif font-bold text-base text-[#102B4E]">भाषा का चुनाव</span>
+    <div class="w-8"></div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow py-4 flex flex-col justify-center max-w-sm mx-auto w-full">
+    <div class="text-center mb-5">
+      <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#C69A43]/20 text-[#102B4E]">
+        चरण १: भाषा चुनें
+      </span>
+      <h1 class="font-serif text-2xl font-bold text-[#102B4E] mt-2">अपनी पसंदीदा भाषा चुनें</h1>
+      <p class="text-xs text-[#55677D] mt-1">आप इसे बाद में सेटिंग्स से कभी भी बदल सकते हैं।</p>
+    </div>
+
+    <!-- 9 Languages -->
+    <div class="space-y-2" id="lang-list">
+      <div onclick="selectLang('hi')" class="lang-item p-3 rounded-xl border-2 border-[#C69A43] bg-[#102B4E] text-white flex items-center justify-between cursor-pointer">
+        <div>
+          <div class="text-base font-bold font-serif">हिन्दी</div>
+          <div class="text-[11px] text-[#D5AD66]">Hindi • "नमस्ते"</div>
+        </div>
+        <span class="material-symbols-outlined text-[#D5AD66] text-[20px]">check_circle</span>
+      </div>
+
+      <div onclick="selectLang('en')" class="lang-item p-3 rounded-xl border border-[#C69A43]/30 bg-white text-[#102B4E] flex items-center justify-between cursor-pointer">
+        <div>
+          <div class="text-base font-bold font-serif">English</div>
+          <div class="text-[11px] text-[#65758B]">English • "Welcome"</div>
+        </div>
+      </div>
+
+      <div onclick="selectLang('pa')" class="lang-item p-3 rounded-xl border border-[#C69A43]/30 bg-white text-[#102B4E] flex items-center justify-between cursor-pointer">
+        <div>
+          <div class="text-base font-bold font-serif">ਪੰਜਾਬੀ</div>
+          <div class="text-[11px] text-[#65758B]">Punjabi • "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ"</div>
+        </div>
+      </div>
+
+      <div onclick="selectLang('mr')" class="lang-item p-3 rounded-xl border border-[#C69A43]/30 bg-white text-[#102B4E] flex items-center justify-between cursor-pointer">
+        <div>
+          <div class="text-base font-bold font-serif">मराठी</div>
+          <div class="text-[11px] text-[#65758B]">Marathi • "नमस्कार"</div>
+        </div>
+      </div>
+
+      <div onclick="selectLang('gu')" class="lang-item p-3 rounded-xl border border-[#C69A43]/30 bg-white text-[#102B4E] flex items-center justify-between cursor-pointer">
+        <div>
+          <div class="text-base font-bold font-serif">ગુજરાતી</div>
+          <div class="text-[11px] text-[#65758B]">Gujarati • "નમસ્તે"</div>
+        </div>
+      </div>
+
+      <div onclick="selectLang('bn')" class="lang-item p-3 rounded-xl border border-[#C69A43]/30 bg-white text-[#102B4E] flex items-center justify-between cursor-pointer">
+        <div>
+          <div class="text-base font-bold font-serif">বাংলা</div>
+          <div class="text-[11px] text-[#65758B]">Bengali • "নমস্কার"</div>
+        </div>
+      </div>
+
+      <div onclick="selectLang('ta')" class="lang-item p-3 rounded-xl border border-[#C69A43]/30 bg-white text-[#102B4E] flex items-center justify-between cursor-pointer">
+        <div>
+          <div class="text-base font-bold font-serif">தமிழ்</div>
+          <div class="text-[11px] text-[#65758B]">Tamil • "வணக்கம்"</div>
+        </div>
+      </div>
+
+      <div onclick="selectLang('te')" class="lang-item p-3 rounded-xl border border-[#C69A43]/30 bg-white text-[#102B4E] flex items-center justify-between cursor-pointer">
+        <div>
+          <div class="text-base font-bold font-serif">తెలుగు</div>
+          <div class="text-[11px] text-[#65758B]">Telugu • "నమస్కారం"</div>
+        </div>
+      </div>
+
+      <div onclick="selectLang('kn')" class="lang-item p-3 rounded-xl border border-[#C69A43]/30 bg-white text-[#102B4E] flex items-center justify-between cursor-pointer">
+        <div>
+          <div class="text-base font-bold font-serif">ಕನ್ನಡ</div>
+          <div class="text-[11px] text-[#65758B]">Kannada • "ನಮಸ್ಕಾರ"</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom CTA -->
+  <footer class="pt-3 border-t border-[#C69A43]/20 max-w-sm mx-auto w-full">
+    <a href="./00-grahak-signup.html" class="w-full py-3.5 rounded-xl bg-[#102B4E] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md">
+      <span>आगे बढ़ें (Continue)</span>
+      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+    </a>
+  </footer>
+
+  <script>
+    function selectLang(code) {
+      document.querySelectorAll('.lang-item').forEach(el => {
+        el.className = 'lang-item p-3 rounded-xl border border-[#C69A43]/30 bg-white text-[#102B4E] flex items-center justify-between cursor-pointer';
+        const icon = el.querySelector('.material-symbols-outlined');
+        if (icon) icon.remove();
+      });
+      event.currentTarget.className = 'lang-item p-3 rounded-xl border-2 border-[#C69A43] bg-[#102B4E] text-white flex items-center justify-between cursor-pointer';
+      const check = document.createElement('span');
+      check.className = 'material-symbols-outlined text-[#D5AD66] text-[20px]';
+      check.textContent = 'check_circle';
+      event.currentTarget.appendChild(check);
+    }
+  </script>
+</body>
+</html>

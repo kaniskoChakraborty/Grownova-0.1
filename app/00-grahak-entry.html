@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full bg-[#FCF9F5]">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grahak — Aapke Dukaan Ka Digital Saathi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              ivory: '#F8F5F1',
+              canvas: '#FCF9F5',
+              navy: '#102B4E',
+              darkNavy: '#0B2340',
+              gold: '#C69A43',
+              goldLight: '#D5AD66',
+              goldSoft: '#F7EEDA',
+              terracotta: '#C05A3E',
+              green: '#15803D'
+            }
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FCF9F5;
+      color: #102B4E;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .desi-border {
+      border: 1.5px solid rgba(198, 154, 67, 0.35);
+      background: #FFFFFF;
+      box-shadow: 0 8px 24px -4px rgba(16, 43, 78, 0.08);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-[#C69A43] selection:text-white pb-6">
+
+  <!-- Top Desi Marigold & Mango Leaf Toran Arch -->
+  <div class="w-full overflow-hidden select-none pointer-events-none">
+    <svg viewBox="0 0 600 24" fill="none" class="w-full h-6" preserveAspectRatio="none">
+      <path d="M0,4 Q75,14 150,4 Q225,14 300,4 Q375,14 450,4 Q525,14 600,4" stroke="#C69A43" stroke-width="2" stroke-dasharray="3 2" />
+      <g>
+        <circle cx="75" cy="8" r="5" fill="#E65100" />
+        <circle cx="75" cy="8" r="3" fill="#FFB300" />
+        <path d="M68 8 Q75 20 75 22 Q75 20 82 8 Z" fill="#2E7D32" opacity="0.85" />
+      </g>
+      <g>
+        <circle cx="225" cy="8" r="5" fill="#E65100" />
+        <circle cx="225" cy="8" r="3" fill="#FFB300" />
+        <path d="M218 8 Q225 20 225 22 Q225 20 232 8 Z" fill="#2E7D32" opacity="0.85" />
+      </g>
+      <g>
+        <circle cx="375" cy="8" r="5" fill="#E65100" />
+        <circle cx="375" cy="8" r="3" fill="#FFB300" />
+        <path d="M368 8 Q375 20 375 22 Q375 20 382 8 Z" fill="#2E7D32" opacity="0.85" />
+      </g>
+      <g>
+        <circle cx="525" cy="8" r="5" fill="#E65100" />
+        <circle cx="525" cy="8" r="3" fill="#FFB300" />
+        <path d="M518 8 Q525 20 525 22 Q525 20 532 8 Z" fill="#2E7D32" opacity="0.85" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- Header -->
+  <header class="px-5 py-2.5 flex items-center justify-between border-b border-[#C69A43]/20">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#102B4E] to-[#0B2340] border border-[#C69A43] flex items-center justify-center text-[#D5AD66] font-bold text-sm shadow-xs">
+        卐
+      </div>
+      <div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="font-serif text-xl font-bold tracking-tight text-[#102B4E]">Grahak</span>
+          <span class="text-[11px] font-bold text-[#C69A43]">ग्राहक</span>
+        </div>
+        <p class="text-[9px] text-[#65758B] font-semibold -mt-0.5">Aapke Dukaan Ka Digital Saathi</p>
+      </div>
+    </div>
+
+    <!-- Language Selector Pill -->
+    <a href="./00-grahak-language.html" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#C69A43]/40 text-xs font-bold text-[#102B4E] shadow-2xs hover:bg-[#F8F5F1]">
+      <span class="material-symbols-outlined text-[14px] text-[#C69A43]">language</span>
+      <span>हिन्दी (Hindi)</span>
+    </a>
+  </header>
+
+  <!-- Main Hero Screen -->
+  <main class="flex-grow px-5 py-4 flex flex-col items-center justify-center text-center">
+    
+    <!-- Auspicious Badge -->
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C69A43]/15 text-[#102B4E] text-[10.5px] font-bold mb-3 border border-[#C69A43]/30">
+      <span class="material-symbols-outlined text-[13px] text-[#C69A43]">verified</span>
+      <span>१००% सुरक्षित • भारतीय दुकानदारों के लिए समर्पित</span>
+    </div>
+
+    <!-- Main Headline -->
+    <h1 class="font-serif text-2xl sm:text-3xl font-extrabold tracking-tight text-[#102B4E] leading-snug">
+      Aapke dukaan ka apna<br>digital saathi.
+    </h1>
+
+    <p class="text-xs sm:text-sm text-[#55677D] font-medium mt-1.5 max-w-xs">
+      Hisab, bikri, stock aur bills — sab ek hi jagah.
+    </p>
+
+    <!-- Contemporary Desi Art Shopkeeper Illustration Frame -->
+    <div class="my-4 w-full max-w-[340px] desi-border rounded-2xl p-3.5 relative overflow-hidden">
+      <div class="border border-dashed border-[#C69A43]/40 rounded-xl p-3 flex flex-col items-center">
+        
+        <!-- Diya Motif -->
+        <div class="w-8 h-8 rounded-full bg-[#102B4E] flex items-center justify-center text-[#D5AD66] mb-2 shadow-xs">
+          <span class="material-symbols-outlined text-[18px]">local_fire_department</span>
+        </div>
+
+        <!-- Shopkeeper and Customer Duo -->
+        <div class="flex items-center justify-around w-full py-1">
+          <div class="flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-[#102B4E] border-2 border-[#C69A43] flex items-center justify-center text-[#D5AD66] mb-1">
+              <span class="material-symbols-outlined text-[28px]">store</span>
+            </div>
+            <span class="text-xs font-bold text-[#102B4E]">दुकानदार भाई</span>
+            <span class="text-[9.5px] text-[#65758B]">खाता & बिक्री</span>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <span class="material-symbols-outlined text-[22px] text-[#C69A43]">sync_alt</span>
+            <span class="text-[9px] font-bold text-[#C69A43] mt-0.5">UPI / पर्ची</span>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-[#C69A43] border-2 border-[#102B4E] flex items-center justify-center text-[#102B4E] mb-1">
+              <span class="material-symbols-outlined text-[26px]">person_check</span>
+            </div>
+            <span class="text-xs font-bold text-[#102B4E]">संतुष्ट ग्राहक</span>
+            <span class="text-[9.5px] text-[#65758B]">तुरंत भुगतान</span>
+          </div>
+        </div>
+
+        <!-- Traditional Tarazu Bar -->
+        <div class="w-full bg-[#F8F5F1] rounded-lg border border-[#C69A43]/30 py-1.5 px-3 mt-2 flex items-center justify-center gap-1.5">
+          <span class="material-symbols-outlined text-[15px] text-[#C69A43]">balance</span>
+          <span class="text-[10px] font-bold text-[#102B4E]">पक्का हिसाब • सुरक्षित उधारी डायरी</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Pillars -->
+    <div class="grid grid-cols-2 gap-2 w-full max-w-[340px] text-left">
+      <div class="bg-white p-2.5 rounded-xl border border-[#C69A43]/25 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#102B4E] text-[18px]">receipt_long</span>
+        <div>
+          <div class="text-[11px] font-bold text-[#102B4E]">ऑफलाइन बिल</div>
+          <div class="text-[9px] text-[#65758B]">बिना नेट तुरंत पर्ची</div>
+        </div>
+      </div>
+      <div class="bg-white p-2.5 rounded-xl border border-[#C69A43]/25 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#C69A43] text-[18px]">photo_camera</span>
+        <div>
+          <div class="text-[11px] font-bold text-[#102B4E]">AI फोटो स्टॉक</div>
+          <div class="text-[9px] text-[#65758B]">फोटो से ऑटो गिनती</div>
+        </div>
+      </div>
+      <div class="bg-white p-2.5 rounded-xl border border-[#C69A43]/25 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#15803D] text-[18px]">location_on</span>
+        <div>
+          <div class="text-[11px] font-bold text-[#102B4E]">जियोटैग हाजिरी</div>
+          <div class="text-[9px] text-[#65758B]">दुकान पर उपस्थिति</div>
+        </div>
+      </div>
+      <div class="bg-white p-2.5 rounded-xl border border-[#C69A43]/25 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#102B4E] text-[18px]">account_balance</span>
+        <div>
+          <div class="text-[11px] font-bold text-[#102B4E]">RBI बैंक सिंक</div>
+          <div class="text-[9px] text-[#65758B]">सुरक्षित खाता स्थिति</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom CTA Actions -->
+  <div class="px-5 pt-3 max-w-[360px] mx-auto w-full flex flex-col gap-2.5">
+    <!-- Prominent CTA: "Shuru Kijiye" -->
+    <a href="./00-grahak-language.html" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#102B4E] to-[#0B2340] hover:from-[#0B2340] hover:to-[#102B4E] text-white font-bold text-sm shadow-lg border border-[#C69A43]/50 flex items-center justify-center gap-2.5 active:scale-98 transition-all">
+      <span>Shuru Kijiye (शुरू कीजिये)</span>
+      <div class="w-6 h-6 rounded-full bg-[#C69A43] flex items-center justify-center text-[#102B4E]">
+        <span class="material-symbols-outlined text-[15px] font-bold">arrow_forward</span>
+      </div>
+    </a>
+
+    <!-- Secondary Login for returning users -->
+    <a href="./00-grahak-login.html" class="py-1 text-center text-xs font-semibold text-[#55677D] hover:text-[#102B4E]">
+      Pehle se account hai? <strong class="text-[#C69A43] underline font-bold">Login kijiye</strong>
+    </a>
+  </div>
+
+</body>
+</html>

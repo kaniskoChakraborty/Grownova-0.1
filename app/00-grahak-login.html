@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full bg-[#FCF9F5]">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grahak Login — Mobile & OTP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #FCF9F5;
+      color: #102B4E;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-[#C69A43] selection:text-white p-4">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between pb-3 border-b border-[#C69A43]/20">
+    <a href="./00-grahak-entry.html" class="flex items-center gap-1 text-xs font-bold text-[#102B4E]">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+      <span>पीछे</span>
+    </a>
+    <span class="font-serif font-bold text-base text-[#102B4E]">Grahak Login</span>
+    <div class="w-8"></div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow py-4 flex flex-col justify-center max-w-sm mx-auto w-full">
+    
+    <div class="text-center mb-6">
+      <div class="w-14 h-14 rounded-full bg-[#102B4E] border-2 border-[#C69A43] flex items-center justify-center text-[#D5AD66] mx-auto mb-2 shadow-xs">
+        <span class="material-symbols-outlined text-[28px]">storefront</span>
+      </div>
+      <h1 class="font-serif text-2xl font-bold text-[#102B4E]" id="screen-title">ग्राहक ऐप में लॉगिन करें</h1>
+      <p class="text-xs text-[#55677D] mt-1" id="screen-sub">अपने पंजीकृत मोबाइल नंबर से लॉगिन करें</p>
+    </div>
+
+    <!-- STEP 1: PHONE INPUT -->
+    <div id="step-phone" class="bg-white p-5 rounded-2xl border-1.5 border-[#C69A43]/30 shadow-sm space-y-4">
+      <div>
+        <label class="text-xs font-bold text-[#102B4E] block mb-1.5">मोबाइल नंबर (Mobile Number)</label>
+        <div class="flex items-center rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 px-3 py-2.5">
+          <div class="flex items-center gap-1 pr-2.5 border-r border-[#C69A43]/30 text-xs font-bold text-[#102B4E]">
+            <span>🇮🇳</span>
+            <span>+91</span>
+          </div>
+          <input
+            id="mobile-input"
+            type="tel"
+            maxlength="10"
+            value="9876543210"
+            placeholder="10 अंकों का नंबर"
+            class="w-full pl-2.5 bg-transparent text-sm font-bold text-[#102B4E] focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <button
+        onclick="goToOtp()"
+        class="w-full py-3.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:bg-[#0B2340] cursor-pointer"
+      >
+        <span>OTP कोड प्राप्त करें (Send OTP)</span>
+        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+      </button>
+    </div>
+
+    <!-- STEP 2: OTP VERIFICATION (Hidden by default) -->
+    <div id="step-otp" class="hidden bg-white p-5 rounded-2xl border-1.5 border-[#C69A43]/30 shadow-sm space-y-4">
+      <div class="flex justify-between gap-1.5">
+        <input type="text" maxlength="1" value="7" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
+        <input type="text" maxlength="1" value="4" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
+        <input type="text" maxlength="1" value="2" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
+        <input type="text" maxlength="1" value="9" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
+        <input type="text" maxlength="1" value="5" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
+        <input type="text" maxlength="1" value="1" class="w-11 h-12 text-center text-xl font-bold rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 text-[#102B4E]" />
+      </div>
+
+      <div class="flex items-center justify-between text-xs pt-1">
+        <button onclick="backToPhone()" class="text-[#65758B] underline cursor-pointer">नंबर बदलें</button>
+        <span class="text-[#C69A43] font-bold">दोबारा भेजें: 24s</span>
+      </div>
+
+      <a
+        href="./01-home-owner-desk.html"
+        class="w-full py-3.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:bg-[#0B2340]"
+      >
+        <span class="material-symbols-outlined text-[#D5AD66] text-[18px]">verified_user</span>
+        <span>सत्यापित करें और लॉगिन करें</span>
+      </a>
+    </div>
+
+    <!-- Signup Switch -->
+    <div class="mt-6 text-center text-xs text-[#55677D]">
+      <span>नया खाता बनाना चाहते हैं? </span>
+      <a href="./00-grahak-signup.html" class="text-[#C69A43] font-bold underline">नया रजिस्ट्रेशन (Sign Up)</a>
+    </div>
+  </main>
+
+  <script>
+    function goToOtp() {
+      document.getElementById('step-phone').classList.add('hidden');
+      document.getElementById('step-otp').classList.remove('hidden');
+      document.getElementById('screen-title').textContent = 'OTP सत्यापन';
+      const num = document.getElementById('mobile-input').value || '9876543210';
+      document.getElementById('screen-sub').textContent = `+91 ${num} पर भेजा गया ६ अंकों का कोड दर्ज करें`;
+    }
+    function backToPhone() {
+      document.getElementById('step-otp').classList.add('hidden');
+      document.getElementById('step-phone').classList.remove('hidden');
+      document.getElementById('screen-title').textContent = 'ग्राहक ऐप में लॉगिन करें';
+      document.getElementById('screen-sub').textContent = 'अपने पंजीकृत मोबाइल नंबर से लॉगिन करें';
+    }
+  </script>
+</body>
+</html>

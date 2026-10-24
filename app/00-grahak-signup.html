@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full bg-[#FCF9F5]">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grahak Sign Up — Naya Khata</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #FCF9F5;
+      color: #102B4E;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-[#C69A43] selection:text-white p-4">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between pb-3 border-b border-[#C69A43]/20">
+    <a href="./00-grahak-language.html" class="flex items-center gap-1 text-xs font-bold text-[#102B4E]">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+      <span>पीछे</span>
+    </a>
+    <span class="font-serif font-bold text-base text-[#102B4E]">दुकान का रजिस्ट्रेशन</span>
+    <div class="w-8"></div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow py-3 flex flex-col justify-center max-w-sm mx-auto w-full">
+    
+    <div class="text-center mb-4">
+      <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#C69A43]/20 text-[#102B4E]">
+        चरण २: बुनियादी जानकारी
+      </span>
+      <h1 class="font-serif text-2xl font-bold text-[#102B4E] mt-1.5">दुकान का खाता बनाएं</h1>
+      <p class="text-xs text-[#55677D] mt-0.5">सिर्फ १ मिनट में अपना डिजिटल बही-खाता शुरू करें</p>
+    </div>
+
+    <form action="./00-grahak-onboarding.html" class="bg-white p-4.5 rounded-2xl border-1.5 border-[#C69A43]/30 shadow-sm space-y-3.5">
+      <div>
+        <label class="text-xs font-bold text-[#102B4E] block mb-1">आपका पूरा नाम (Full Name) *</label>
+        <div class="flex items-center rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 px-3 py-2">
+          <span class="material-symbols-outlined text-[#C69A43] text-[18px] mr-2">person</span>
+          <input
+            type="text"
+            required
+            value="रमेश कुमार गुप्ता"
+            class="w-full bg-transparent text-xs font-bold text-[#102B4E] focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-[#102B4E] block mb-1">मोबाइल नंबर (Mobile Number) *</label>
+        <div class="flex items-center rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 px-3 py-2">
+          <div class="flex items-center gap-1 pr-2 border-r border-[#C69A43]/30 text-xs font-bold text-[#102B4E]">
+            <span>🇮🇳</span>
+            <span>+91</span>
+          </div>
+          <input
+            type="tel"
+            required
+            maxlength="10"
+            value="9876543210"
+            class="w-full pl-2 bg-transparent text-xs font-bold text-[#102B4E] focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-[#102B4E] block mb-1">दुकान / व्यापार का नाम (Shop Name) *</label>
+        <div class="flex items-center rounded-xl bg-[#FCF9F5] border-2 border-[#C69A43]/40 px-3 py-2">
+          <span class="material-symbols-outlined text-[#C69A43] text-[18px] mr-2">storefront</span>
+          <input
+            type="text"
+            required
+            value="श्री गणेश किराना स्टोर"
+            class="w-full bg-transparent text-xs font-bold text-[#102B4E] focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-[#102B4E] block mb-1">व्यापार का प्रकार (Business Type)</label>
+        <select class="w-full bg-[#FCF9F5] border-2 border-[#C69A43]/40 rounded-xl px-3 py-2 text-xs font-bold text-[#102B4E] focus:outline-none cursor-pointer">
+          <option selected>किराना & जनरल स्टोर (Kirana & FMCG)</option>
+          <option>कपड़ा एवं वस्त्र (Clothing & Textiles)</option>
+          <option>हार्डवेयर एवं इलेक्ट्रिकल (Hardware)</option>
+          <option>मेडिकल स्टोर (Pharmacy)</option>
+          <option>डेयरी एवं स्वीट्स (Dairy & Sweets)</option>
+          <option>मोबाइल & इलेक्ट्रॉनिक्स (Electronics)</option>
+          <option>अन्य खुदरा व्यापार (Other)</option>
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full mt-2 py-3 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:bg-[#0B2340] cursor-pointer"
+      >
+        <span>खाता बनाएं और ऑनबोर्डिंग शुरू करें</span>
+        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+      </button>
+    </form>
+
+    <div class="mt-4 text-center text-xs text-[#55677D]">
+      <span>पहले से खाता है? </span>
+      <a href="./00-grahak-login.html" class="text-[#C69A43] font-bold underline">लॉगिन करें (Sign In)</a>
+    </div>
+  </main>
+
+</body>
+</html>

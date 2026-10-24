@@ -12,6 +12,15 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ModulePlaceholderPage } from './pages/ModulePlaceholderPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
+// New Grahak Contemporary Desi Art Flow & Features
+import { GrahakEntryPage } from './pages/grahak/GrahakEntryPage';
+import { GrahakLanguagePage } from './pages/grahak/GrahakLanguagePage';
+import { GrahakLoginPage } from './pages/grahak/GrahakLoginPage';
+import { GrahakSignUpPage } from './pages/grahak/GrahakSignUpPage';
+import { GrahakOnboardingPage } from './pages/grahak/GrahakOnboardingPage';
+import { GrahakSettingsPage } from './pages/grahak/GrahakSettingsPage';
+import { GrahakFeaturesPage } from './pages/grahak/GrahakFeaturesPage';
+
 // Auto-scroll to top on route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -57,6 +66,16 @@ export function App() {
           <Route path="/dashboard/compliance" element={<ModulePlaceholderPage />} />
           <Route path="/dashboard/settings" element={<ModulePlaceholderPage />} />
           <Route path="/dashboard/calendar" element={<ModulePlaceholderPage />} />
+
+          {/* Grahak Contemporary Desi Art Flow & Features (Non-destructive extension) */}
+          <Route path="/grahak" element={<GrahakEntryPage />} />
+          <Route path="/grahak/welcome" element={<GrahakEntryPage />} />
+          <Route path="/grahak/language" element={<GrahakLanguagePage />} />
+          <Route path="/grahak/login" element={<GrahakLoginPage />} />
+          <Route path="/grahak/signup" element={<GrahakSignUpPage />} />
+          <Route path="/grahak/onboarding" element={<GrahakOnboardingPage />} />
+          <Route path="/grahak/settings" element={<GrahakSettingsPage />} />
+          <Route path="/grahak/features" element={<GrahakFeaturesPage />} />
 
           {/* 404 Dedicated Not Found Route */}
           <Route path="*" element={<NotFoundPage />} />

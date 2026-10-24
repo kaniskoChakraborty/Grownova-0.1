@@ -4,7 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 import { theme } from './src/constants/theme';
-import { AppProvider } from './src/context/AppContext';
+import { AppProvider, useApp } from './src/context/AppContext';
 import { BottomNavBar, TabKey } from './src/components/BottomNavBar';
 
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -25,12 +25,14 @@ import { GrahakOnboardingScreen } from './src/screens/GrahakOnboardingScreen';
 type AuthFlowStep = 'entry' | 'language' | 'login' | 'signup' | 'onboarding' | null;
 
 function MainNavigator() {
+  const { setLanguage, updateStore } = useApp();
   const [currentTab, setCurrentTab] = useState<TabKey>('home');
   const [overlayScreen, setOverlayScreen] = useState<'create_bill' | 'attendance' | null>(null);
 
   // Grahak Entry Flow State (Defaults to 'entry' for first-time / unauthenticated visitors)
   const [authStep, setAuthStep] = useState<AuthFlowStep>('entry');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('हिन्दी (Hindi)');
+  const [selectedLanguageCode, setSelectedLanguageCode] = useState<string>('hi');
   const [registeredProfile, setRegisteredProfile] = useState<{
     fullName: string;
     mobile: string;
@@ -86,6 +88,7 @@ function MainNavigator() {
           onLogin={() => setAuthStep('login')}
           onLanguageSelect={() => setAuthStep('language')}
           selectedLanguage={selectedLanguage}
+          languageCode={selectedLanguageCode}
         />
       );
     }
@@ -96,9 +99,11 @@ function MainNavigator() {
           onBack={() => setAuthStep('entry')}
           onSelectLanguage={(l) => {
             setSelectedLanguage(`${l.nativeName} (${l.name})`);
+            setSelectedLanguageCode(l.code);
+            setLanguage(l.code as any);
             setAuthStep('signup');
           }}
-          selectedCode="hi"
+          selectedCode={selectedLanguageCode}
         />
       );
     }
@@ -108,8 +113,15 @@ function MainNavigator() {
         <GrahakSignUpScreen
           onBack={() => setAuthStep('language')}
           onNavigateToLogin={() => setAuthStep('login')}
+          languageCode={selectedLanguageCode}
           onSuccess={(prof) => {
             setRegisteredProfile(prof);
+            updateStore({
+              name: prof.shopName,
+              ownerName: prof.fullName,
+              phone: prof.mobile,
+              tagline: prof.businessType,
+            });
             setAuthStep('onboarding');
           }}
         />
@@ -121,6 +133,7 @@ function MainNavigator() {
         <GrahakLoginScreen
           onBack={() => setAuthStep('entry')}
           onNavigateToSignup={() => setAuthStep('signup')}
+          languageCode={selectedLanguageCode}
           onSuccess={(_mob) => {
             setAuthStep(null);
           }}
@@ -134,7 +147,17 @@ function MainNavigator() {
           initialShopName={registeredProfile?.shopName}
           initialOwnerName={registeredProfile?.fullName}
           initialBusinessType={registeredProfile?.businessType}
-          onComplete={() => setAuthStep(null)}
+          languageCode={selectedLanguageCode}
+          onComplete={(data) => {
+            if (data) {
+              updateStore({
+                name: data.shopName,
+                ownerName: data.ownerName,
+                upiId: data.upiId,
+              });
+            }
+            setAuthStep(null);
+          }}
         />
       );
     }

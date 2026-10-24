@@ -378,7 +378,56 @@
 
   <script>
     (function() {
-      let selectedCategory = 'Kirana Store';
+      const userLang = localStorage.getItem('grahak_language') || localStorage.getItem('grahak_selected_language') || localStorage.getItem('grahak_locale') || 'hi';
+      
+      // If language is English, localize the visible elements
+      if (userLang === 'en') {
+        const langPill = document.querySelector('button[onclick*="00-grahak-language.html"] span');
+        if (langPill) langPill.textContent = 'English';
+
+        const mainH1 = document.querySelector('h1');
+        if (mainH1) mainH1.innerHTML = 'Open New Account <span class="text-base font-sans font-semibold text-slate-500">/ Sign Up</span>';
+
+        const mainP = document.querySelector('main p.text-xs.text-slate-600');
+        if (mainP) mainP.textContent = 'Start your digital shop ledger and billing in just 1 minute. No paperwork needed.';
+
+        const subTag = document.querySelector('.bg-gold-subtle span.font-bold');
+        if (subTag) subTag.textContent = 'SHUBH AARAMBH • DIGITAL ONBOARDING';
+
+        const label1 = document.querySelector('label[for="signup-fullname"]') || document.querySelectorAll('label')[0];
+        if (label1) label1.innerHTML = '<i class="fa-regular fa-user text-gold text-xs mr-1"></i><span>Full Name (Proprietor Name)</span>';
+
+        const label2 = document.querySelectorAll('label')[1];
+        if (label2) label2.innerHTML = '<i class="fa-solid fa-shop text-gold text-xs mr-1"></i><span>Shop / Business Name</span>';
+
+        const label3 = document.querySelectorAll('label')[2];
+        if (label3) label3.innerHTML = '<i class="fa-solid fa-mobile-screen-button text-gold text-xs mr-1"></i><span>Mobile Number</span>';
+
+        const label4 = document.querySelectorAll('label')[3];
+        if (label4) label4.innerHTML = '<i class="fa-solid fa-tags text-gold text-xs mr-1"></i><span>Business Category</span>';
+
+        const label5 = document.querySelectorAll('label')[4];
+        if (label5) label5.innerHTML = '<i class="fa-solid fa-file-invoice text-gold text-xs mr-1"></i><span>GSTIN or PAN</span>';
+
+        const chips = document.querySelectorAll('.category-chip');
+        if (chips[0]) chips[0].querySelector('span:nth-child(2)').textContent = 'Kirana / FMCG';
+        if (chips[1]) chips[1].querySelector('span:nth-child(2)').textContent = 'Wholesaler / Mandi';
+        if (chips[2]) chips[2].querySelector('span:nth-child(2)').textContent = 'Electronics & Mobile';
+        if (chips[3]) chips[3].querySelector('span:nth-child(2)').textContent = 'Clothing & Wear';
+        if (chips[4]) chips[4].querySelector('span:nth-child(2)').textContent = 'Hardware & Paint';
+        if (chips[5]) chips[5].querySelector('span:nth-child(2)').textContent = 'Other Retail';
+
+        const submitBtn = document.getElementById('signup-submit-btn');
+        if (submitBtn) {
+          const btnText = submitBtn.querySelector('span:nth-child(2)');
+          if (btnText) btnText.textContent = 'Create Account • Start Grahak';
+        }
+
+        const footerLogin = document.querySelector('footer span');
+        if (footerLogin) footerLogin.textContent = 'Already have an account?';
+      }
+
+      let selectedCategory = userLang === 'en' ? 'Kirana Store' : 'किराना & जनरल स्टोर';
       const chips = document.querySelectorAll('.category-chip');
       chips.forEach(chip => {
         chip.addEventListener('click', function() {
@@ -399,7 +448,7 @@
         submitBtn.addEventListener('click', async function() {
           const fullName = document.getElementById('signup-fullname')?.value || 'Rajesh Gupta';
           const shopName = document.getElementById('signup-shopname')?.value || 'Shree Ganesh Kirana Store';
-          const phone = (document.getElementById('signup-phone')?.value || '9823045678').replace(/\\s+/g, '');
+          const phone = (document.getElementById('signup-phone')?.value || '9823045678').replace(/\s+/g, '');
           const gstin = document.getElementById('signup-gstin')?.value || '';
 
           const profile = {
@@ -408,12 +457,15 @@
             phone,
             category: selectedCategory,
             gstin,
+            language: userLang,
             signupDate: new Date().toISOString()
           };
 
           try {
             localStorage.setItem('grahak_shop_profile', JSON.stringify(profile));
             localStorage.setItem('grahak_auth_token', 'token_demo_' + Date.now());
+            localStorage.setItem('grahak_language', userLang);
+            localStorage.setItem('grahak_selected_language', userLang);
           } catch(e) {}
 
           // Also attempt registration on backend
@@ -426,15 +478,19 @@
                 shopName,
                 ownerName: fullName,
                 businessType: selectedCategory,
+                language: userLang,
                 role: 'RETAILER'
               })
             }).catch(() => {});
           } catch(e) {}
 
-          submitBtn.innerHTML = '<span class="font-serif text-gold-warm text-base">✦</span><span>खाता तैयार हो रहा है...</span>';
+          submitBtn.innerHTML = userLang === 'en'
+            ? '<span class="font-serif text-gold-warm text-base">✦</span><span>Creating Account...</span>'
+            : '<span class="font-serif text-gold-warm text-base">✦</span><span>खाता तैयार हो रहा है...</span>';
+
           setTimeout(() => {
             window.location.href = '00-grahak-onboarding.html';
-          }, 400);
+          }, 350);
         });
       }
     })();

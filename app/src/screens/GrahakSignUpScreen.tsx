@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { theme } from '../constants/theme';
+import { getGrahakTranslation } from '../constants/translations';
 
 interface GrahakSignUpScreenProps {
   onBack: () => void;
@@ -17,44 +18,60 @@ interface GrahakSignUpScreenProps {
     mobile: string;
     shopName: string;
     businessType: string;
+    language?: string;
   }) => void;
   onNavigateToLogin: () => void;
+  languageCode?: string;
 }
-
-const BIZ_TYPES = [
-  'किराना & जनरल स्टोर (Kirana)',
-  'कपड़ा एवं गारमेंट्स (Textiles)',
-  'हार्डवेयर एवं इलेक्ट्रिकल (Hardware)',
-  'मेडिकल स्टोर (Pharmacy)',
-  'डेयरी एवं स्वीट्स (Dairy & Sweets)',
-  'मोबाइल & इलेक्ट्रॉनिक्स (Electronics)',
-  'अन्य खुदरा व्यापार (Other)',
-];
 
 export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
   onBack,
   onSuccess,
   onNavigateToLogin,
+  languageCode = 'hi',
 }) => {
+  const t = getGrahakTranslation(languageCode);
+
+  const bizTypes = [
+    t.catKirana,
+    t.catWholesaler,
+    t.catClothing,
+    t.catElectronics,
+    t.catHardware,
+    t.catOther,
+  ];
+
   const [fullName, setFullName] = useState('');
   const [mobile, setMobile] = useState('');
   const [shopName, setShopName] = useState('');
-  const [businessType, setBusinessType] = useState(BIZ_TYPES[0]);
+  const [businessType, setBusinessType] = useState(bizTypes[0]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = () => {
     setErrorMsg(null);
     if (!fullName.trim()) {
-      setErrorMsg('कृपया अपना पूरा नाम दर्ज करें।');
+      setErrorMsg(
+        languageCode === 'en'
+          ? 'Please enter your full name.'
+          : 'कृपया अपना पूरा नाम दर्ज करें।'
+      );
       return;
     }
     const cleaned = mobile.replace(/\D/g, '');
     if (cleaned.length !== 10 || !/^[6-9]\d{9}$/.test(cleaned)) {
-      setErrorMsg('कृपया १० अंकों का सही भारतीय मोबाइल नंबर दर्ज करें।');
+      setErrorMsg(
+        languageCode === 'en'
+          ? 'Please enter a valid 10-digit Indian mobile number.'
+          : 'कृपया १० अंकों का सही भारतीय मोबाइल नंबर दर्ज करें।'
+      );
       return;
     }
     if (!shopName.trim()) {
-      setErrorMsg('कृपया अपनी दुकान का नाम दर्ज करें।');
+      setErrorMsg(
+        languageCode === 'en'
+          ? 'Please enter your shop or business name.'
+          : 'कृपया अपनी दुकान का नाम दर्ज करें।'
+      );
       return;
     }
 
@@ -62,7 +79,8 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
       fullName: fullName.trim(),
       mobile: `+91 ${cleaned}`,
       shopName: shopName.trim(),
-      businessType,
+      businessType: businessType || bizTypes[0],
+      language: languageCode,
     });
   };
 
@@ -72,9 +90,9 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
       <View style={styles.navBar}>
         <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7}>
           <Ionicons name="arrow-back" size={20} color={theme.colors.primary} />
-          <Text style={styles.backText}>पीछे</Text>
+          <Text style={styles.backText}>{t.backBtn}</Text>
         </TouchableOpacity>
-        <Text style={styles.navTitle}>दुकान का रजिस्ट्रेशन</Text>
+        <Text style={styles.navTitle}>{t.signupHeading}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -82,12 +100,12 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.badge}>
-            <Text style={styles.badgeText}>नया डिजिटल खाता</Text>
+            <Text style={styles.badgeText}>
+              {languageCode === 'en' ? 'New Digital Account' : 'नया डिजिटल खाता'}
+            </Text>
           </View>
-          <Text style={styles.title}>अपनी दुकान का पंजीकरण करें</Text>
-          <Text style={styles.subtitle}>
-            सिर्फ १ मिनट में अपना डिजिटल बही-खाता शुरू करें
-          </Text>
+          <Text style={styles.title}>{t.signupHeading}</Text>
+          <Text style={styles.subtitle}>{t.signupSub}</Text>
         </View>
 
         {errorMsg && (
@@ -101,12 +119,12 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
         <View style={styles.formCard}>
           {/* Full Name */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>आपका पूरा नाम (Full Name) *</Text>
+            <Text style={styles.label}>{t.fullNameLabel} *</Text>
             <View style={styles.inputWrapper}>
               <Ionicons name="person-outline" size={18} color="#C69A43" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="उदा. रमेश कुमार गुप्ता"
+                placeholder={t.fullNamePlaceholder}
                 placeholderTextColor="#94A3B8"
                 value={fullName}
                 onChangeText={setFullName}
@@ -116,7 +134,7 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
 
           {/* Mobile Number with +91 */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>मोबाइल नंबर (Mobile Number) *</Text>
+            <Text style={styles.label}>{t.mobileLabel} *</Text>
             <View style={styles.phoneInputRow}>
               <View style={styles.codeBox}>
                 <Text style={styles.flag}>🇮🇳</Text>
@@ -126,7 +144,7 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
                 style={styles.phoneInput}
                 keyboardType="phone-pad"
                 maxLength={10}
-                placeholder="10 अंकों का नंबर"
+                placeholder={t.mobilePlaceholder}
                 placeholderTextColor="#94A3B8"
                 value={mobile}
                 onChangeText={(t) => setMobile(t.replace(/\D/g, ''))}
@@ -136,12 +154,12 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
 
           {/* Shop Name */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>दुकान / फर्म का नाम (Shop Name) *</Text>
+            <Text style={styles.label}>{t.shopNameLabel} *</Text>
             <View style={styles.inputWrapper}>
               <MaterialCommunityIcons name="store-outline" size={18} color="#C69A43" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="उदा. श्री गणेश किराना स्टोर"
+                placeholder={t.shopNamePlaceholder}
                 placeholderTextColor="#94A3B8"
                 value={shopName}
                 onChangeText={setShopName}
@@ -151,9 +169,9 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
 
           {/* Business Type Selector Pills */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>व्यापार का प्रकार (Business Type)</Text>
+            <Text style={styles.label}>{t.businessTypeLabel}</Text>
             <View style={styles.pillsRow}>
-              {BIZ_TYPES.map((type) => {
+              {bizTypes.map((type) => {
                 const isSelected = businessType === type;
                 return (
                   <TouchableOpacity
@@ -177,16 +195,16 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
             onPress={handleSubmit}
             activeOpacity={0.85}
           >
-            <Text style={styles.submitBtnText}>रजिस्ट्रेशन पूरा करें (Continue)</Text>
+            <Text style={styles.submitBtnText}>{t.createAccountBtn}</Text>
             <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
 
         {/* Switch to Login */}
         <View style={styles.loginRow}>
-          <Text style={styles.loginPrompt}>पहले से खाता है? </Text>
+          <Text style={styles.loginPrompt}>{t.alreadyHaveAccount} </Text>
           <TouchableOpacity onPress={onNavigateToLogin}>
-            <Text style={styles.loginLink}>लॉगिन करें (Sign In)</Text>
+            <Text style={styles.loginLink}>{t.loginAction}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

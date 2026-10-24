@@ -10,18 +10,23 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { theme } from '../constants/theme';
+import { getGrahakTranslation } from '../constants/translations';
 
 interface GrahakLoginScreenProps {
   onBack: () => void;
   onSuccess: (mobile: string) => void;
   onNavigateToSignup: () => void;
+  languageCode?: string;
 }
 
 export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
   onBack,
   onSuccess,
   onNavigateToSignup,
+  languageCode = 'hi',
 }) => {
+  const t = getGrahakTranslation(languageCode);
+
   const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -47,11 +52,19 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
     setErrorMsg(null);
     const cleaned = mobile.replace(/\D/g, '');
     if (cleaned.length !== 10) {
-      setErrorMsg('कृपया १० अंकों का वैध भारतीय मोबाइल नंबर दर्ज करें।');
+      setErrorMsg(
+        languageCode === 'en'
+          ? 'Please enter a valid 10-digit Indian mobile number.'
+          : 'कृपया १० अंकों का वैध भारतीय मोबाइल नंबर दर्ज करें।'
+      );
       return;
     }
     if (!/^[6-9]\d{9}$/.test(cleaned)) {
-      setErrorMsg('मोबाइल नंबर 6, 7, 8 या 9 से शुरू होना चाहिए।');
+      setErrorMsg(
+        languageCode === 'en'
+          ? 'Mobile number must start with 6, 7, 8 or 9.'
+          : 'मोबाइल नंबर 6, 7, 8 या 9 से शुरू होना चाहिए।'
+      );
       return;
     }
 
@@ -79,7 +92,11 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
     setErrorMsg(null);
     const code = otp.join('');
     if (code.length !== 6) {
-      setErrorMsg('कृपया पूरा ६ अंकों का OTP कोड दर्ज करें।');
+      setErrorMsg(
+        languageCode === 'en'
+          ? 'Please enter the complete 6-digit OTP code.'
+          : 'कृपया पूरा ६ अंकों का OTP कोड दर्ज करें।'
+      );
       return;
     }
 
@@ -112,9 +129,9 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
           activeOpacity={0.7}
         >
           <Ionicons name="arrow-back" size={20} color={theme.colors.primary} />
-          <Text style={styles.backText}>पीछे</Text>
+          <Text style={styles.backText}>{t.backBtn}</Text>
         </TouchableOpacity>
-        <Text style={styles.navTitle}>Grahak Login</Text>
+        <Text style={styles.navTitle}>{t.loginAction}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -125,12 +142,16 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
             <MaterialCommunityIcons name="storefront-outline" size={32} color="#D5AD66" />
           </View>
           <Text style={styles.screenHeading}>
-            {step === 'PHONE' ? 'ग्राहक ऐप में लॉगिन करें' : 'OTP सत्यापन'}
+            {step === 'PHONE' ? t.loginAction : t.enterOtp}
           </Text>
           <Text style={styles.screenSubtitle}>
             {step === 'PHONE'
-              ? 'दुकानदार लॉगिन • मोबाइल नंबर द्वारा सुरक्षित प्रवेश'
-              : `+91 ${mobile} पर भेजा गया ६ अंकों का कोड दर्ज करें`}
+              ? (languageCode === 'en'
+                  ? 'Merchant Login • Secure mobile number access'
+                  : 'दुकानदार लॉगिन • मोबाइल नंबर द्वारा सुरक्षित प्रवेश')
+              : (languageCode === 'en'
+                  ? `Enter 6-digit verification code sent to +91 ${mobile}`
+                  : `+91 ${mobile} पर भेजा गया ६ अंकों का कोड दर्ज करें`)}
           </Text>
         </View>
 
@@ -145,7 +166,7 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
         {/* STEP 1: MOBILE INPUT */}
         {step === 'PHONE' && (
           <View style={styles.formCard}>
-            <Text style={styles.inputLabel}>मोबाइल नंबर (Mobile Number)</Text>
+            <Text style={styles.inputLabel}>{t.mobileLabel} *</Text>
             
             <View style={styles.phoneInputRow}>
               <View style={styles.countryCode}>
@@ -156,7 +177,7 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
                 style={styles.phoneInput}
                 keyboardType="phone-pad"
                 maxLength={10}
-                placeholder="10 अंकों का नंबर"
+                placeholder={t.mobilePlaceholder}
                 placeholderTextColor="#94A3B8"
                 value={mobile}
                 onChangeText={(text) => setMobile(text.replace(/\D/g, ''))}
@@ -169,7 +190,9 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
               onPress={handleSendOtp}
               activeOpacity={0.85}
             >
-              <Text style={styles.actionButtonText}>OTP कोड प्राप्त करें (Continue)</Text>
+              <Text style={styles.actionButtonText}>
+                {languageCode === 'en' ? 'Get OTP Code • Continue' : 'OTP कोड प्राप्त करें (Continue)'}
+              </Text>
               <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
@@ -178,7 +201,9 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
         {/* STEP 2: OTP VERIFICATION */}
         {step === 'OTP' && (
           <View style={styles.formCard}>
-            <Text style={styles.inputLabel}>६ अंकों का OTP कोड</Text>
+            <Text style={styles.inputLabel}>
+              {languageCode === 'en' ? '6-Digit OTP Code' : '६ अंकों का OTP कोड'}
+            </Text>
 
             <View style={styles.otpBoxesRow}>
               {otp.map((digit, idx) => (
@@ -198,16 +223,19 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
             {/* Resend Row */}
             <View style={styles.resendRow}>
               <TouchableOpacity onPress={() => setStep('PHONE')}>
-                <Text style={styles.changePhoneText}>नंबर बदलें</Text>
+                <Text style={styles.changePhoneText}>
+                  {languageCode === 'en' ? 'Change Number' : 'नंबर बदलें'}
+                </Text>
               </TouchableOpacity>
 
               {canResend ? (
                 <TouchableOpacity onPress={handleResend}>
-                  <Text style={styles.resendActiveText}>दोबारा OTP भेजें</Text>
+                  <Text style={styles.resendActiveText}>{t.resendOtp}</Text>
                 </TouchableOpacity>
               ) : (
                 <Text style={styles.resendWaitText}>
-                  दोबारा भेजें: <Text style={{ fontWeight: '800' }}>{resendTimer}s</Text>
+                  {languageCode === 'en' ? 'Resend in: ' : 'दोबारा भेजें: '}
+                  <Text style={{ fontWeight: '800' }}>{resendTimer}s</Text>
                 </Text>
               )}
             </View>
@@ -218,16 +246,16 @@ export const GrahakLoginScreen: React.FC<GrahakLoginScreenProps> = ({
               activeOpacity={0.85}
             >
               <Ionicons name="checkmark-done" size={20} color="#D5AD66" />
-              <Text style={styles.actionButtonText}>सत्यापित करें और लॉगिन करें</Text>
+              <Text style={styles.actionButtonText}>{t.verifyAndLogin}</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {/* Bottom Signup Switch */}
         <View style={styles.signupPrompt}>
-          <Text style={styles.promptText}>नया खाता बनाना चाहते हैं? </Text>
+          <Text style={styles.promptText}>{t.noAccount} </Text>
           <TouchableOpacity onPress={onNavigateToSignup}>
-            <Text style={styles.signupLinkText}>नया रजिस्ट्रेशन (Sign Up)</Text>
+            <Text style={styles.signupLinkText}>{t.signupAction}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

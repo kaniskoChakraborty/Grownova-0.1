@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi" class="h-full bg-[#FCF9F5]">
+<html lang="en" class="h-full bg-[#FCF9F5]">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +20,7 @@
 
   <!-- Header -->
   <header class="flex items-center justify-between pb-3 border-b border-[#C69A43]/20">
-    <span class="font-serif font-bold text-base text-[#102B4E]">दुकान ऑनबोर्डिंग (Setup)</span>
+    <span class="font-serif font-bold text-base text-[#102B4E]" id="onboard-header-title">दुकान ऑनबोर्डिंग (Setup)</span>
     <div class="flex items-center gap-1.5" id="step-dots">
       <div id="dot-1" class="w-6 h-6 rounded-full bg-[#102B4E] text-white text-[10px] font-bold flex items-center justify-center">1</div>
       <div id="dot-2" class="w-6 h-6 rounded-full bg-white border border-[#C69A43]/30 text-[#65758B] text-[10px] font-bold flex items-center justify-center">2</div>
@@ -38,22 +38,22 @@
         <span class="material-symbols-outlined text-[26px]">storefront</span>
       </div>
       <div class="text-center">
-        <h2 class="font-serif text-xl font-bold text-[#102B4E]">दुकान की बुनियादी जानकारी</h2>
-        <p class="text-xs text-[#55677D] mt-0.5">पुष्टि करें कि आपके बिल और डिजिटल बही-खाते पर क्या नाम दिखेगा</p>
+        <h2 class="font-serif text-xl font-bold text-[#102B4E]" id="step-1-title">दुकान की बुनियादी जानकारी</h2>
+        <p class="text-xs text-[#55677D] mt-0.5" id="step-1-sub">पुष्टि करें कि आपके बिल और डिजिटल बही-खाते पर क्या नाम दिखेगा</p>
       </div>
 
       <div class="space-y-3">
         <div>
-          <label class="text-[11px] font-bold text-[#102B4E] block mb-1">दुकान का नाम</label>
-          <input type="text" value="श्री गणेश किराना स्टोर" class="w-full px-3 py-2 rounded-xl bg-[#FCF9F5] border border-[#C69A43]/40 text-xs font-bold text-[#102B4E]" />
+          <label class="text-[11px] font-bold text-[#102B4E] block mb-1" id="label-shopname">दुकान का नाम / Shop Name</label>
+          <input type="text" id="onboard-shopname" value="Shree Ganesh Kirana Store" class="w-full px-3 py-2 rounded-xl bg-[#FCF9F5] border border-[#C69A43]/40 text-xs font-bold text-[#102B4E]" />
         </div>
         <div>
-          <label class="text-[11px] font-bold text-[#102B4E] block mb-1">मालिक का नाम</label>
-          <input type="text" value="रमेश कुमार गुप्ता" class="w-full px-3 py-2 rounded-xl bg-[#FCF9F5] border border-[#C69A43]/40 text-xs font-bold text-[#102B4E]" />
+          <label class="text-[11px] font-bold text-[#102B4E] block mb-1" id="label-ownername">मालिक का नाम / Owner Name</label>
+          <input type="text" id="onboard-ownername" value="Rajesh Kumar Gupta" class="w-full px-3 py-2 rounded-xl bg-[#FCF9F5] border border-[#C69A43]/40 text-xs font-bold text-[#102B4E]" />
         </div>
       </div>
 
-      <button onclick="goToStep(2)" class="w-full py-3 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer">
+      <button onclick="goToStep(2)" class="w-full py-3 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer" id="btn-step-1">
         <span>आगे बढ़ें (भुगतान सेटिंग्स)</span>
         <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
       </button>
@@ -65,24 +65,24 @@
         <span class="material-symbols-outlined text-[26px]">qr_code_scanner</span>
       </div>
       <div class="text-center">
-        <h2 class="font-serif text-xl font-bold text-[#102B4E]">भुगतान & उधारी सेटिंग्स</h2>
-        <p class="text-xs text-[#55677D] mt-0.5">UPI, नकद एवं उधारी पर्ची दर्ज करने की व्यवस्था</p>
+        <h2 class="font-serif text-xl font-bold text-[#102B4E]" id="step-2-title">भुगतान & उधारी सेटिंग्स</h2>
+        <p class="text-xs text-[#55677D] mt-0.5" id="step-2-sub">UPI, नकद एवं उधारी पर्ची दर्ज करने की व्यवस्था</p>
       </div>
 
       <div class="space-y-3">
         <div>
-          <label class="text-[11px] font-bold text-[#102B4E] block mb-1">दुकान का UPI आईडी (Google Pay / PhonePe)</label>
-          <input type="text" value="shreeganesh@upi" class="w-full px-3 py-2 rounded-xl bg-[#FCF9F5] border border-[#C69A43]/40 text-xs font-mono font-bold text-[#102B4E]" />
+          <label class="text-[11px] font-bold text-[#102B4E] block mb-1" id="label-upi">दुकान का UPI आईडी (Google Pay / PhonePe)</label>
+          <input type="text" id="onboard-upi" value="shreeganesh@upi" class="w-full px-3 py-2 rounded-xl bg-[#FCF9F5] border border-[#C69A43]/40 text-xs font-mono font-bold text-[#102B4E]" />
         </div>
         <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
           <span class="material-symbols-outlined text-[#15803D] text-[18px]">cloud_off</span>
-          <span>ऑफलाइन बिलिंग तैयार: बिना नेट के भी बिल बन जाएगा</span>
+          <span id="text-offline-note">ऑफलाइन बिलिंग तैयार: बिना नेट के भी बिल बन जाएगा</span>
         </div>
       </div>
 
       <div class="flex gap-2">
-        <button onclick="goToStep(1)" class="w-1/3 py-2.5 rounded-xl bg-[#F8F5F1] text-xs font-bold text-[#102B4E] cursor-pointer">पीछे</button>
-        <button onclick="goToStep(3)" class="w-2/3 py-2.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer">
+        <button onclick="goToStep(1)" class="w-1/3 py-2.5 rounded-xl bg-[#F8F5F1] text-xs font-bold text-[#102B4E] cursor-pointer" id="btn-back-2">पीछे</button>
+        <button onclick="goToStep(3)" class="w-2/3 py-2.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer" id="btn-step-2">
           <span>हाजिरी नियम</span>
           <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
         </button>
@@ -95,21 +95,21 @@
         <span class="material-symbols-outlined text-[26px]">pin_drop</span>
       </div>
       <div class="text-center">
-        <h2 class="font-serif text-xl font-bold text-[#102B4E]">दुकान जियोटैग & स्टाफ हाजिरी</h2>
-        <p class="text-xs text-[#55677D] mt-0.5">कर्मचारी दुकान की ५० मीटर की परिधि में रहकर ही हाजिरी लगा सकेंगे</p>
+        <h2 class="font-serif text-xl font-bold text-[#102B4E]" id="step-3-title">दुकान जियोटैग & स्टाफ हाजिरी</h2>
+        <p class="text-xs text-[#55677D] mt-0.5" id="step-3-sub">कर्मचारी दुकान की ५० मीटर की परिधि में रहकर ही हाजिरी लगा सकेंगे</p>
       </div>
 
       <div class="p-3 rounded-xl bg-[#FCF9F5] border border-[#C69A43]/30 text-xs">
         <div class="flex items-center justify-between mb-1">
-          <span class="font-bold text-[#102B4E]">दुकान लोकेशन</span>
+          <span class="font-bold text-[#102B4E]" id="label-geotag">दुकान लोकेशन</span>
           <span class="text-[10px] font-bold text-[#15803D]">📍 26.8467° N, 80.9462° E</span>
         </div>
-        <p class="text-[10px] text-[#65758B]">चेक-इन सेल्फी सत्यापन सक्रिय रखा गया है।</p>
+        <p class="text-[10px] text-[#65758B]" id="text-geotag-note">चेक-इन सेल्फी सत्यापन सक्रिय रखा गया है।</p>
       </div>
 
       <div class="flex gap-2">
-        <button onclick="goToStep(2)" class="w-1/3 py-2.5 rounded-xl bg-[#F8F5F1] text-xs font-bold text-[#102B4E] cursor-pointer">पीछे</button>
-        <button onclick="goToStep(4)" class="w-2/3 py-2.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer">
+        <button onclick="goToStep(2)" class="w-1/3 py-2.5 rounded-xl bg-[#F8F5F1] text-xs font-bold text-[#102B4E] cursor-pointer" id="btn-back-3">पीछे</button>
+        <button onclick="goToStep(4)" class="w-2/3 py-2.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer" id="btn-step-3">
           <span>समीक्षा देखें</span>
           <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
         </button>
@@ -123,38 +123,100 @@
       </div>
 
       <div>
-        <span class="text-[10px] font-bold text-[#C69A43] uppercase tracking-wider">बधाई हो! 🎉</span>
-        <h2 class="font-serif text-2xl font-bold text-[#102B4E] mt-1">दुकान का खाता तैयार है</h2>
-        <p class="text-xs text-[#55677D] mt-1">श्री गणेश किराना स्टोर अब डिजिटल हिसाब, बिलिंग और स्टॉक प्रबंधन के लिए तैयार है।</p>
+        <span class="text-[10px] font-bold text-[#C69A43] uppercase tracking-wider" id="done-badge">बधाई हो! 🎉</span>
+        <h2 class="font-serif text-2xl font-bold text-[#102B4E] mt-1" id="done-title">दुकान का खाता तैयार है</h2>
+        <p class="text-xs text-[#55677D] mt-1" id="done-desc">श्री गणेश किराना स्टोर अब डिजिटल हिसाब, बिलिंग और स्टॉक प्रबंधन के लिए तैयार है।</p>
       </div>
 
-      <div class="p-3 rounded-xl bg-[#FCF9F5] border border-[#C69A43]/25 text-left text-xs space-y-1.5">
+      <div class="p-3 rounded-xl bg-[#FCF9F5] border border-[#C69A43]/25 text-left text-xs space-y-1.5" id="summary-points">
         <div class="flex items-center gap-2 text-[#102B4E]">
           <span class="material-symbols-outlined text-[#15803D] text-[16px]">check_circle</span>
-          <span>UPI & नकद खाता सक्रिय</span>
+          <span id="point-1">UPI & नकद खाता सक्रिय</span>
         </div>
         <div class="flex items-center gap-2 text-[#102B4E]">
           <span class="material-symbols-outlined text-[#15803D] text-[16px]">check_circle</span>
-          <span>ऑफलाइन बिलिंग तैयार</span>
+          <span id="point-2">ऑफलाइन बिलिंग तैयार</span>
         </div>
         <div class="flex items-center gap-2 text-[#102B4E]">
           <span class="material-symbols-outlined text-[#15803D] text-[16px]">check_circle</span>
-          <span>कर्मचारी जियोटैग हाजिरी सक्षम</span>
+          <span id="point-3">कर्मचारी जियोटैग हाजिरी सक्षम</span>
         </div>
       </div>
 
-      <a
-        href="./01-home-owner-desk.html"
-        class="w-full py-3.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg hover:bg-[#0B2340]"
+      <button
+        onclick="finishAndRedirect()"
+        class="w-full py-3.5 rounded-xl bg-[#102B4E] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg hover:bg-[#0B2340] cursor-pointer"
+        id="btn-finish"
       >
-        <span>Continue to Grahak (ग्राहक शुरू करें)</span>
+        <span id="btn-finish-text">Continue to Grahak (ग्राहक शुरू करें)</span>
         <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-      </a>
+      </button>
     </div>
 
   </main>
 
   <script>
+    let currentProfile = {};
+    try {
+      const p = localStorage.getItem('grahak_shop_profile');
+      if (p) currentProfile = JSON.parse(p);
+    } catch(e) {}
+
+    const userLang = currentProfile.language || localStorage.getItem('grahak_language') || localStorage.getItem('grahak_selected_language') || localStorage.getItem('grahak_locale') || 'hi';
+
+    // Populate input fields with user's profile
+    const shopInput = document.getElementById('onboard-shopname');
+    const ownerInput = document.getElementById('onboard-ownername');
+
+    if (shopInput) {
+      shopInput.value = currentProfile.shopName || (userLang === 'hi' ? 'श्री गणेश किराना स्टोर' : 'Shree Ganesh Kirana Store');
+    }
+    if (ownerInput) {
+      ownerInput.value = currentProfile.fullName || (userLang === 'hi' ? 'रमेश कुमार गुप्ता' : 'Rajesh Kumar Gupta');
+    }
+
+    // Apply localization for English and other non-Hindi languages
+    if (userLang !== 'hi') {
+      document.getElementById('onboard-header-title').textContent = 'Shop Onboarding (Setup)';
+      
+      document.getElementById('step-1-title').textContent = 'Basic Shop Information';
+      document.getElementById('step-1-sub').textContent = 'Confirm the details that will appear on your customer bills and digital ledger';
+      document.getElementById('label-shopname').textContent = 'Shop / Business Name';
+      document.getElementById('label-ownername').textContent = 'Owner / Proprietor Name';
+      document.getElementById('btn-step-1').querySelector('span').textContent = 'Next: Payment Settings';
+
+      document.getElementById('step-2-title').textContent = 'Payment & Udhaar Settings';
+      document.getElementById('step-2-sub').textContent = 'UPI, cash and customer credit management setup';
+      document.getElementById('label-upi').textContent = 'Shop UPI ID (Google Pay / PhonePe)';
+      document.getElementById('text-offline-note').textContent = 'Offline billing enabled: Works seamlessly without internet';
+      document.getElementById('btn-back-2').textContent = 'Back';
+      document.getElementById('btn-step-2').querySelector('span').textContent = 'Next: Attendance Setup';
+
+      document.getElementById('step-3-title').textContent = 'Shop Geotag & Staff Attendance';
+      document.getElementById('step-3-sub').textContent = 'Staff can check in only within 50 meters of your registered shop';
+      document.getElementById('label-geotag').textContent = 'Registered Shop GPS';
+      document.getElementById('text-geotag-note').textContent = 'Selfie photo verification is enabled for check-ins.';
+      document.getElementById('btn-back-3').textContent = 'Back';
+      document.getElementById('btn-step-3').querySelector('span').textContent = 'Review & Finish';
+
+      document.getElementById('done-badge').textContent = 'CONGRATULATIONS! 🎉';
+      document.getElementById('done-title').textContent = 'Shop Account is Ready';
+      document.getElementById('point-1').textContent = 'UPI & Cash Ledger Active';
+      document.getElementById('point-2').textContent = 'Offline Billing Enabled';
+      document.getElementById('point-3').textContent = 'Staff Geotag Attendance Ready';
+      document.getElementById('btn-finish-text').textContent = 'Enter Grahak Dashboard';
+    }
+
+    function updateDoneDesc() {
+      const sName = shopInput?.value || currentProfile.shopName || 'Your Shop';
+      const descEl = document.getElementById('done-desc');
+      if (descEl) {
+        descEl.innerHTML = userLang !== 'hi'
+          ? `<strong>${sName}</strong> is now completely ready for digital billing, stock, and ledger.`
+          : `<strong>${sName}</strong> अब डिजिटल हिसाब, बिलिंग और स्टॉक प्रबंधन के लिए तैयार है।`;
+      }
+    }
+
     function goToStep(s) {
       [1, 2, 3, 4].forEach(i => {
         document.getElementById(`step-${i}`).classList.add('hidden');
@@ -171,6 +233,23 @@
         }
       });
       document.getElementById(`step-${s}`).classList.remove('hidden');
+      if (s === 4) updateDoneDesc();
+    }
+
+    function finishAndRedirect() {
+      try {
+        const updatedProfile = {
+          ...currentProfile,
+          shopName: shopInput?.value || currentProfile.shopName || 'Shree Ganesh Kirana Store',
+          fullName: ownerInput?.value || currentProfile.fullName || 'Rajesh Kumar Gupta',
+          upiId: document.getElementById('onboard-upi')?.value || 'shreeganesh@upi',
+          language: userLang,
+          onboarded: true
+        };
+        localStorage.setItem('grahak_shop_profile', JSON.stringify(updatedProfile));
+        localStorage.setItem('grahak_onboarding_completed', 'true');
+      } catch(e) {}
+      window.location.href = './01-home-owner-desk.html';
     }
   </script>
 </body>

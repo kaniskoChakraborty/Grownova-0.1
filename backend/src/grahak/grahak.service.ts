@@ -24,6 +24,7 @@ export interface StoreProfile {
   rating: number;
   isOpen: boolean;
   geofence: { lat: number; lng: number; radiusMeters: number };
+  language?: string;
 }
 
 export interface CatalogItem {
@@ -324,10 +325,11 @@ export class GrahakService {
     const cleanPhone = dto.phone.replace(/\D/g, '').slice(-10);
     const storeId = `store-${Date.now().toString().slice(-4)}`;
 
+    const isEnglish = dto.language === 'en';
     const newStore: StoreProfile = {
       id: storeId,
-      name: dto.shopName || `${dto.fullName} ki Dukaan`,
-      tagline: 'Aapka Apna Vishwasniya Store',
+      name: dto.shopName || (isEnglish ? `${dto.fullName}'s Store` : `${dto.fullName} ki Dukaan`),
+      tagline: isEnglish ? 'Your Trusted Digital Store' : 'Aapka Apna Vishwasniya Store',
       category: dto.businessType || 'Kirana & FMCG',
       ownerName: dto.fullName,
       phone: cleanPhone,
@@ -339,16 +341,19 @@ export class GrahakService {
       rating: 5.0,
       isOpen: true,
       geofence: { lat: 22.7196, lng: 75.8577, radiusMeters: 150 },
+      language: dto.language || 'hi',
     };
 
     this.stores.unshift(newStore);
-    this.logger.log(`[MERCHANT REGISTERED] ${newStore.name} by ${newStore.ownerName} (${cleanPhone})`);
+    this.logger.log(`[MERCHANT REGISTERED] ${newStore.name} by ${newStore.ownerName} (${cleanPhone}) in ${dto.language || 'hi'}`);
 
     return {
       success: true,
       store: newStore,
       token: `gn_jwt_${cleanPhone}_${Date.now()}`,
-      message: 'Badhaai ho! Aapka naya Vyapari Khata safalta-poorvak shuru ho gaya hai.',
+      message: isEnglish
+        ? 'Congratulations! Your Merchant Account has been successfully created.'
+        : 'Badhaai ho! Aapka naya Vyapari Khata safalta-poorvak shuru ho gaya hai.',
     };
   }
 

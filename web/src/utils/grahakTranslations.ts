@@ -64,6 +64,43 @@ export interface TranslationDictionary {
   offlineBilling: string;
   bankSync: string;
   settingsTitle: string;
+
+  // Comprehensive localized fields for Sign-Up & Onboarding
+  signupHeading: string;
+  signupSub: string;
+  fullNamePlaceholder: string;
+  shopNamePlaceholder: string;
+  shopNameNotice: string;
+  catKirana: string;
+  catWholesaler: string;
+  catClothing: string;
+  catElectronics: string;
+  catHardware: string;
+  catOther: string;
+  gstinOptionalLabel: string;
+  gstinNotice: string;
+  whatsappConsent: string;
+  createAccountBtn: string;
+  step1Title: string;
+  step1Sub: string;
+  step2Title: string;
+  step2Sub: string;
+  upiIdLabel: string;
+  upiNotice: string;
+  offlineSupportTitle: string;
+  offlineSupportDesc: string;
+  step3Title: string;
+  step3Sub: string;
+  geotagLabel: string;
+  detectLocationBtn: string;
+  step4Title: string;
+  congratulations: string;
+  accountReadyDesc: string;
+  defaultOwnerName: string;
+  defaultShopName: string;
+  defaultCategory: string;
+  nextBtn: string;
+  backBtn: string;
 }
 
 export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
@@ -102,13 +139,49 @@ export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionar
     offlineBilling: 'ऑफलाइन बिल बनाएं',
     bankSync: 'बैंक खाता स्थिति (सुरक्षित)',
     settingsTitle: 'दुकान एवं खाता सेटिंग्स',
+
+    signupHeading: 'दुकान या व्यापार का रजिस्ट्रेशन',
+    signupSub: 'सिर्फ १ मिनट में अपना डिजिटल बही-खाता और बिलिंग शुरू करें',
+    fullNamePlaceholder: 'उदा. रमेश कुमार शर्मा',
+    shopNamePlaceholder: 'उदा. श्री गणेश किराना स्टोर',
+    shopNameNotice: 'यही नाम आपके ग्राहक के बिल और व्हाट्सऐप रसीद पर प्रिंट होगा।',
+    catKirana: 'किराना & जनरल स्टोर',
+    catWholesaler: 'थोक विक्रेता / मंडी',
+    catClothing: 'कपड़ा & रेडीमेड',
+    catElectronics: 'इलेक्ट्रॉनिक्स & मोबाइल',
+    catHardware: 'हार्डवेयर & पेंट',
+    catOther: 'अन्य खुदरा व्यापार',
+    gstinOptionalLabel: 'GSTIN या PAN नंबर (ऐच्छिक)',
+    gstinNotice: 'यदि आपके पास GSTIN नहीं है तो इसे खाली छोड़ दें।',
+    whatsappConsent: 'मुझे WhatsApp पर रोज़ाना दुकान का हिसाब और अलर्ट भेजें।',
+    createAccountBtn: 'खाता खोलें (Create Account)',
+    step1Title: 'दुकान की बुनियादी जानकारी',
+    step1Sub: 'पुष्टि करें कि आपके बिल और डिजिटल बही-खाते पर क्या नाम दिखेगा',
+    step2Title: 'भुगतान & उधारी सेटिंग्स',
+    step2Sub: 'ग्राहकों से UPI, नकद एवं उधारी दर्ज करने की व्यवस्था',
+    upiIdLabel: 'आपकी दुकान का UPI आईडी (Google Pay / PhonePe / Paytm)',
+    upiNotice: 'ग्राहक इस UPI आईडी पर भुगतान करके सीधे रसीद प्राप्त कर सकेंगे।',
+    offlineSupportTitle: 'ऑफलाइन बिलिंग सपोर्ट',
+    offlineSupportDesc: 'बिना इंटरनेट के भी बिल बना सकते हैं। इंटरनेट आते ही डेटा सुरक्षित सिंक हो जाएगा।',
+    step3Title: 'दुकान जियोटैग & स्टाफ हाजिरी',
+    step3Sub: 'कर्मचारी दुकान की 50 मीटर की परिधि में रहकर ही हाजिरी लगा सकेंगे',
+    geotagLabel: 'दुकान का जियो-लोकेशन',
+    detectLocationBtn: 'वर्तमान स्थान दर्ज करें',
+    step4Title: 'दुकान का खाता पूरी तरह तैयार है',
+    congratulations: 'बधाई हो! 🎉',
+    accountReadyDesc: 'अब डिजिटल हिसाब, बिलिंग और स्टॉक प्रबंधन के लिए तैयार है।',
+    defaultOwnerName: 'रमेश कुमार गुप्ता',
+    defaultShopName: 'श्री गणेश किराना स्टोर',
+    defaultCategory: 'किराना & जनरल स्टोर',
+    nextBtn: 'आगे बढ़ें',
+    backBtn: 'पीछे',
   },
   en: {
     brandName: 'Grahak',
-    headline: 'Aapke dukaan ka apna digital saathi.',
-    subheadline: 'Hisab, bikri, stock aur bills — sab ek hi jagah.',
-    ctaStart: 'Shuru Kijiye',
-    loginReturning: 'Already have an account? Login',
+    headline: 'Your Trusted Neighborhood Business Partner.',
+    subheadline: 'Ledger, billing, stock, and customer khata — all in one simple app.',
+    ctaStart: 'Get Started',
+    loginReturning: 'Already registered? Login',
     loginAction: 'Login to Grahak',
     signupAction: 'Create New Account',
     chooseLanguage: 'Choose Your Preferred Language',
@@ -138,6 +211,42 @@ export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionar
     offlineBilling: 'Create Offline Bills',
     bankSync: 'Bank Account Status (Secure)',
     settingsTitle: 'Shop & Account Settings',
+
+    signupHeading: 'Shop & Business Registration',
+    signupSub: 'Start your digital billing & ledger in less than 1 minute',
+    fullNamePlaceholder: 'e.g. Rajesh Kumar Sharma',
+    shopNamePlaceholder: 'e.g. Shree Ganesh Kirana & General Store',
+    shopNameNotice: 'This name will appear on customer bills & WhatsApp receipts.',
+    catKirana: 'Kirana & General Store',
+    catWholesaler: 'Wholesaler / Mandi',
+    catClothing: 'Clothing & Textiles',
+    catElectronics: 'Electronics & Mobile',
+    catHardware: 'Hardware & Paint',
+    catOther: 'Other Retail Store',
+    gstinOptionalLabel: 'GSTIN or PAN (Optional)',
+    gstinNotice: 'Leave blank if you do not have a GST number.',
+    whatsappConsent: 'Send me daily shop receipts & ledger summary on WhatsApp.',
+    createAccountBtn: 'Create Account',
+    step1Title: 'Basic Shop Information',
+    step1Sub: 'Confirm the details that will appear on your customer bills and digital ledger',
+    step2Title: 'Payment & Udhaar Settings',
+    step2Sub: 'Configure UPI, cash payments, and customer credit ledger',
+    upiIdLabel: 'Your Shop UPI ID (Google Pay / PhonePe / Paytm)',
+    upiNotice: 'Customers can pay to this UPI ID and receive instant digital receipts.',
+    offlineSupportTitle: 'Offline Billing Support',
+    offlineSupportDesc: 'Create bills even without internet. Data syncs automatically once reconnected.',
+    step3Title: 'Shop Geotag & Staff Attendance',
+    step3Sub: 'Employees can check in only within 50 meters of your registered shop address',
+    geotagLabel: 'Shop Geolocation',
+    detectLocationBtn: 'Detect Current Location',
+    step4Title: 'Your Shop Account is Ready',
+    congratulations: 'Congratulations! 🎉',
+    accountReadyDesc: 'is now fully ready for digital billing, stock, and ledger.',
+    defaultOwnerName: 'Rajesh Kumar Gupta',
+    defaultShopName: 'Shree Ganesh Kirana Store',
+    defaultCategory: 'Kirana & General Store',
+    nextBtn: 'Next Step',
+    backBtn: 'Back',
   },
   pa: {
     brandName: 'ਗ੍ਰਾਹਕ',
@@ -174,6 +283,42 @@ export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionar
     offlineBilling: 'ਆਫਲਾਈਨ ਬਿੱਲ ਬਣਾਓ',
     bankSync: 'ਬੈਂਕ ਖਾਤਾ ਸਥਿਤੀ',
     settingsTitle: 'ਦੁਕਾਨ ਅਤੇ ਖਾਤਾ ਸੈਟਿੰਗਾਂ',
+
+    signupHeading: 'ਦੁਕਾਨ ਜਾਂ ਕਾਰੋਬਾਰ ਦੀ ਰਜਿਸਟ੍ਰੇਸ਼ਨ',
+    signupSub: 'ਸਿਰਫ ੧ ਮਿੰਟ ਵਿੱਚ ਡਿਜੀਟਲ ਬਹੀ-ਖਾਤਾ ਅਤੇ ਬਿਲਿੰਗ ਸ਼ੁਰੂ ਕਰੋ',
+    fullNamePlaceholder: 'ਉਦਾ. ਹਰਪ੍ਰੀਤ ਸਿੰਘ',
+    shopNamePlaceholder: 'ਉਦਾ. ਗੁਰੂ ਕ੍ਰਿਪਾ ਕਰਿਆਨਾ ਸਟੋਰ',
+    shopNameNotice: 'ਇਹ ਨਾਮ ਗਾਹਕਾਂ ਦੇ ਬਿੱਲ ਅਤੇ ਵਟਸਐਪ ਪਰਚੀ ਤੇ ਛਪੇਗਾ।',
+    catKirana: 'ਕਰਿਆਨਾ & ਜਨਰਲ ਸਟੋਰ',
+    catWholesaler: 'ਥੋਕ ਵਿਕਰੇਤਾ / ਮੰਡੀ',
+    catClothing: 'ਕੱਪੜਾ & ਰੈਡੀਮੇਡ',
+    catElectronics: 'ਇਲੈਕਟ੍ਰਾਨਿਕਸ & ਮੋਬਾਈਲ',
+    catHardware: 'ਹਾਰਡਵੇਅਰ & ਪੇਂਟ',
+    catOther: 'ਹੋਰ ਪਰਚੂਨ ਦੁਕਾਨ',
+    gstinOptionalLabel: 'ਜੀਐਸਟੀਆਈਐਨ ਜਾਂ ਪੈਨ (ਵਿਕਲਪਿਕ)',
+    gstinNotice: 'ਜੇਕਰ ਤੁਹਾਡੇ ਕੋਲ ਜੀਐਸਟੀ ਨਹੀਂ ਹੈ ਤਾਂ ਖਾਲੀ ਛੱਡੋ।',
+    whatsappConsent: 'ਮੈਨੂੰ ਵਟਸਐਪ ਤੇ ਰੋਜ਼ਾਨਾ ਹਿਸਾਬ ਅਤੇ ਅਪਡੇਟ ਭੇਜੋ।',
+    createAccountBtn: 'ਖਾਤਾ ਖੋਲ੍ਹੋ (Create Account)',
+    step1Title: 'ਦੁਕਾਨ ਦੀ ਮੁੱਢਲੀ ਜਾਣਕਾਰੀ',
+    step1Sub: 'ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਬਿੱਲ ਅਤੇ ਬਹੀ-ਖਾਤੇ ਤੇ ਕੀ ਨਾਮ ਦਿਖੇਗਾ',
+    step2Title: 'ਭੁਗਤਾਨ & ਉਧਾਰ ਸੈਟਿੰਗਾਂ',
+    step2Sub: 'UPI, ਨਕਦ ਅਤੇ ਉਧਾਰ ਦਰਜ ਕਰਨ ਦੀ ਵਿਵਸਥਾ',
+    upiIdLabel: 'ਤੁਹਾਡੀ ਦੁਕਾਨ ਦਾ UPI ਆਈਡੀ',
+    upiNotice: 'ਗਾਹਕ ਇਸ UPI ਤੇ ਭੁਗਤਾਨ ਕਰਕੇ ਸਿੱਧਾ ਪਰਚੀ ਲੈ ਸਕਣਗੇ।',
+    offlineSupportTitle: 'ਆਫਲਾਈਨ ਬਿਲਿੰਗ ਸਹਿਯੋਗ',
+    offlineSupportDesc: 'ਬਿਨਾਂ ਇੰਟਰਨੈੱਟ ਦੇ ਵੀ ਬਿੱਲ ਬਣੇਗਾ, ਇੰਟਰਨੈੱਟ ਆਉਣ ਤੇ ਸੁਰੱਖਿਅਤ ਸਿੰਕ ਹੋਵੇਗਾ।',
+    step3Title: 'ਜਿਓਟੈਗ & ਸਟਾਫ ਹਾਜ਼ਰੀ',
+    step3Sub: 'ਕਰਮਚਾਰੀ ਦੁਕਾਨ ਦੇ ਦਾਇਰੇ ਵਿੱਚ ਰਹਿ ਕੇ ਹੀ ਹਾਜ਼ਰੀ ਲਗਾ ਸਕਣਗੇ',
+    geotagLabel: 'ਦੁਕਾਨ ਦਾ ਜਿਓ-ਲੋਕੇਸ਼ਨ',
+    detectLocationBtn: 'ਮੌਜੂਦਾ ਸਥਾਨ ਦਰਜ ਕਰੋ',
+    step4Title: 'ਤੁਹਾਡਾ ਖਾਤਾ ਤਿਆਰ ਹੈ',
+    congratulations: 'ਵਧਾਈਆਂ! 🎉',
+    accountReadyDesc: 'ਹੁਣ ਡਿਜੀਟਲ ਬਿਲਿੰਗ ਅਤੇ ਸਟਾਕ ਲਈ ਪੂਰੀ ਤਰ੍ਹਾਂ ਤਿਆਰ ਹੈ।',
+    defaultOwnerName: 'ਹਰਪ੍ਰੀਤ ਸਿੰਘ',
+    defaultShopName: 'ਗੁਰੂ ਕ੍ਰਿਪਾ ਕਰਿਆਨਾ ਸਟੋਰ',
+    defaultCategory: 'ਕਰਿਆਨਾ & ਜਨਰਲ ਸਟੋਰ',
+    nextBtn: 'ਅੱਗੇ ਵਧੋ',
+    backBtn: 'ਪਿੱਛੇ',
   },
   mr: {
     brandName: 'ग्राहक',
@@ -210,6 +355,42 @@ export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionar
     offlineBilling: 'ऑफलाइन बिल तयार करा',
     bankSync: 'बँक खाते स्थिती',
     settingsTitle: 'दुकान आणि खाते सेटिंग्ज',
+
+    signupHeading: 'दुकान किंवा व्यवसाय नोंदणी',
+    signupSub: 'फक्त १ मिनिटात डिजिटल वही-खाते व बिलिंग सुरू करा',
+    fullNamePlaceholder: 'उदा. सचिन जोशी',
+    shopNamePlaceholder: 'उदा. महालक्ष्मी किराणा स्टोअर्स',
+    shopNameNotice: 'हे नाव ग्राहकांच्या बिलावर व व्हॉट्सॲप पावतीवर दिसेल.',
+    catKirana: 'किराणा & जनरल स्टोअर',
+    catWholesaler: 'घाऊक विक्रेता / मार्केट',
+    catClothing: 'कापड & रेडीमेड',
+    catElectronics: 'इलेक्ट्रॉनिक्स & मोबाईल',
+    catHardware: 'हार्डवेअर & पेंट्स',
+    catOther: 'इतर किरकोळ दुकान',
+    gstinOptionalLabel: 'जीएसटीआयएन किंवा पॅन (ऐच्छिक)',
+    gstinNotice: 'जीएसटी नसेल तर ही जागा रिकामी ठेवा.',
+    whatsappConsent: 'मला व्हॉट्सॲपवर दररोज दुकानाचा हिशोब व पावत्या पाठवा.',
+    createAccountBtn: 'खाते उघडा (Create Account)',
+    step1Title: 'दुकानाची मूलभूत माहिती',
+    step1Sub: 'बिलांवर आणि वही-खात्यावर दिसणाऱ्या माहितीची पुष्टी करा',
+    step2Title: 'पेमेंट & उधारी सेटिंग्ज',
+    step2Sub: 'UPI, रोख आणि उधारी नोंदवण्याची सोय',
+    upiIdLabel: 'तुमच्या दुकानाचा UPI आयडी',
+    upiNotice: 'ग्राहक या UPI वर पैसे भरून थेट पावती मिळवू शकतील.',
+    offlineSupportTitle: 'ऑफलाइन बिलिंग सपोर्ट',
+    offlineSupportDesc: 'इंटरनेट नसतानाही बिल तयार होते, इंटरनेट आल्यावर सुरक्षित सिंक होईल.',
+    step3Title: 'दुकान जिओटॅग & हजेरी',
+    step3Sub: 'कर्मचारी दुकानाच्या ५० मीटर परिसरातच हजेरी लावू शकतील',
+    geotagLabel: 'दुकानाचे जिओ-लोकेशन',
+    detectLocationBtn: 'सध्याचे स्थान नोंदवा',
+    step4Title: 'तुमचे खाते सज्ज आहे',
+    congratulations: 'अभिनंदन! 🎉',
+    accountReadyDesc: 'आता डिजिटल बिलिंग आणि स्टॉकसाठी पूर्णपणे सज्ज आहे.',
+    defaultOwnerName: 'सचिन जोशी',
+    defaultShopName: 'महालक्ष्मी किराणा स्टोअर्स',
+    defaultCategory: 'किराणा & जनरल स्टोअर',
+    nextBtn: 'पुढे जा',
+    backBtn: 'मागे',
   },
   gu: {
     brandName: 'ગ્રાહક',
@@ -246,6 +427,42 @@ export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionar
     offlineBilling: 'ઓફલાઇન બિલ બનાવો',
     bankSync: 'બેંક ખાતાની સ્થિતિ',
     settingsTitle: 'દુકાન અને ખાતા સેટિંગ્સ',
+
+    signupHeading: 'દુકાન અથવા વ્યવસાય નોંધણી',
+    signupSub: 'માત્ર ૧ મિનિટમાં ડિજિટલ ચોપડો અને બિલિંગ શરૂ કરો',
+    fullNamePlaceholder: 'દા.ત. મુકેશભાઈ પટેલ',
+    shopNamePlaceholder: 'દા.ત. શ્રી અંબે કિરાણા સ્ટોર',
+    shopNameNotice: 'આ નામ ગ્રાહકના બિલ અને વોટ્સએપ પહોંચ પર દેખાશે.',
+    catKirana: 'કરિયાણું & જનરલ સ્ટોર',
+    catWholesaler: 'જથ્થાબંધ વેપારી / માર્કેટ',
+    catClothing: 'કાપડ & રેડીમેડ',
+    catElectronics: 'ઇલેક્ટ્રોનિક્સ & મોબાઇલ',
+    catHardware: 'હાર્ડવેર & પેઇન્ટ્સ',
+    catOther: 'અન્ય છૂટક દુકાન',
+    gstinOptionalLabel: 'જીએસટી અથવા પાન (મરજિયાત)',
+    gstinNotice: 'જો જીએસટી ન હોય તો ખાલી છોડી શકો છો.',
+    whatsappConsent: 'મને વોટ્સએપ પર દૈનિક હિસાબ અને પહોંચ મોકલો.',
+    createAccountBtn: 'ખાતું ખોલો (Create Account)',
+    step1Title: 'દુકાનની મૂળભૂત માહિતી',
+    step1Sub: 'બિલ અને ડિજિટલ ચોપડા પર દેખાતી વિગતોની પુષ્ટિ કરો',
+    step2Title: 'પેમેન્ટ & ઉધારી સેટિંગ્સ',
+    step2Sub: 'UPI, રોકડ અને ગ્રાહક ઉધારી નોંધણીની વ્યવસ્થા',
+    upiIdLabel: 'તમારી દુકાનનું UPI આઈડી',
+    upiNotice: 'ગ્રાહકો આ UPI પર ચૂકવણી કરીને સીધી પહોંચ મેળવી શકશે.',
+    offlineSupportTitle: 'ઓફલાઇન બિલિંગ સુવિધા',
+    offlineSupportDesc: 'ઇન્ટરનેટ વગર પણ બિલ બનશે, ઇન્ટરનેટ આવતાં સુરક્ષિત સિંક થશે.',
+    step3Title: 'દુકાન જીઓટેગ & હાજરી',
+    step3Sub: 'કર્મચારીઓ દુકાનના ૫૦ મીટરના દાયરામાં જ હાજરી પૂરી શકશે',
+    geotagLabel: 'દુકાનનું જીઓ-લોકેશન',
+    detectLocationBtn: 'હાલનું સ્થાન નોંધો',
+    step4Title: 'તમારું ખાતું તૈયાર છે',
+    congratulations: 'અભિનંદન! 🎉',
+    accountReadyDesc: 'હવે ડિજિટલ બિલિંગ અને સ્ટોક મેનેજમેન્ટ માટે સંપૂર્ણ તૈયાર છે.',
+    defaultOwnerName: 'મુકેશભાઈ પટેલ',
+    defaultShopName: 'શ્રી અંબે કિરાણા સ્ટોર',
+    defaultCategory: 'કરિયાણું & જનરલ સ્ટોર',
+    nextBtn: 'આગળ વધો',
+    backBtn: 'પાછળ',
   },
   bn: {
     brandName: 'গ্রাহক',
@@ -282,6 +499,42 @@ export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionar
     offlineBilling: 'অফলাইন বিল তৈরি করুন',
     bankSync: 'ব্যাংক অ্যাকাউন্টের অবস্থা',
     settingsTitle: 'দোকান ও অ্যাকাউন্ট সেটিংস',
+
+    signupHeading: 'দোকান বা ব্যবসার রেজিস্ট্রেশন',
+    signupSub: 'মাত্র ১ মিনিটে ডিজিটাল খাতা ও বিলিং শুরু করুন',
+    fullNamePlaceholder: 'উদা. সুবীর দত্ত',
+    shopNamePlaceholder: 'উদা. মা ভবানী মুদি ভান্ডার',
+    shopNameNotice: 'এই নামটি গ্রাহকের বিল ও হোয়াটসঅ্যাপ রসিদে ছাপা হবে।',
+    catKirana: 'মুদিখানা & জেনারেল স্টোর',
+    catWholesaler: 'পাইকারি বিক্রেতা / আড়ত',
+    catClothing: 'পোশাক & বস্ত্রালয়',
+    catElectronics: 'ইলেকট্রনিক্স & মোবাইল',
+    catHardware: 'হার্ডওয়্যার & রং',
+    catOther: 'অন্যান্য খুচরা দোকান',
+    gstinOptionalLabel: 'জিএসটিআইএন বা প্যান (ঐচ্ছিক)',
+    gstinNotice: 'জিএসটি না থাকলে ফাঁকা রাখতে পারেন।',
+    whatsappConsent: 'আমাকে হোয়াটসঅ্যাপে দৈনিক হিসাব ও আপডেট পাঠান।',
+    createAccountBtn: 'অ্যাকাউন্ট খুলুন (Create Account)',
+    step1Title: 'দোকানের প্রাথমিক তথ্য',
+    step1Sub: 'বিল এবং খাতায় কী নাম দেখতে চান তা নিশ্চিত করুন',
+    step2Title: 'পেমেন্ট & বাকি সেটিংস',
+    step2Sub: 'UPI, নগদ ও ক্রেতার বাকি হিসাব রাখার ব্যবস্থা',
+    upiIdLabel: 'আপনার দোকানের UPI আইডি',
+    upiNotice: 'ক্রেতারা এই UPI-তে পেমেন্ট করে সরাসরি রসিদ পাবেন।',
+    offlineSupportTitle: 'অফলাইন বিলিং সুবিধা',
+    offlineSupportDesc: 'ইন্টারনেট ছাড়াও বিল তৈরি হবে, সংযোগ ফিরলেই স্বয়ংক্রিয় সিঙ্ক হবে।',
+    step3Title: 'দোকান জিওট্যাগ & হাজিরা',
+    step3Sub: 'কর্মীরা দোকানের ৫০ মিটারের মধ্যে থেকেই হাজিরা দিতে পারবে',
+    geotagLabel: 'দোকানের জিও-লোকেশন',
+    detectLocationBtn: 'বর্তমান অবস্থান নির্ধারণ করুন',
+    step4Title: 'আপনার অ্যাকাউন্ট প্রস্তুত',
+    congratulations: 'অভিনন্দন! 🎉',
+    accountReadyDesc: 'এখন ডিজিটাল বিলিং ও স্টক পরিচালনার জন্য সম্পূর্ণ প্রস্তুত।',
+    defaultOwnerName: 'সুবীর দত্ত',
+    defaultShopName: 'মা ভবানী মুদি ভান্ডার',
+    defaultCategory: 'মুদিখানা & জেনারেল স্টোর',
+    nextBtn: 'এগিয়ে যান',
+    backBtn: 'পেছনে',
   },
   ta: {
     brandName: 'கிராஹக்',
@@ -318,6 +571,42 @@ export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionar
     offlineBilling: 'ஆஃப்லைன் பில் உருவாக்கவும்',
     bankSync: 'வங்கி கணக்கு நிலை',
     settingsTitle: 'கடை மற்றும் கணக்கு அமைப்புகள்',
+
+    signupHeading: 'கடை அல்லது வணிகப் பதிவு',
+    signupSub: '1 நிமிடத்தில் டிஜிட்டல் கணக்கு மற்றும் பில்லிங் தொடங்கவும்',
+    fullNamePlaceholder: 'எ.கா. சரவணன் குமார்',
+    shopNamePlaceholder: 'எ.கா. ஸ்ரீ முருகன் மளிகைக் கடை',
+    shopNameNotice: 'இந்த பெயர் வாடிக்கையாளர் பில் மற்றும் வாட்ஸ்அப் ரசீதில் அச்சிடப்படும்.',
+    catKirana: 'மளிகை & பொது அங்காடி',
+    catWholesaler: 'மொத்த வியாபாரி / மண்டி',
+    catClothing: 'ஜவுளி & ஆயத்த ஆடைகள்',
+    catElectronics: 'எலக்ட்ரானிக்ஸ் & மொபைல்',
+    catHardware: 'ஹார்டுவேர் & பெயிண்ட்ஸ்',
+    catOther: 'இதர சில்லறை கடை',
+    gstinOptionalLabel: 'ஜிஎஸ்டி அல்லது பான் (விருப்பமானது)',
+    gstinNotice: 'ஜிஎஸ்டி இல்லை என்றால் காலியாக விடலாம்.',
+    whatsappConsent: 'தினசரி கணக்கு மற்றும் ரசீதுகளை வாட்ஸ்அப்பில் அனுப்பவும்.',
+    createAccountBtn: 'கணக்கு தொடங்கவும் (Create Account)',
+    step1Title: 'கடையின் அடிப்படை தகவல்',
+    step1Sub: 'பில்களில் தோன்றும் தகவல்களை உறுதிப்படுத்தவும்',
+    step2Title: 'கட்டணம் & கடன் அமைப்புகள்',
+    step2Sub: 'UPI, ரொக்கம் மற்றும் கடன் கணக்கு வசதி',
+    upiIdLabel: 'உங்கள் கடையின் UPI ஐடி',
+    upiNotice: 'வாடிக்கையாளர்கள் இந்த UPI-க்கு செலுத்தி ரசீது பெறலாம்.',
+    offlineSupportTitle: 'ஆஃப்லைன் பில்லிங் வசதி',
+    offlineSupportDesc: 'இணையம் இல்லாமலும் பில் போடலாம், இணையம் வந்ததும் தானாக சேமிக்கப்படும்.',
+    step3Title: 'கடை ஜியோடேக் & வருகை',
+    step3Sub: 'ஊழியர்கள் கடையின் 50 மீட்டர் சுற்றளவில் மட்டுமே வருகை பதிவு செய்ய முடியும்',
+    geotagLabel: 'கடையின் இருப்பிடம்',
+    detectLocationBtn: 'தற்போதைய இடத்தை பதிவுசெய்',
+    step4Title: 'உங்கள் கணக்கு தயாராக உள்ளது',
+    congratulations: 'வாழ்த்துகள்! 🎉',
+    accountReadyDesc: 'இப்போது டிஜிட்டல் பில்லிங் மற்றும் இருப்பு நிர்வாகத்திற்கு தயாராக உள்ளது.',
+    defaultOwnerName: 'சரவணன் குமார்',
+    defaultShopName: 'ஸ்ரீ முருகன் மளிகைக் கடை',
+    defaultCategory: 'மளிகை & பொது அங்காடி',
+    nextBtn: 'தொடரவும்',
+    backBtn: 'பின்செல்க',
   },
   te: {
     brandName: 'గ్రాహక్',
@@ -354,6 +643,42 @@ export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionar
     offlineBilling: 'ఆఫ్‌లైన్ బిల్లు చేయండి',
     bankSync: 'బ్యాంకు ఖాతా స్థితి',
     settingsTitle: 'దుకాణం & ఖాతా సెట్టింగ్స్',
+
+    signupHeading: 'దుకాణం లేదా వ్యాపార నమోదు',
+    signupSub: 'కేవలం 1 నిమిషంలో డిజిటల్ లెక్కలు & బిల్లింగ్ ప్రారంభించండి',
+    fullNamePlaceholder: 'ఉదా. రమేష్ బాబు',
+    shopNamePlaceholder: 'ఉదా. శ్రీ లక్ష్మి కిరాణా స్టోర్స్',
+    shopNameNotice: 'ఈ పేరు కస్టమర్ బిల్లులు మరియు వాట్సాప్ రసీదులపై ముద్రించబడుతుంది.',
+    catKirana: 'కిరాణా & జనరల్ స్టోర్',
+    catWholesaler: 'హోల్‌సేలర్ / మార్కెట్',
+    catClothing: 'వస్త్రాలు & రెడీమేడ్',
+    catElectronics: 'ఎలక్ట్రానిక్స్ & మొబైల్',
+    catHardware: 'హార్డ్‌వేర్ & పెయింట్స్',
+    catOther: 'ఇతర రిటైల్ దుకాణం',
+    gstinOptionalLabel: 'జీఎస్టీ లేదా పాన్ (ఐచ్ఛికం)',
+    gstinNotice: 'జీఎస్టీ లేకుంటే ఖాళీగా వదిలివేయవచ్చు.',
+    whatsappConsent: 'నాకు వాట్సాప్‌లో రోజువారీ లెక్కల వివరాలు పంపండి.',
+    createAccountBtn: 'ఖాతా తెరవండి (Create Account)',
+    step1Title: 'దుకాణం ప్రాథమిక వివరాలు',
+    step1Sub: 'బిల్లులపై కనిపించే వివరాలను ధృవీకరించండి',
+    step2Title: 'చెల్లింపు & ఉధార సెట్టింగ్స్',
+    step2Sub: 'UPI, నగదు మరియు ఉధార లెక్కల నమోదు',
+    upiIdLabel: 'మీ దుకాణం UPI ఐడీ',
+    upiNotice: 'కస్టమర్లు ఈ UPI కి చెల్లించి నేరుగా రసీదు పొందవచ్చు.',
+    offlineSupportTitle: 'ఆఫ్‌లైన్ బిల్లింగ్ సదుపాయం',
+    offlineSupportDesc: 'నెట్ లేకున్నా బిల్లు చేయవచ్చు, నెట్ రాగానే భద్రంగా సింక్ అవుతుంది.',
+    step3Title: 'దుకాణం జియోట్యాగ్ & హాజరు',
+    step3Sub: 'ఉద్యోగులు దుకాణం 50 మీటర్ల పరిధిలోనే హాజరు వేయగలరు',
+    geotagLabel: 'దుకాణం జియో-లొకేషన్',
+    detectLocationBtn: 'ప్రస్తుత స్థానాన్ని నమోదు చేయండి',
+    step4Title: 'మీ ఖాతా సిద్ధంగా ఉంది',
+    congratulations: 'అభినందనలు! 🎉',
+    accountReadyDesc: 'ఇప్పుడు డిజిటల్ బిల్లింగ్ మరియు స్టాక్ నిర్వహణకు పూర్తిగా సిద్ధంగా ఉంది.',
+    defaultOwnerName: 'రమేష్ బాబు',
+    defaultShopName: 'శ్రీ లక్ష్మి కిరాణా స్టోర్స్',
+    defaultCategory: 'కిరాణా & జనరల్ స్టోర్',
+    nextBtn: 'కొనసాగించండి',
+    backBtn: 'వెనుకకు',
   },
   kn: {
     brandName: 'ಗ್ರಾಹಕ್',
@@ -390,16 +715,54 @@ export const GRAHAK_TRANSLATIONS: Record<SupportedLanguage, TranslationDictionar
     offlineBilling: 'ಆಫ್‌ಲೈನ್ ಬಿಲ್ ರಚಿಸಿ',
     bankSync: 'ಬ್ಯಾಂಕ್ ಖಾತೆಯ ಸ್ಥಿತಿ',
     settingsTitle: 'ಅಂಗಡಿ ಮತ್ತು ಖಾತೆ ಸೆಟ್ಟಿಂಗ್ಸ್',
+
+    signupHeading: 'ಅಂಗಡಿ ಅಥವಾ ವ್ಯಾಪಾರ ನೋಂದಣಿ',
+    signupSub: 'ಕೇವಲ ೧ ನಿಮಿಷದಲ್ಲಿ ಡಿಜಿಟಲ್ ಖಾತೆ ಮತ್ತು ಬಿಲ್ಲಿಂಗ್ ಆರಂಭಿಸಿ',
+    fullNamePlaceholder: 'ಉದಾ. ಪ್ರಶಾಂತ್ ಕುಮಾರ್',
+    shopNamePlaceholder: 'ಉದಾ. ಶ್ರೀ ವೆಂಕಟೇಶ್ವರ ಪ್ರಾವಿಷನ್ ಸ್ಟೋರ್ಸ್',
+    shopNameNotice: 'ಈ ಹೆಸರು ಗ್ರಾಹಕರ ಬಿಲ್ ಮತ್ತು ವಾಟ್ಸಾಪ್ ರಶೀದಿಯಲ್ಲಿ ಮುದ್ರಿತವಾಗುತ್ತದೆ.',
+    catKirana: 'ಕಿರಾಣಿ & ಪ್ರಾವಿಷನ್ ಸ್ಟೋರ್',
+    catWholesaler: 'ಸಗಟು ವ್ಯಾಪಾರಿ / ಮಂಡಿ',
+    catClothing: 'ಬಟ್ಟೆ & ರೆಡಿಮೇಡ್',
+    catElectronics: 'ಎಲೆಕ್ಟ್ರಾನಿಕ್ಸ್ & ಮೊಬೈಲ್',
+    catHardware: 'ಹಾರ್ಡ್‌ವೇರ್ & ಪೇಂಟ್ಸ್',
+    catOther: 'ಇತರ ಚಿಲ್ಲರೆ ಅಂಗಡಿ',
+    gstinOptionalLabel: 'ಜಿಎಸ್‌ಟಿಐಎನ್ ಅಥವಾ ಪ್ಯಾನ್ (ಐಚ್ಛಿಕ)',
+    gstinNotice: 'ಜಿಎಸ್‌ಟಿ ಇಲ್ಲದಿದ್ದರೆ ಖಾಲಿ ಬಿಡಬಹುದು.',
+    whatsappConsent: 'ನನಗೆ ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ದೈನಂದಿನ ಲೆಕ್ಕ ಮತ್ತು ರಶೀದಿಗಳನ್ನು ಕಳುಹಿಸಿ.',
+    createAccountBtn: 'ಖಾತೆ ತೆರೆಯಿರಿ (Create Account)',
+    step1Title: 'ಅಂಗಡಿಯ ಪ್ರಾಥಮಿಕ ವಿವರ',
+    step1Sub: 'ಬಿಲ್‌ಗಳಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಮಾಹಿತಿಯನ್ನು ಖಚಿತಪಡಿಸಿ',
+    step2Title: 'ಪಾವತಿ & ಸಾಲದ ಸೆಟ್ಟಿಂಗ್ಸ್',
+    step2Sub: 'UPI, ನಗದು ಮತ್ತು ಸಾಲದ ಲೆಕ್ಕ ದಾಖಲಿಸುವ ವ್ಯವಸ್ಥೆ',
+    upiIdLabel: 'ನಿಮ್ಮ ಅಂಗಡಿಯ UPI ಐಡಿ',
+    upiNotice: 'ಗ್ರಾಹಕರು ಈ UPI ಗೆ ಪಾವತಿಸಿ ತಕ್ಷಣ ರಶೀದಿ ಪಡೆಯಬಹುದು.',
+    offlineSupportTitle: 'ಆಫ್‌ಲೈನ್ ಬಿಲ್ಲಿಂಗ್ ಸೌಲಭ್ಯ',
+    offlineSupportDesc: 'ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದಿದ್ದರೂ ಬಿಲ್ ಮಾಡಬಹುದು, ಇಂಟರ್ನೆಟ್ ಬಂದ ತಕ್ಷಣ ಸಿಂಕ್ ಆಗುತ್ತದೆ.',
+    step3Title: 'ಅಂಗಡಿ ಜಿಯೋಟ್ಯಾಗ್ & ಹಾಜರಾತಿ',
+    step3Sub: 'ನೌಕರರು ಅಂಗಡಿಯ 50 ಮೀಟರ್ ವ್ಯಾಪ್ತಿಯಲ್ಲಿ ಮಾತ್ರ ಹಾಜರಾತಿ ಹಾಕಬಹುದು',
+    geotagLabel: 'ಅಂಗಡಿಯ ಜಿಯೋ-ಸ್ಥಳ',
+    detectLocationBtn: 'ಪ್ರಸ್ತುತ ಸ್ಥಳ ನಮೂದಿಸಿ',
+    step4Title: 'ನಿಮ್ಮ ಖಾತೆ ಸಿದ್ಧವಾಗಿದೆ',
+    congratulations: 'ಅಭಿನಂದನೆಗಳು! 🎉',
+    accountReadyDesc: 'ಈಗ ಡಿಜಿಟಲ್ ಬಿಲ್ಲಿಂಗ್ ಮತ್ತು ಸ್ಟಾಕ್ ನಿರ್ವಹಣೆಗೆ ಸಂಪೂರ್ಣ ಸಿದ್ಧವಾಗಿದೆ.',
+    defaultOwnerName: 'ಪ್ರಶಾಂತ್ ಕುಮಾರ್',
+    defaultShopName: 'ಶ್ರೀ ವೆಂಕಟೇಶ್ವರ ಪ್ರಾವಿಷನ್ ಸ್ಟೋರ್ಸ್',
+    defaultCategory: 'ಕಿರಾಣಿ & ಪ್ರಾವಿಷನ್ ಸ್ಟೋರ್',
+    nextBtn: 'ಮುಂದುವರಿಯಿರಿ',
+    backBtn: 'ಹಿಂದೆ',
   },
 };
 
-const STORAGE_KEY = 'grahak_selected_language';
+const STORAGE_KEYS = ['grahak_selected_language', 'grahak_language', 'grahak_locale'];
 
 export function getStoredGrahakLanguage(): SupportedLanguage {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && (saved in GRAHAK_TRANSLATIONS)) {
-      return saved as SupportedLanguage;
+    for (const key of STORAGE_KEYS) {
+      const saved = localStorage.getItem(key);
+      if (saved && (saved in GRAHAK_TRANSLATIONS)) {
+        return saved as SupportedLanguage;
+      }
     }
   } catch {
     // ignore
@@ -409,7 +772,9 @@ export function getStoredGrahakLanguage(): SupportedLanguage {
 
 export function setStoredGrahakLanguage(lang: SupportedLanguage): void {
   try {
-    localStorage.setItem(STORAGE_KEY, lang);
+    for (const key of STORAGE_KEYS) {
+      localStorage.setItem(key, lang);
+    }
   } catch {
     // ignore
   }

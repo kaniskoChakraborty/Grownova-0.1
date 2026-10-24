@@ -5,7 +5,7 @@ import { Share, Linking, Alert } from 'react-native';
 // TYPES & INTERFACES
 // ==========================================
 
-export type Language = 'en' | 'hi';
+export type Language = 'en' | 'hi' | 'pa' | 'mr' | 'gu' | 'bn' | 'ta' | 'te' | 'kn';
 
 export interface StoreProfile {
   name: string;
@@ -124,6 +124,7 @@ interface AppContextType {
   // Localization & Store
   language: Language;
   toggleLanguage: () => void;
+  setLanguage: (lang: Language) => void;
   store: StoreProfile;
   updateStore: (data: Partial<StoreProfile>) => void;
 
@@ -953,6 +954,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       value={{
         language,
         toggleLanguage,
+        setLanguage,
         store,
         updateStore,
         isSyncing,

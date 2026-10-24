@@ -8,12 +8,14 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { theme } from '../constants/theme';
+import { getGrahakTranslation } from '../constants/translations';
 
 interface GrahakEntryScreenProps {
   onStart: () => void;
   onLogin: () => void;
   onLanguageSelect: () => void;
   selectedLanguage?: string;
+  languageCode?: string;
 }
 
 export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
@@ -21,7 +23,10 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
   onLogin,
   onLanguageSelect,
   selectedLanguage = 'हिन्दी (Hindi)',
+  languageCode = 'hi',
 }) => {
+  const t = getGrahakTranslation(languageCode);
+
   return (
     <View style={styles.container}>
       {/* Decorative Toran Garland */}
@@ -46,9 +51,11 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
           <View>
             <View style={styles.brandTitleRow}>
               <Text style={styles.brandName}>Grahak</Text>
-              <Text style={styles.brandHindi}>ग्राहक</Text>
+              <Text style={styles.brandHindi}>{t.brandName}</Text>
             </View>
-            <Text style={styles.brandTagline}>Aapke Dukaan Ka Digital Saathi</Text>
+            <Text style={styles.brandTagline}>
+              {languageCode === 'en' ? 'Your Trusted Digital Shop Partner' : 'Aapke Dukaan Ka Digital Saathi'}
+            </Text>
           </View>
         </View>
 
@@ -69,16 +76,18 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
         {/* Desi Art Auspicious Badge */}
         <View style={styles.auspiciousBadge}>
           <MaterialCommunityIcons name="brightness-percent" size={14} color={theme.colors.secondaryAccent} />
-          <Text style={styles.auspiciousText}>१००% सुरक्षित • भारतीय दुकानदारों का भरोसेमंद ऐप</Text>
+          <Text style={styles.auspiciousText}>
+            {languageCode === 'en' ? '100% Encrypted & Safe • Made for Bharat' : '१००% सुरक्षित • भारतीय दुकानदारों का भरोसेमंद ऐप'}
+          </Text>
         </View>
 
         {/* Hero Headline */}
         <Text style={styles.heroHeadline}>
-          Aapke dukaan ka apna{'\n'}digital saathi.
+          {t.headline}
         </Text>
         
         <Text style={styles.heroSubhead}>
-          Hisab, bikri, stock aur bills — sab ek hi jagah.
+          {t.subheadline}
         </Text>
 
         {/* Contemporary Desi Art Shopkeeper Illustration Card */}
@@ -94,8 +103,12 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
                 <View style={[styles.avatarCircle, { backgroundColor: '#102B4E' }]}>
                   <MaterialCommunityIcons name="store" size={32} color="#D5AD66" />
                 </View>
-                <Text style={styles.charLabel}>दुकानदार भाई</Text>
-                <Text style={styles.charSub}>खाता & बिक्री</Text>
+                <Text style={styles.charLabel}>
+                  {languageCode === 'en' ? 'Shop Owner' : 'दुकानदार भाई'}
+                </Text>
+                <Text style={styles.charSub}>
+                  {languageCode === 'en' ? 'Billing & POS' : 'खाता & बिक्री'}
+                </Text>
               </View>
 
               <View style={styles.dividerArrow}>
@@ -108,8 +121,12 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
                 <View style={[styles.avatarCircle, { backgroundColor: '#C69A43' }]}>
                   <MaterialCommunityIcons name="cellphone-check" size={30} color="#102B4E" />
                 </View>
-                <Text style={styles.charLabel}>संतुष्ट ग्राहक</Text>
-                <Text style={styles.charSub}>तुरंत भुगतान</Text>
+                <Text style={styles.charLabel}>
+                  {languageCode === 'en' ? 'Happy Customer' : 'संतुष्ट ग्राहक'}
+                </Text>
+                <Text style={styles.charSub}>
+                  {languageCode === 'en' ? 'Instant Bill' : 'तुरंत भुगतान'}
+                </Text>
               </View>
             </View>
 
@@ -117,7 +134,9 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
             <View style={styles.counterDesk}>
               <View style={styles.tarazuRow}>
                 <MaterialCommunityIcons name="scale-balance" size={18} color="#D5AD66" />
-                <Text style={styles.tarazuText}>पक्का हिसाब • सुरक्षित उधारी डायरी</Text>
+                <Text style={styles.tarazuText}>
+                  {languageCode === 'en' ? 'Digital Ledger • Real-time Udhaar Record' : 'पक्का हिसाब • सुरक्षित उधारी डायरी'}
+                </Text>
               </View>
             </View>
           </View>
@@ -127,19 +146,19 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
         <View style={styles.featuresGrid}>
           <View style={styles.featurePill}>
             <Ionicons name="receipt-outline" size={16} color={theme.colors.primary} />
-            <Text style={styles.featureTitle}>ऑफलाइन बिल</Text>
+            <Text style={styles.featureTitle}>{t.offlineBilling}</Text>
           </View>
           <View style={styles.featurePill}>
             <Ionicons name="camera-outline" size={16} color={theme.colors.primary} />
-            <Text style={styles.featureTitle}>AI फोटो स्टॉक</Text>
+            <Text style={styles.featureTitle}>{t.inventoryScanner}</Text>
           </View>
           <View style={styles.featurePill}>
             <Ionicons name="location-outline" size={16} color={theme.colors.primary} />
-            <Text style={styles.featureTitle}>जियोटैग हाजिरी</Text>
+            <Text style={styles.featureTitle}>{t.geotagAttendance}</Text>
           </View>
           <View style={styles.featurePill}>
             <Ionicons name="shield-checkmark-outline" size={16} color={theme.colors.primary} />
-            <Text style={styles.featureTitle}>RBI बैंक सिंक</Text>
+            <Text style={styles.featureTitle}>{t.bankSync}</Text>
           </View>
         </View>
       </ScrollView>
@@ -152,7 +171,7 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
           onPress={onStart}
           activeOpacity={0.85}
         >
-          <Text style={styles.ctaText}>Shuru Kijiye (शुरू कीजिये)</Text>
+          <Text style={styles.ctaText}>{t.ctaStart}</Text>
           <View style={styles.ctaArrowCircle}>
             <Ionicons name="arrow-forward" size={18} color="#102B4E" />
           </View>
@@ -165,7 +184,7 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
           activeOpacity={0.7}
         >
           <Text style={styles.loginText}>
-            Pehle se account hai? <Text style={styles.loginHighlight}>Login kijiye</Text>
+            {t.loginReturning}
           </Text>
         </TouchableOpacity>
       </View>

@@ -27,6 +27,28 @@
 <!-- Interactive Local Micro-script for Tab Feedback -->
 <script>
     (function () {
+      // Hydrate profile and greeting dynamically
+      try {
+        const profileRaw = localStorage.getItem('grahak_shop_profile');
+        if (profileRaw) {
+          const profile = JSON.parse(profileRaw);
+          const lang = profile.language || localStorage.getItem('grahak_language') || localStorage.getItem('grahak_selected_language') || 'hi';
+          
+          const titleEl = document.querySelector('header span.font-title-md');
+          if (titleEl && profile.shopName) titleEl.textContent = profile.shopName;
+
+          const subEl = document.querySelector('header span.font-label-md.text-on-surface-variant');
+          if (subEl && profile.fullName) subEl.textContent = `${profile.fullName} · Digital Counter`;
+
+          const h1El = document.querySelector('h1.font-display-lg-mobile');
+          if (h1El) {
+            h1El.textContent = lang === 'en'
+              ? `Hello, ${profile.fullName || 'Partner'} 👋`
+              : `नमस्ते, ${profile.fullName || 'राजेश जी'} 🙏`;
+          }
+        }
+      } catch(e) {}
+
       // Small celebratory tap delight on FAST POS button
       const fastBtn = document.querySelector('button.group');
       if (fastBtn) {

@@ -109,6 +109,11 @@ export interface StaffMember {
   status: 'present' | 'absent' | 'half_day';
   checkInTime?: string;
   geoAccuracy: string;
+  photoUri?: string;
+  geoCoords?: string;
+  geoAddress?: string;
+  isGeotagVerified?: boolean;
+  attendanceTimestamp?: string;
 }
 
 // ==========================================
@@ -126,13 +131,24 @@ interface AppContextType {
   isSyncing: boolean;
   syncNow: () => Promise<void>;
 
-  // Inventory
+  // Inventory & AI Scanner
   inventory: InventoryItem[];
   addProduct: (item: Omit<InventoryItem, 'id' | 'status'>) => void;
   updateStock: (id: string, delta: number) => void;
+  setProductQuantity: (id: string, newStock: number) => void;
   reorderStock: (id: string, qty: number) => void;
+  scanAndUpsertProduct: (detected: {
+    name: string;
+    category?: string;
+    price: number;
+    costPrice?: number;
+    unit: string;
+    stock: number;
+    barcode?: string;
+    photoUri?: string;
+  }) => InventoryItem;
 
-  // Sales & POS Invoicing
+  // Sales & POS Invoicing (Auto-deducts inventory)
   sales: SaleInvoice[];
   createBill: (billData: {
     customerName: string;
@@ -165,26 +181,17 @@ interface AppContextType {
   }) => void;
   paySupplierBill: (billId: string, amount: number, mode: 'cash' | 'upi') => void;
 
-  // Staff & Attendance
+  // Staff & Geotag Photo Attendance
   staff: StaffMember[];
   isOwnerPunchedIn: boolean;
   ownerPunchTime: string | null;
+  ownerPhotoUri: string | null;
+  ownerGeoCoords: string | null;
   toggleOwnerPunch: () => void;
+  recordOwnerPhotoPunch: (photoUri: string, coords?: string) => void;
   setStaffStatus: (staffId: string, status: 'present' | 'absent' | 'half_day') => void;
+  recordStaffPhotoAttendance: (staffId: string, photoUri: string, coords?: string, address?: string) => void;
   addStaff: (data: { name: string; role: string; phone: string }) => void;
-
-  // Dual-Mode Experience (Ghrahak Customer vs Merchant Desk)
-  appMode: 'customer' | 'merchant';
-  setAppMode: (mode: 'customer' | 'merchant') => void;
-  toggleAppMode: () => void;
-  activeCustomerId: string;
-  setActiveCustomerId: (id: string) => void;
-  activeCustomer: Customer;
-  customerCart: BillItem[];
-  addToCustomerCart: (item: InventoryItem) => void;
-  updateCustomerCartQty: (id: string, delta: number) => void;
-  clearCustomerCart: () => void;
-  sendParchiOrder: (items: BillItem[], note?: string) => void;
 
   // Dashboard Aggregates
   todaySales: number;
@@ -357,10 +364,55 @@ const INITIAL_PURCHASES: PurchaseBill[] = [
 ];
 
 const INITIAL_STAFF: StaffMember[] = [
-  { id: 'st1', name: 'Ramesh Kumar', role: 'Counter Billing', phone: '98230-11223', status: 'present', checkInTime: '08:45 AM', geoAccuracy: 'Inside Shop (12m)' },
-  { id: 'st2', name: 'Sunita Patil', role: 'Inventory & Stock', phone: '98230-22334', status: 'present', checkInTime: '09:00 AM', geoAccuracy: 'Inside Shop (18m)' },
-  { id: 'st3', name: 'Suresh Verma', role: 'Helper & Delivery', phone: '98230-33445', status: 'present', checkInTime: '09:12 AM', geoAccuracy: 'Mandi Gate (45m)' },
-  { id: 'st4', name: 'Manoj Shinde', role: 'Loading Staff', phone: '98230-44556', status: 'absent', checkInTime: undefined, geoAccuracy: 'Not Clocked In' },
+  {
+    id: 'st1',
+    name: 'Ramesh Kumar',
+    role: 'Counter Billing',
+    phone: '98230-11223',
+    status: 'present',
+    checkInTime: '08:45 AM',
+    geoAccuracy: 'Inside Shop (8m)',
+    geoCoords: '18.5204° N, 73.8567° E',
+    geoAddress: 'Shree Ganesh Traders · Shop #14, Pune Mandi',
+    isGeotagVerified: true,
+    attendanceTimestamp: 'Today, 08:45 AM',
+  },
+  {
+    id: 'st2',
+    name: 'Sunita Patil',
+    role: 'Inventory & Stock',
+    phone: '98230-22334',
+    status: 'present',
+    checkInTime: '09:00 AM',
+    geoAccuracy: 'Inside Shop (12m)',
+    geoCoords: '18.5204° N, 73.8567° E',
+    geoAddress: 'Shree Ganesh Traders · Shop #14, Pune Mandi',
+    isGeotagVerified: true,
+    attendanceTimestamp: 'Today, 09:00 AM',
+  },
+  {
+    id: 'st3',
+    name: 'Suresh Verma',
+    role: 'Helper & Delivery',
+    phone: '98230-33445',
+    status: 'present',
+    checkInTime: '09:12 AM',
+    geoAccuracy: 'Mandi Gate (35m)',
+    geoCoords: '18.5209° N, 73.8571° E',
+    geoAddress: 'Market Yard Gate 2, Pune Mandi',
+    isGeotagVerified: true,
+    attendanceTimestamp: 'Today, 09:12 AM',
+  },
+  {
+    id: 'st4',
+    name: 'Manoj Shinde',
+    role: 'Loading Staff',
+    phone: '98230-44556',
+    status: 'absent',
+    checkInTime: undefined,
+    geoAccuracy: 'Not Clocked In',
+    isGeotagVerified: false,
+  },
 ];
 
 // ==========================================
@@ -382,89 +434,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [isOwnerPunchedIn, setIsOwnerPunchedIn] = useState<boolean>(true);
   const [ownerPunchTime, setOwnerPunchTime] = useState<string | null>('08:30 AM');
-
-  // Dual-mode state (Ghrahak Customer vs Merchant Desk)
-  const [appMode, setAppMode] = useState<'customer' | 'merchant'>('customer');
-  const [activeCustomerId, setActiveCustomerId] = useState<string>('c1');
-  const [customerCart, setCustomerCart] = useState<BillItem[]>([
-    { id: '1', name: 'Fortune Sunflower Oil (1L)', price: 145, qty: 1, unit: 'pouch' },
-    { id: '3', name: 'Tata Tea Premium (500g)', price: 160, qty: 1, unit: 'packet' },
-  ]);
-
-  const toggleAppMode = () => {
-    setAppMode((prev) => (prev === 'customer' ? 'merchant' : 'customer'));
-  };
-
-  const activeCustomer = useMemo(() => {
-    return (
-      customers.find((c) => c.id === activeCustomerId) ||
-      customers[0] || {
-        id: 'c1',
-        name: 'Amit Sharma',
-        phone: '98230-84192',
-        due: 3200,
-        limit: 15000,
-        status: 'active' as const,
-        lastTransaction: 'Today, 10m ago',
-      }
-    );
-  }, [customers, activeCustomerId]);
-
-  const addToCustomerCart = (item: InventoryItem) => {
-    setCustomerCart((prev) => {
-      const existing = prev.find((it) => it.id === item.id);
-      if (existing) {
-        return prev.map((it) => (it.id === item.id ? { ...it, qty: it.qty + 1 } : it));
-      }
-      return [...prev, { id: item.id, name: item.name, price: item.price, qty: 1, unit: item.unit }];
-    });
-    Alert.alert('✅ Added to Basket', `${item.name} added to your Ghrahak basket.`);
-  };
-
-  const updateCustomerCartQty = (id: string, delta: number) => {
-    setCustomerCart((prev) =>
-      prev
-        .map((it) => (it.id === id ? { ...it, qty: Math.max(0, it.qty + delta) } : it))
-        .filter((it) => it.qty > 0)
-    );
-  };
-
-  const clearCustomerCart = () => {
-    setCustomerCart([]);
-  };
-
-  const sendParchiOrder = (items: BillItem[], note?: string) => {
-    if (items.length === 0) {
-      Alert.alert('Basket is empty', 'Please add some items to your order or write a parchi.');
-      return;
-    }
-
-    const itemsList = items
-      .map((it) => `• ${it.name} x${it.qty} = ₹${(it.price * it.qty).toLocaleString('en-IN')}`)
-      .join('\n');
-    const totalEst = items.reduce((sum, it) => sum + it.price * it.qty, 0);
-
-    const text =
-      `🛒 *New Order from Ghrahak (ग्राहक पर्ची)*\n` +
-      `Customer: ${activeCustomer.name} (${activeCustomer.phone})\n` +
-      `To Store: ${store.name}\n` +
-      `--------------------------------\n` +
-      `${itemsList}\n` +
-      `--------------------------------\n` +
-      `*Estimated Total: ₹${totalEst.toLocaleString('en-IN')}*\n` +
-      (note ? `Note: ${note}\n` : '') +
-      `\nPlease pack and confirm when ready. Thank you! 🙏`;
-
-    Share.share({
-      message: text,
-      title: 'Ghrahak Grocery Order',
-    }).catch(() => {
-      const url = `whatsapp://send?phone=${store.phone}&text=${encodeURIComponent(text)}`;
-      Linking.canOpenURL(url).then((supported: boolean) => {
-        if (supported) Linking.openURL(url);
-      });
-    });
-  };
+  const [ownerPhotoUri, setOwnerPhotoUri] = useState<string | null>(null);
+  const [ownerGeoCoords, setOwnerGeoCoords] = useState<string | null>('18.5204° N, 73.8567° E');
 
   // Toggle Language
   const toggleLanguage = () => {
@@ -527,6 +498,75 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         '📦 Stock Received & Updated',
         `Added +${qty} ${item.unit} to ${item.name}. New total stock: ${item.stock + qty}`
       );
+    }
+  };
+
+  // Set Product Quantity directly (e.g. from AI camera inventory scan or physical stock check)
+  const setProductQuantity = (id: string, newStock: number) => {
+    setInventory((prev) =>
+      prev.map((it) => {
+        if (it.id === id) {
+          const validStock = Math.max(0, newStock);
+          return {
+            ...it,
+            stock: validStock,
+            status: getStockStatus(validStock, it.minStock),
+          };
+        }
+        return it;
+      })
+    );
+  };
+
+  // Scan and Upsert Product from AI Camera detection
+  const scanAndUpsertProduct = (detected: {
+    name: string;
+    category?: string;
+    price: number;
+    costPrice?: number;
+    unit: string;
+    stock: number;
+    barcode?: string;
+    photoUri?: string;
+  }): InventoryItem => {
+    const existingIndex = inventory.findIndex(
+      (it) =>
+        (detected.barcode && it.barcode === detected.barcode) ||
+        it.name.toLowerCase().includes(detected.name.toLowerCase()) ||
+        detected.name.toLowerCase().includes(it.name.toLowerCase())
+    );
+
+    if (existingIndex !== -1) {
+      const existing = inventory[existingIndex];
+      const updated: InventoryItem = {
+        ...existing,
+        stock: detected.stock,
+        status: getStockStatus(detected.stock, existing.minStock),
+        price: detected.price || existing.price,
+        barcode: detected.barcode || existing.barcode,
+      };
+      setInventory((prev) => {
+        const next = [...prev];
+        next[existingIndex] = updated;
+        return next;
+      });
+      return updated;
+    } else {
+      const newItem: InventoryItem = {
+        id: 'inv_' + Date.now(),
+        name: detected.name,
+        nameHi: detected.name,
+        category: detected.category || 'Pantry Staples',
+        stock: detected.stock,
+        unit: detected.unit || 'packet',
+        price: detected.price || 100,
+        costPrice: detected.costPrice || Math.round((detected.price || 100) * 0.85),
+        minStock: 10,
+        status: getStockStatus(detected.stock, 10),
+        barcode: detected.barcode,
+      };
+      setInventory((prev) => [newItem, ...prev]);
+      return newItem;
     }
   };
 
@@ -801,7 +841,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     Alert.alert('✅ Supplier Payment Recorded', `Paid ₹${amount.toLocaleString('en-IN')} to ${bill.supplierName}.`);
   };
 
-  // Staff & Attendance
+  // Staff & Geotag Photo Attendance
   const toggleOwnerPunch = () => {
     if (isOwnerPunchedIn) {
       setIsOwnerPunchedIn(false);
@@ -811,8 +851,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsOwnerPunchedIn(true);
       const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
       setOwnerPunchTime(timeStr);
-      Alert.alert('✅ Shop Clock-In Verified', `Geotag verified at Pune Mandi Counter (Accuracy 12m). Clocked in at ${timeStr}.`);
+      Alert.alert('✅ Shop Clock-In Verified', `Geotag verified at Pune Mandi Counter (Accuracy 8m). Clocked in at ${timeStr}.`);
     }
+  };
+
+  const recordOwnerPhotoPunch = (
+    photoUri: string,
+    coords: string = '18.5204° N, 73.8567° E'
+  ) => {
+    const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    setIsOwnerPunchedIn(true);
+    setOwnerPunchTime(timeStr);
+    setOwnerPhotoUri(photoUri);
+    setOwnerGeoCoords(coords);
+    Alert.alert(
+      '📸 Owner Geotag Punch Verified',
+      `Owner attendance clocked with geotag photo at ${timeStr}.\nLocation: 18.5204° N, 73.8567° E (Pune Mandi Shop #14)`
+    );
   };
 
   const setStaffStatus = (staffId: string, status: 'present' | 'absent' | 'half_day') => {
@@ -830,6 +885,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
+  const recordStaffPhotoAttendance = (
+    staffId: string,
+    photoUri: string,
+    coords: string = '18.5204° N, 73.8567° E',
+    address: string = 'Shree Ganesh Traders · Shop #14, Pune Mandi'
+  ) => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    const dateStr = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+
+    setStaff((prev) =>
+      prev.map((s) => {
+        if (s.id === staffId) {
+          return {
+            ...s,
+            status: 'present',
+            checkInTime: timeStr,
+            photoUri,
+            geoCoords: coords,
+            geoAddress: address,
+            geoAccuracy: 'Inside Shop (8m radius)',
+            isGeotagVerified: true,
+            attendanceTimestamp: `${dateStr}, ${timeStr}`,
+          };
+        }
+        return s;
+      })
+    );
+  };
+
   const addStaff = (data: { name: string; role: string; phone: string }) => {
     const newStaff: StaffMember = {
       id: 'st_' + Date.now(),
@@ -839,6 +924,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       status: 'present',
       checkInTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
       geoAccuracy: 'Inside Shop (14m)',
+      isGeotagVerified: false,
     };
     setStaff((prev) => [...prev, newStaff]);
   };
@@ -874,7 +960,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         inventory,
         addProduct,
         updateStock,
+        setProductQuantity,
         reorderStock,
+        scanAndUpsertProduct,
         sales,
         createBill,
         customers,
@@ -891,20 +979,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         staff,
         isOwnerPunchedIn,
         ownerPunchTime,
+        ownerPhotoUri,
+        ownerGeoCoords,
         toggleOwnerPunch,
+        recordOwnerPhotoPunch,
         setStaffStatus,
+        recordStaffPhotoAttendance,
         addStaff,
-        appMode,
-        setAppMode,
-        toggleAppMode,
-        activeCustomerId,
-        setActiveCustomerId,
-        activeCustomer,
-        customerCart,
-        addToCustomerCart,
-        updateCustomerCartQty,
-        clearCustomerCart,
-        sendParchiOrder,
         todaySales,
         todayCash,
         todayUdhaar,

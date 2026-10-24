@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Ghrahak",
-    "slug": "ghrahak",
+    "name": "GrowNova OS",
+    "slug": "grownova-os",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

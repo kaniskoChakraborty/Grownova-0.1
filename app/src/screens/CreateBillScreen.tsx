@@ -236,19 +236,24 @@ export const CreateBillScreen: React.FC<CreateBillScreenProps> = ({ onBack, onSu
         </View>
 
         {/* Cart Item Cards */}
-        {cartItems.map((item) => (
-          <View key={item.id} style={styles.cartCard}>
-            <View style={styles.cartTop}>
-              <View style={styles.cartInfo}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemPriceUnit}>
-                  ₹{item.price} / {item.unit}
+        {cartItems.map((item) => {
+          const matchingInv = inventory.find((it) => it.id === item.id || it.name === item.name);
+          return (
+            <View key={item.id} style={styles.cartCard}>
+              <View style={styles.cartTop}>
+                <View style={styles.cartInfo}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <Text style={styles.itemPriceUnit}>
+                    ₹{item.price} / {item.unit}
+                  </Text>
+                  <Text style={styles.stockBadgeText}>
+                    📦 In Stock: {matchingInv ? matchingInv.stock : '-'} (After bill: {matchingInv ? Math.max(0, matchingInv.stock - item.qty) : '-'})
+                  </Text>
+                </View>
+                <Text style={styles.itemTotal}>
+                  ₹{(item.price * item.qty).toLocaleString('en-IN')}
                 </Text>
               </View>
-              <Text style={styles.itemTotal}>
-                ₹{(item.price * item.qty).toLocaleString('en-IN')}
-              </Text>
-            </View>
 
             <View style={styles.cartControls}>
               <View style={styles.qtyBox}>
@@ -277,7 +282,8 @@ export const CreateBillScreen: React.FC<CreateBillScreenProps> = ({ onBack, onSu
               </TouchableOpacity>
             </View>
           </View>
-        ))}
+        );
+      })}
 
         {/* Calculation Breakdown */}
         <View style={styles.summaryCard}>
@@ -500,6 +506,28 @@ export const CreateBillScreen: React.FC<CreateBillScreenProps> = ({ onBack, onSu
                   ₹{createdInvoice?.total.toLocaleString('en-IN')}
                 </Text>
               </View>
+            </View>
+
+            {/* Inventory Auto-Updated Confirmation Badge */}
+            <View style={styles.stockDeductedCard}>
+              <View style={styles.stockDeductedHeader}>
+                <MaterialIcons name="inventory-2" size={16} color="#166534" />
+                <Text style={styles.stockDeductedTitle}>Inventory Auto-Deducted ✅</Text>
+              </View>
+              <Text style={styles.stockDeductedSub}>
+                Stock automatically updated for {createdInvoice?.items.length} items:
+              </Text>
+              {createdInvoice?.items.map((it, idx) => {
+                const inv = inventory.find((i) => i.id === it.id || i.name === it.name);
+                return (
+                  <View key={idx} style={styles.stockDeductedItemRow}>
+                    <Text style={styles.stockDeductedItemName} numberOfLines={1}>• {it.name}</Text>
+                    <Text style={styles.stockDeductedItemQty}>
+                      -{it.qty} {it.unit}s {inv !== undefined ? `(Left: ${inv.stock})` : ''}
+                    </Text>
+                  </View>
+                );
+              })}
             </View>
 
             {/* Receipt Actions */}
@@ -1053,5 +1081,51 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 15,
     fontWeight: '700',
+  },
+  stockBadgeText: {
+    fontSize: 11,
+    color: '#166534',
+    fontWeight: '600',
+    marginTop: 3,
+  },
+  stockDeductedCard: {
+    width: '100%',
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+  },
+  stockDeductedHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+  },
+  stockDeductedTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#166534',
+  },
+  stockDeductedSub: {
+    fontSize: 11,
+    color: '#15803D',
+    marginBottom: 6,
+  },
+  stockDeductedItemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 2,
+  },
+  stockDeductedItemName: {
+    fontSize: 11,
+    color: '#14532D',
+    flex: 1,
+  },
+  stockDeductedItemQty: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#166534',
   },
 });

@@ -233,6 +233,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </TouchableOpacity>
         </View>
 
+        {/* 📷 AI Inventory Scan Quick Launch Card */}
+        <TouchableOpacity style={styles.scanLaunchCard} activeOpacity={0.85} onPress={onNavigateToStock}>
+          <View style={styles.scanLaunchLeft}>
+            <View style={styles.scanLaunchIconCircle}>
+              <MaterialIcons name="photo-camera" size={24} color="#C69A43" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <View style={styles.scanBadgeRow}>
+                <Text style={styles.scanLaunchTitle}>📷 Scan Inventory (AI Camera)</Text>
+                <View style={styles.aiPill}>
+                  <Text style={styles.aiPillText}>AI LENS</Text>
+                </View>
+              </View>
+              <Text style={styles.scanLaunchSub}>
+                Photo detect FMCG items · Counts stock & auto-updates
+              </Text>
+            </View>
+          </View>
+          <MaterialIcons name="arrow-forward" size={22} color={theme.colors.primary} />
+        </TouchableOpacity>
+
         {/* Attendance Banner */}
         <TouchableOpacity style={styles.attendanceBanner} activeOpacity={0.8} onPress={onNavigateToAttendance}>
           <View style={styles.attendanceLeft}>
@@ -642,6 +663,63 @@ const styles = StyleSheet.create({
   attendanceSubtitle: {
     fontSize: 11,
     color: theme.colors.textMuted,
+    marginTop: 2,
+  },
+
+  scanLaunchCard: {
+    backgroundColor: '#FFFDF9',
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1.5,
+    borderColor: '#C69A43',
+    marginBottom: theme.spacing.md,
+    shadowColor: '#102B4E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  scanLaunchLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    flex: 1,
+  },
+  scanLaunchIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#102B4E',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scanBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  scanLaunchTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#102B4E',
+  },
+  aiPill: {
+    backgroundColor: '#C69A43',
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 4,
+  },
+  aiPillText: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#FFF',
+  },
+  scanLaunchSub: {
+    fontSize: 11,
+    color: '#64748B',
     marginTop: 2,
   },
 

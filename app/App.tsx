@@ -190,6 +190,7 @@ function MainNavigator() {
             onNavigateToPurchase={() => setCurrentTab('purchase')}
             onNavigateToStock={() => setCurrentTab('stock')}
             onNavigateToAttendance={() => setOverlayScreen('attendance')}
+            onSwitchToEntry={() => setAuthStep('entry')}
           />
         );
       case 'sales':
@@ -212,6 +213,7 @@ function MainNavigator() {
             onNavigateToPurchase={() => setCurrentTab('purchase')}
             onNavigateToStock={() => setCurrentTab('stock')}
             onNavigateToAttendance={() => setOverlayScreen('attendance')}
+            onSwitchToEntry={() => setAuthStep('entry')}
           />
         );
     }

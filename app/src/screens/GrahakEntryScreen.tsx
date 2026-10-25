@@ -5,8 +5,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { theme } from '../constants/theme';
 import { getGrahakTranslation } from '../constants/translations';
 
@@ -29,162 +30,205 @@ export const GrahakEntryScreen: React.FC<GrahakEntryScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Decorative Toran Garland */}
-      <View style={styles.toranContainer}>
-        <View style={styles.toranLine} />
-        <View style={styles.toranPattis}>
-          {[1, 2, 3, 4, 5, 6, 7].map((item) => (
-            <View key={item} style={styles.toranLeaf}>
-              <View style={styles.gendaFlower} />
-              <View style={styles.mangoLeaf} />
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* Top Header with Language Pill */}
+      {/* Top Header Bar */}
       <View style={styles.topHeader}>
-        <View style={styles.logoRow}>
-          <View style={styles.logoBadge}>
-            <Text style={styles.logoIcon}>卐</Text>
+        <View style={styles.brandRow}>
+          <View style={styles.emblemBadge}>
+            <Text style={styles.emblemText}>ग</Text>
           </View>
           <View>
-            <View style={styles.brandTitleRow}>
-              <Text style={styles.brandName}>Grahak</Text>
-              <Text style={styles.brandHindi}>{t.brandName}</Text>
+            <View style={styles.brandNameRow}>
+              <Text style={styles.brandTitleHindi}>ग्राहक</Text>
+              <Text style={styles.brandTitleEnglish}>GRAHAK</Text>
             </View>
             <Text style={styles.brandTagline}>
-              {languageCode === 'en' ? 'Your Trusted Digital Shop Partner' : 'Aapke Dukaan Ka Digital Saathi'}
+              {languageCode === 'en' ? 'Digital Vyapar Saathi' : 'दुकान का डिजिटल साथी'}
             </Text>
           </View>
         </View>
 
-        <TouchableOpacity 
-          style={styles.langPill}
+        <TouchableOpacity
+          style={styles.langButton}
           onPress={onLanguageSelect}
           activeOpacity={0.8}
         >
-          <Ionicons name="globe-outline" size={14} color={theme.colors.secondaryAccent} />
-          <Text style={styles.langPillText}>{selectedLanguage}</Text>
+          <MaterialIcons name="translate" size={16} color={theme.colors.secondary} />
+          <Text style={styles.langButtonText}>
+            {selectedLanguage.split(' ')[0] || 'हिंदी / Eng'}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
+      {/* Decorative Auspicious Toran Marigold Garland */}
+      <View style={styles.toranRow}>
+        <View style={styles.flowerDot}>
+          <Text style={styles.flowerGlyph}>✿</Text>
+        </View>
+        <View style={styles.goldBead} />
+        <View style={styles.flowerDot}>
+          <Text style={styles.flowerGlyph}>✿</Text>
+        </View>
+        <View style={styles.shubhLabhPill}>
+          <Text style={styles.shubhLabhStar}>✦</Text>
+          <Text style={styles.shubhLabhText}>
+            {languageCode === 'en' ? 'Shubh Labh • Trusted OS' : 'शुभ लाभ • १००% सुरक्षित'}
+          </Text>
+          <Text style={styles.shubhLabhStar}>✦</Text>
+        </View>
+        <View style={styles.flowerDot}>
+          <Text style={styles.flowerGlyph}>✿</Text>
+        </View>
+        <View style={styles.goldBead} />
+        <View style={styles.flowerDot}>
+          <Text style={styles.flowerGlyph}>✿</Text>
+        </View>
+      </View>
+
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Desi Art Auspicious Badge */}
-        <View style={styles.auspiciousBadge}>
-          <MaterialCommunityIcons name="brightness-percent" size={14} color={theme.colors.secondaryAccent} />
-          <Text style={styles.auspiciousText}>
-            {languageCode === 'en' ? '100% Encrypted & Safe • Made for Bharat' : '१००% सुरक्षित • भारतीय दुकानदारों का भरोसेमंद ऐप'}
+        {/* Hero Contemporary Desi Folk-Art Arch Card */}
+        <View style={styles.heroCard}>
+          {/* Central Auspicious Emblem */}
+          <View style={styles.heroEmblemContainer}>
+            <View style={styles.heroEmblemNavySquare}>
+              <Text style={styles.heroEmblemChar}>ग़</Text>
+            </View>
+            <View style={styles.storefrontBadgeCircle}>
+              <MaterialIcons name="storefront" size={14} color="#FFF" />
+            </View>
+          </View>
+
+          {/* Title and Tagline */}
+          <View style={styles.heroTitleRow}>
+            <Text style={styles.heroTitleHindi}>ग्राहक</Text>
+            <Text style={styles.heroTitleDivider}>|</Text>
+            <Text style={styles.heroTitleEnglish}>Grahak</Text>
+          </View>
+
+          <Text style={styles.heroSubtitleHindi}>
+            {t.headline}
           </Text>
-        </View>
+          <Text style={styles.heroSubtitleEnglish}>
+            {t.subheadline}
+          </Text>
 
-        {/* Hero Headline */}
-        <Text style={styles.heroHeadline}>
-          {t.headline}
-        </Text>
-        
-        <Text style={styles.heroSubhead}>
-          {t.subheadline}
-        </Text>
-
-        {/* Contemporary Desi Art Shopkeeper Illustration Card */}
-        <View style={styles.illustrationCard}>
-          <View style={styles.archFrame}>
-            <View style={styles.diyaContainer}>
-              <MaterialCommunityIcons name="fire" size={24} color="#D5AD66" />
-            </View>
-
-            <View style={styles.charactersRow}>
-              {/* Shopkeeper */}
-              <View style={styles.characterBox}>
-                <View style={[styles.avatarCircle, { backgroundColor: '#102B4E' }]}>
-                  <MaterialCommunityIcons name="store" size={32} color="#D5AD66" />
-                </View>
-                <Text style={styles.charLabel}>
-                  {languageCode === 'en' ? 'Shop Owner' : 'दुकानदार भाई'}
-                </Text>
-                <Text style={styles.charSub}>
-                  {languageCode === 'en' ? 'Billing & POS' : 'खाता & बिक्री'}
+          {/* Google Stitch Hand-Painted Counter Visual Canvas */}
+          <View style={styles.canvasContainer}>
+            <Image
+              source={{
+                uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBLbkzIlB0y0V9GJlVC3cUJjFLJIDGsViVA1fHE4wPb5TamdJZzaTQF1qzttnjOfEnNQgXd0jbzoeSpIeP5lRSb9gSbwYOxVIPyM05md9dUDC31s3Zz3o3xm64Jesx3KO1bFO11asOH9BaXRgw9zFzwCMnsvxJDPkgLBav1FtMc5rtqmbKJk7aWpKwJ8oo0kHkew6FZq8O7x9G5F80urSiK5eV4rpN5mZM7bkljdmk_evaB3Wi0MMEN',
+              }}
+              style={styles.canvasImage}
+              resizeMode="cover"
+            />
+            {/* Bottom Stamp Overlay */}
+            <View style={styles.canvasStampOverlay}>
+              <View style={styles.stampLeft}>
+                <View style={styles.greenLiveDot} />
+                <Text style={styles.stampLeftText}>
+                  {languageCode === 'en' ? 'Smart Vyapar Live' : 'दुकानदारी हुई अब आसान'}
                 </Text>
               </View>
-
-              <View style={styles.dividerArrow}>
-                <Ionicons name="repeat" size={24} color={theme.colors.secondaryAccent} />
-                <Text style={styles.arrowText}>UPI / पर्ची</Text>
-              </View>
-
-              {/* Customer */}
-              <View style={styles.characterBox}>
-                <View style={[styles.avatarCircle, { backgroundColor: '#C69A43' }]}>
-                  <MaterialCommunityIcons name="cellphone-check" size={30} color="#102B4E" />
-                </View>
-                <Text style={styles.charLabel}>
-                  {languageCode === 'en' ? 'Happy Customer' : 'संतुष्ट ग्राहक'}
-                </Text>
-                <Text style={styles.charSub}>
-                  {languageCode === 'en' ? 'Instant Bill' : 'तुरंत भुगतान'}
-                </Text>
-              </View>
-            </View>
-
-            {/* Counter Balance Scale Graphic */}
-            <View style={styles.counterDesk}>
-              <View style={styles.tarazuRow}>
-                <MaterialCommunityIcons name="scale-balance" size={18} color="#D5AD66" />
-                <Text style={styles.tarazuText}>
-                  {languageCode === 'en' ? 'Digital Ledger • Real-time Udhaar Record' : 'पक्का हिसाब • सुरक्षित उधारी डायरी'}
-                </Text>
-              </View>
+              <Text style={styles.stampRightText}>
+                {languageCode === 'en' ? 'Khata 2.0' : 'बही-खाता 2.0'}
+              </Text>
             </View>
           </View>
         </View>
 
-        {/* Feature Highlights Grid */}
-        <View style={styles.featuresGrid}>
-          <View style={styles.featurePill}>
-            <Ionicons name="receipt-outline" size={16} color={theme.colors.primary} />
-            <Text style={styles.featureTitle}>{t.offlineBilling}</Text>
+        {/* 3 Value Pillars Proposition Grid */}
+        <View style={styles.pillarsCard}>
+          <View style={styles.pillarsHeader}>
+            <Text style={styles.pillarsSub}>
+              {languageCode === 'en' ? 'ONE ALL-IN-ONE SOLUTION' : 'एक समाधान • सम्पूर्ण व्यापार'}
+            </Text>
+            <Text style={styles.pillarsTitle}>
+              {languageCode === 'en'
+                ? 'Accounts, Sales, Stock & Bills in One Place'
+                : 'हिसाब, बिक्री, स्टॉक और बिल — सब एक ही जगह'}
+            </Text>
           </View>
-          <View style={styles.featurePill}>
-            <Ionicons name="camera-outline" size={16} color={theme.colors.primary} />
-            <Text style={styles.featureTitle}>{t.inventoryScanner}</Text>
+
+          <View style={styles.pillarsGrid}>
+            {/* Pillar 1 */}
+            <View style={styles.pillarItem}>
+              <View style={[styles.pillarIconCircle, { backgroundColor: '#FFDEA6' }]}>
+                <MaterialIcons name="bolt" size={20} color={theme.colors.secondary} />
+              </View>
+              <Text style={styles.pillarTitle}>1-Min Bill</Text>
+              <Text style={styles.pillarSub}>
+                {languageCode === 'en' ? 'Quick POS Bill' : 'पक्का बिल & पर्ची'}
+              </Text>
+            </View>
+
+            {/* Pillar 2 */}
+            <View style={styles.pillarItem}>
+              <View style={[styles.pillarIconCircle, { backgroundColor: '#FFDAD6' }]}>
+                <MaterialIcons name="pending-actions" size={20} color={theme.colors.error} />
+              </View>
+              <Text style={styles.pillarTitle}>Udhaar</Text>
+              <Text style={styles.pillarSub}>
+                {languageCode === 'en' ? 'Ledger Safety' : 'सुरक्षित उधारी'}
+              </Text>
+            </View>
+
+            {/* Pillar 3 */}
+            <View style={styles.pillarItem}>
+              <View style={[styles.pillarIconCircle, { backgroundColor: '#D5E3FF' }]}>
+                <MaterialIcons name="payments" size={20} color={theme.colors.primary} />
+              </View>
+              <Text style={styles.pillarTitle}>Daily Hisab</Text>
+              <Text style={styles.pillarSub}>
+                {languageCode === 'en' ? 'Cash & UPI' : 'मुनाफा & गल्ला'}
+              </Text>
+            </View>
           </View>
-          <View style={styles.featurePill}>
-            <Ionicons name="location-outline" size={16} color={theme.colors.primary} />
-            <Text style={styles.featureTitle}>{t.geotagAttendance}</Text>
+        </View>
+
+        {/* Feature Pills Horizontal Highlights */}
+        <View style={styles.featuresRow}>
+          <View style={styles.featureChip}>
+            <Ionicons name="camera-outline" size={15} color={theme.colors.secondary} />
+            <Text style={styles.featureChipText}>{t.inventoryScanner}</Text>
           </View>
-          <View style={styles.featurePill}>
-            <Ionicons name="shield-checkmark-outline" size={16} color={theme.colors.primary} />
-            <Text style={styles.featureTitle}>{t.bankSync}</Text>
+          <View style={styles.featureChip}>
+            <Ionicons name="location-outline" size={15} color={theme.colors.secondary} />
+            <Text style={styles.featureChipText}>{t.geotagAttendance}</Text>
           </View>
         </View>
       </ScrollView>
 
       {/* Bottom Sticky Action Buttons */}
       <View style={styles.bottomBar}>
-        {/* Prominent CTA: "Shuru Kijiye" */}
+        {/* Primary CTA: Start New Account */}
         <TouchableOpacity
           style={styles.ctaButton}
           onPress={onStart}
           activeOpacity={0.85}
         >
-          <Text style={styles.ctaText}>{t.ctaStart}</Text>
+          <Text style={styles.ctaText}>
+            {languageCode === 'en' ? 'Get Started • Open Khata' : 'नया खाता शुरू करें (Get Started)'}
+          </Text>
           <View style={styles.ctaArrowCircle}>
-            <Ionicons name="arrow-forward" size={18} color="#102B4E" />
+            <MaterialIcons name="arrow-forward" size={18} color="#102B4E" />
           </View>
         </TouchableOpacity>
 
-        {/* Secondary Login option for returning users */}
+        {/* Secondary CTA: Existing Merchant Login */}
         <TouchableOpacity
           style={styles.loginLink}
           onPress={onLogin}
           activeOpacity={0.7}
         >
-          <Text style={styles.loginText}>
-            {t.loginReturning}
+          <Text style={styles.loginLinkText}>
+            {languageCode === 'en'
+              ? 'Already registered? '
+              : 'पहले से खाता है? '}
+            <Text style={styles.loginLinkHighlight}>
+              {languageCode === 'en' ? 'Sign In / लॉगिन करें' : 'लॉगिन करें'}
+            </Text>
           </Text>
         </TouchableOpacity>
       </View>
@@ -197,94 +241,60 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FCF9F5',
   },
-  toranContainer: {
-    height: 18,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  toranLine: {
-    height: 2,
-    backgroundColor: '#C69A43',
-    marginHorizontal: -10,
-    marginTop: 2,
-  },
-  toranPattis: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 8,
-  },
-  toranLeaf: {
-    alignItems: 'center',
-  },
-  gendaFlower: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#E65100',
-    marginTop: -1,
-  },
-  mangoLeaf: {
-    width: 8,
-    height: 10,
-    backgroundColor: '#2E7D32',
-    borderBottomLeftRadius: 5,
-    borderBottomRightRadius: 5,
-  },
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(198, 154, 67, 0.2)',
+    paddingBottom: 8,
   },
-  logoRow: {
+  brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
   },
-  logoBadge: {
+  emblemBadge: {
     width: 36,
     height: 36,
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: '#102B4E',
-    borderWidth: 1,
-    borderColor: '#C69A43',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#C69A43',
   },
-  logoIcon: {
-    fontSize: 16,
-    color: '#D5AD66',
-    fontWeight: 'bold',
+  emblemText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFDEA6',
+    lineHeight: 24,
   },
-  brandTitleRow: {
+  brandNameRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 6,
   },
-  brandName: {
-    fontSize: 18,
+  brandTitleHindi: {
+    fontSize: 17,
     fontWeight: '800',
     color: '#102B4E',
-    fontFamily: 'serif',
   },
-  brandHindi: {
-    fontSize: 12,
-    fontWeight: '700',
+  brandTitleEnglish: {
+    fontSize: 11,
+    fontWeight: '800',
     color: '#C69A43',
+    letterSpacing: 1.5,
   },
   brandTagline: {
-    fontSize: 9.5,
+    fontSize: 10,
     color: '#65758B',
     fontWeight: '500',
   },
-  langPill: {
+  langButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 20,
@@ -292,167 +302,283 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(198, 154, 67, 0.35)',
   },
-  langPillText: {
+  langButtonText: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: '#102B4E',
+  },
+  toranRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    paddingVertical: 4,
+  },
+  flowerDot: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flowerGlyph: {
+    color: '#7C5800',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  goldBead: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FECD70',
+  },
+  shubhLabhPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(198, 154, 67, 0.12)',
+  },
+  shubhLabhStar: {
+    fontSize: 9,
+    color: '#7C5800',
+  },
+  shubhLabhText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#7C5800',
+    letterSpacing: 0.5,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 20,
+  },
+  heroCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(198, 154, 67, 0.28)',
+    shadowColor: '#102B4E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+    marginBottom: 14,
+  },
+  heroEmblemContainer: {
+    position: 'relative',
+    marginBottom: 8,
+  },
+  heroEmblemNavySquare: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    backgroundColor: '#102B4E',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#C69A43',
+    shadowColor: '#102B4E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  heroEmblemChar: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#FFDEA6',
+  },
+  storefrontBadgeCircle: {
+    position: 'absolute',
+    bottom: -4,
+    right: -4,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: '#C69A43',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+  },
+  heroTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  heroTitleHindi: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#102B4E',
+  },
+  heroTitleDivider: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#C69A43',
+  },
+  heroTitleEnglish: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#102B4E',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  heroSubtitleHindi: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#7C5800',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  heroSubtitleEnglish: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#65758B',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  canvasContainer: {
+    width: '100%',
+    height: 180,
+    borderRadius: 14,
+    overflow: 'hidden',
+    position: 'relative',
+    borderWidth: 1,
+    borderColor: 'rgba(198, 154, 67, 0.3)',
+  },
+  canvasImage: {
+    width: '100%',
+    height: '100%',
+  },
+  canvasStampOverlay: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    right: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255, 255, 255, 0.94)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  stampLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  greenLiveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#2E7D32',
+  },
+  stampLeftText: {
     fontSize: 11,
     fontWeight: '700',
     color: '#102B4E',
   },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 24,
-    alignItems: 'center',
+  stampRightText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#7C5800',
   },
-  auspiciousBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    backgroundColor: 'rgba(198, 154, 67, 0.12)',
+  pillarsCard: {
+    backgroundColor: '#F6F3EF',
+    borderRadius: 16,
+    padding: 14,
     borderWidth: 1,
-    borderColor: 'rgba(198, 154, 67, 0.3)',
+    borderColor: 'rgba(198, 154, 67, 0.2)',
     marginBottom: 12,
   },
-  auspiciousText: {
-    fontSize: 10.5,
+  pillarsHeader: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  pillarsSub: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#7C5800',
+    letterSpacing: 0.8,
+  },
+  pillarsTitle: {
+    fontSize: 13,
     fontWeight: '700',
     color: '#102B4E',
-  },
-  heroHeadline: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#102B4E',
-    fontFamily: 'serif',
+    marginTop: 2,
     textAlign: 'center',
-    lineHeight: 32,
   },
-  heroSubhead: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#55677D',
-    textAlign: 'center',
-    marginTop: 6,
-    lineHeight: 18,
-  },
-  illustrationCard: {
-    width: '100%',
-    marginVertical: 18,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    borderWidth: 1.5,
-    borderColor: 'rgba(198, 154, 67, 0.35)',
-    padding: 16,
-    shadowColor: '#102B4E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  archFrame: {
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: 'rgba(198, 154, 67, 0.4)',
-    borderRadius: 18,
-    padding: 12,
-    alignItems: 'center',
-  },
-  diyaContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#102B4E',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  charactersRow: {
+  pillarsGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '100%',
-    paddingVertical: 10,
+    justifyContent: 'space-between',
+    gap: 8,
   },
-  characterBox: {
+  pillarItem: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 10,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
   },
-  avatarCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  pillarIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#C69A43',
     marginBottom: 6,
   },
-  charLabel: {
+  pillarTitle: {
     fontSize: 12,
     fontWeight: '700',
     color: '#102B4E',
   },
-  charSub: {
-    fontSize: 10,
+  pillarSub: {
+    fontSize: 9.5,
     color: '#65758B',
-  },
-  dividerArrow: {
-    alignItems: 'center',
-  },
-  arrowText: {
-    fontSize: 9,
-    fontWeight: '700',
-    color: '#C69A43',
+    textAlign: 'center',
     marginTop: 2,
   },
-  counterDesk: {
-    width: '100%',
-    backgroundColor: '#F8F5F1',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(198, 154, 67, 0.3)',
-    paddingVertical: 8,
-    marginTop: 8,
-    alignItems: 'center',
-  },
-  tarazuRow: {
+  featuresRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  tarazuText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#102B4E',
-  },
-  featuresGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 8,
-    width: '100%',
   },
-  featurePill: {
+  featureChip: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 14,
+    paddingVertical: 9,
+    paddingHorizontal: 10,
     backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(198, 154, 67, 0.25)',
-    width: '48%',
   },
-  featureTitle: {
+  featureChipText: {
     fontSize: 11,
     fontWeight: '700',
     color: '#102B4E',
   },
   bottomBar: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 20,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 16,
     borderTopWidth: 1,
     borderTopColor: 'rgba(198, 154, 67, 0.2)',
     backgroundColor: '#FFFFFF',
@@ -463,42 +589,42 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     backgroundColor: '#102B4E',
-    paddingVertical: 15,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(198, 154, 67, 0.5)',
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#C69A43',
     shadowColor: '#102B4E',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowRadius: 6,
     elevation: 4,
   },
   ctaText: {
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '800',
-    letterSpacing: 0.3,
   },
   ctaArrowCircle: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: '#C69A43',
     alignItems: 'center',
     justifyContent: 'center',
   },
   loginLink: {
-    marginTop: 12,
+    marginTop: 10,
     alignItems: 'center',
     paddingVertical: 4,
   },
-  loginText: {
-    fontSize: 12,
-    color: '#55677D',
-    fontWeight: '600',
+  loginLinkText: {
+    fontSize: 12.5,
+    color: '#65758B',
+    fontWeight: '500',
   },
-  loginHighlight: {
-    color: '#C69A43',
-    fontWeight: '800',
+  loginLinkHighlight: {
+    color: '#102B4E',
+    fontWeight: '700',
+    textDecorationLine: 'underline',
   },
 });

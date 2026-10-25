@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { theme } from '../constants/theme';
 import { getGrahakTranslation } from '../constants/translations';
 
@@ -32,19 +34,19 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
 }) => {
   const t = getGrahakTranslation(languageCode);
 
-  const bizTypes = [
-    t.catKirana,
-    t.catWholesaler,
-    t.catClothing,
-    t.catElectronics,
-    t.catHardware,
-    t.catOther,
+  const categories = [
+    { id: 'kirana', label: t.catKirana, icon: '🌾' },
+    { id: 'wholesaler', label: t.catWholesaler, icon: '📦' },
+    { id: 'clothing', label: t.catClothing, icon: '👕' },
+    { id: 'electronics', label: t.catElectronics, icon: '📱' },
+    { id: 'hardware', label: t.catHardware, icon: '🛠️' },
+    { id: 'other', label: t.catOther, icon: '🏪' },
   ];
 
   const [fullName, setFullName] = useState('');
   const [mobile, setMobile] = useState('');
   const [shopName, setShopName] = useState('');
-  const [businessType, setBusinessType] = useState(bizTypes[0]);
+  const [selectedCategory, setSelectedCategory] = useState(categories[0].label);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = () => {
@@ -79,51 +81,91 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
       fullName: fullName.trim(),
       mobile: `+91 ${cleaned}`,
       shopName: shopName.trim(),
-      businessType: businessType || bizTypes[0],
+      businessType: selectedCategory,
       language: languageCode,
     });
   };
 
   return (
-    <View style={styles.container}>
-      {/* Top Navigation */}
-      <View style={styles.navBar}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7}>
-          <Ionicons name="arrow-back" size={20} color={theme.colors.primary} />
-          <Text style={styles.backText}>{t.backBtn}</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      {/* Top Header */}
+      <View style={styles.topHeader}>
+        <TouchableOpacity style={styles.backBtn} onPress={onBack} activeOpacity={0.7}>
+          <MaterialIcons name="arrow-back" size={22} color={theme.colors.primary} />
         </TouchableOpacity>
-        <Text style={styles.navTitle}>{t.signupHeading}</Text>
-        <View style={{ width: 40 }} />
+
+        <View style={styles.headerBrand}>
+          <View style={styles.headerEmblem}>
+            <Text style={styles.headerEmblemText}>ग़</Text>
+          </View>
+          <View>
+            <Text style={styles.headerTitle}>
+              ग्राहक <Text style={styles.headerTitleSub}>GRAHAK</Text>
+            </Text>
+            <Text style={styles.headerTagline}>Digital Vyapar Saathi</Text>
+          </View>
+        </View>
+
+        <View style={styles.headerRightSpacer} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>
-              {languageCode === 'en' ? 'New Digital Account' : 'नया डिजिटल खाता'}
-            </Text>
-          </View>
-          <Text style={styles.title}>{t.signupHeading}</Text>
-          <Text style={styles.subtitle}>{t.signupSub}</Text>
+      {/* Decorative Auspicious Toran Marigold Garland */}
+      <View style={styles.toranRow}>
+        <View style={styles.flowerDot}>
+          <Text style={styles.flowerGlyph}>✿</Text>
+        </View>
+        <View style={styles.goldBead} />
+        <View style={styles.flowerDot}>
+          <Text style={styles.flowerGlyph}>✿</Text>
+        </View>
+        <View style={styles.shubhLabhPill}>
+          <Text style={styles.shubhLabhStar}>✦</Text>
+          <Text style={styles.shubhLabhText}>
+            {languageCode === 'en' ? 'Shubh Shuruwat • New Account' : 'शुभ शुरुआत • नया व्यापार खाता'}
+          </Text>
+          <Text style={styles.shubhLabhStar}>✦</Text>
+        </View>
+        <View style={styles.flowerDot}>
+          <Text style={styles.flowerGlyph}>✿</Text>
+        </View>
+        <View style={styles.goldBead} />
+        <View style={styles.flowerDot}>
+          <Text style={styles.flowerGlyph}>✿</Text>
+        </View>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Title Area */}
+        <View style={styles.titleArea}>
+          <Text style={styles.screenHeading}>{t.signupHeading}</Text>
+          <Text style={styles.screenSubheading}>{t.signupSub}</Text>
         </View>
 
         {errorMsg && (
-          <View style={styles.errorBox}>
-            <Ionicons name="alert-circle" size={16} color="#BA1A1A" />
-            <Text style={styles.errorText}>{errorMsg}</Text>
+          <View style={styles.errorBanner}>
+            <Ionicons name="alert-circle" size={16} color={theme.colors.error} />
+            <Text style={styles.errorBannerText}>{errorMsg}</Text>
           </View>
         )}
 
-        {/* Form Card */}
+        {/* Registration Form Card */}
         <View style={styles.formCard}>
-          {/* Full Name */}
+          {/* 1. Full Name */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>{t.fullNameLabel} *</Text>
-            <View style={styles.inputWrapper}>
-              <Ionicons name="person-outline" size={18} color="#C69A43" style={styles.inputIcon} />
+            <Text style={styles.fieldLabel}>
+              {languageCode === 'en' ? 'Owner Full Name' : 'मालिक का पूरा नाम'} *
+            </Text>
+            <View style={styles.inputBox}>
+              <MaterialIcons name="person" size={20} color={theme.colors.secondary} />
               <TextInput
-                style={styles.input}
+                style={styles.textInput}
                 placeholder={t.fullNamePlaceholder}
                 placeholderTextColor="#94A3B8"
                 value={fullName}
@@ -132,33 +174,38 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
             </View>
           </View>
 
-          {/* Mobile Number with +91 */}
+          {/* 2. Mobile Number */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>{t.mobileLabel} *</Text>
-            <View style={styles.phoneInputRow}>
-              <View style={styles.codeBox}>
-                <Text style={styles.flag}>🇮🇳</Text>
-                <Text style={styles.code}>+91</Text>
+            <Text style={styles.fieldLabel}>
+              {languageCode === 'en' ? 'Mobile Number (10 digits)' : 'मोबाइल नंबर (१० अंक)'} *
+            </Text>
+            <View style={styles.inputBox}>
+              <View style={styles.flagBlock}>
+                <Text style={styles.flagEmoji}>🇮🇳</Text>
+                <Text style={styles.countryCode}>+91</Text>
               </View>
+              <View style={styles.inputDivider} />
               <TextInput
-                style={styles.phoneInput}
+                style={styles.textInput}
                 keyboardType="phone-pad"
                 maxLength={10}
-                placeholder={t.mobilePlaceholder}
+                placeholder="98230 45678"
                 placeholderTextColor="#94A3B8"
                 value={mobile}
-                onChangeText={(t) => setMobile(t.replace(/\D/g, ''))}
+                onChangeText={(val) => setMobile(val.replace(/\D/g, ''))}
               />
             </View>
           </View>
 
-          {/* Shop Name */}
+          {/* 3. Shop Name */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>{t.shopNameLabel} *</Text>
-            <View style={styles.inputWrapper}>
-              <MaterialCommunityIcons name="store-outline" size={18} color="#C69A43" style={styles.inputIcon} />
+            <Text style={styles.fieldLabel}>
+              {languageCode === 'en' ? 'Shop / Business Name' : 'दुकान / फर्म का नाम'} *
+            </Text>
+            <View style={styles.inputBox}>
+              <MaterialIcons name="storefront" size={20} color={theme.colors.secondary} />
               <TextInput
-                style={styles.input}
+                style={styles.textInput}
                 placeholder={t.shopNamePlaceholder}
                 placeholderTextColor="#94A3B8"
                 value={shopName}
@@ -167,21 +214,32 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
             </View>
           </View>
 
-          {/* Business Type Selector Pills */}
+          {/* 4. Business Category Chips */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>{t.businessTypeLabel}</Text>
-            <View style={styles.pillsRow}>
-              {bizTypes.map((type) => {
-                const isSelected = businessType === type;
+            <Text style={styles.fieldLabel}>
+              {languageCode === 'en' ? 'Business Category' : 'व्यापार का प्रकार'}
+            </Text>
+            <View style={styles.categoriesWrap}>
+              {categories.map((cat) => {
+                const isSelected = selectedCategory === cat.label;
                 return (
                   <TouchableOpacity
-                    key={type}
-                    style={[styles.pill, isSelected && styles.pillSelected]}
-                    onPress={() => setBusinessType(type)}
+                    key={cat.id}
+                    style={[
+                      styles.categoryChip,
+                      isSelected && styles.categoryChipSelected,
+                    ]}
+                    onPress={() => setSelectedCategory(cat.label)}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.pillText, isSelected && styles.pillTextSelected]}>
-                      {type}
+                    <Text style={styles.categoryIcon}>{cat.icon}</Text>
+                    <Text
+                      style={[
+                        styles.categoryText,
+                        isSelected && styles.categoryTextSelected,
+                      ]}
+                    >
+                      {cat.label}
                     </Text>
                   </TouchableOpacity>
                 );
@@ -189,26 +247,36 @@ export const GrahakSignUpScreen: React.FC<GrahakSignUpScreenProps> = ({
             </View>
           </View>
 
-          {/* Submit */}
+          {/* Submit Button */}
           <TouchableOpacity
-            style={styles.submitBtn}
+            style={styles.primaryBtn}
             onPress={handleSubmit}
             activeOpacity={0.85}
           >
-            <Text style={styles.submitBtnText}>{t.createAccountBtn}</Text>
-            <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+            <Text style={styles.primaryBtnText}>
+              {languageCode === 'en'
+                ? 'Continue to Onboarding • आगे बढ़ें'
+                : 'ओटीपी प्राप्त करें & खाता खोलें'}
+            </Text>
+            <MaterialIcons name="arrow-forward" size={20} color="#FFF" />
           </TouchableOpacity>
         </View>
 
-        {/* Switch to Login */}
-        <View style={styles.loginRow}>
-          <Text style={styles.loginPrompt}>{t.alreadyHaveAccount} </Text>
-          <TouchableOpacity onPress={onNavigateToLogin}>
-            <Text style={styles.loginLink}>{t.loginAction}</Text>
+        {/* Existing User Login Link */}
+        <View style={styles.loginLinkRow}>
+          <Text style={styles.loginPrompt}>
+            {languageCode === 'en'
+              ? 'Already have an account? '
+              : 'पहले से खाता है? '}
+          </Text>
+          <TouchableOpacity onPress={onNavigateToLogin} activeOpacity={0.7}>
+            <Text style={styles.loginLink}>
+              {languageCode === 'en' ? 'Login (लॉगिन करें)' : 'लॉगिन करें'}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -217,213 +285,266 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FCF9F5',
   },
-  navBar: {
+  topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(198, 154, 67, 0.2)',
+    paddingTop: 8,
+    paddingBottom: 8,
   },
-  backButton: {
+  backBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: 'rgba(198, 154, 67, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerBrand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerEmblem: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: '#102B4E',
+    borderWidth: 1,
+    borderColor: '#C69A43',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerEmblemText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFDEA6',
+  },
+  headerTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#102B4E',
+  },
+  headerTitleSub: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#C69A43',
+    letterSpacing: 1,
+  },
+  headerTagline: {
+    fontSize: 9.5,
+    color: '#65758B',
+    fontWeight: '500',
+  },
+  headerRightSpacer: {
+    width: 38,
+  },
+  toranRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    paddingVertical: 4,
+  },
+  flowerDot: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flowerGlyph: {
+    color: '#7C5800',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  goldBead: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FECD70',
+  },
+  shubhLabhPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingVertical: 4,
+    paddingVertical: 2,
     paddingHorizontal: 8,
-  },
-  backText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#102B4E',
-  },
-  navTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#102B4E',
-  },
-  content: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  badge: {
-    backgroundColor: 'rgba(198, 154, 67, 0.15)',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
     borderRadius: 12,
-    marginBottom: 6,
+    backgroundColor: 'rgba(198, 154, 67, 0.12)',
   },
-  badgeText: {
-    fontSize: 10.5,
-    fontWeight: '800',
-    color: '#102B4E',
+  shubhLabhStar: {
+    fontSize: 9,
+    color: '#7C5800',
   },
-  title: {
+  shubhLabhText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#7C5800',
+    letterSpacing: 0.5,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 24,
+  },
+  titleArea: {
+    marginBottom: 14,
+  },
+  screenHeading: {
     fontSize: 22,
     fontWeight: '800',
     color: '#102B4E',
-    fontFamily: 'serif',
-    textAlign: 'center',
+    marginBottom: 4,
   },
-  subtitle: {
-    fontSize: 12,
+  screenSubheading: {
+    fontSize: 13,
     color: '#65758B',
-    textAlign: 'center',
-    marginTop: 4,
+    lineHeight: 18,
   },
-  errorBox: {
+  errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
     backgroundColor: '#FFEBEE',
     borderWidth: 1,
     borderColor: '#FFCDD2',
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    padding: 10,
+    borderRadius: 10,
     marginBottom: 14,
-    width: '100%',
   },
-  errorText: {
-    fontSize: 11.5,
+  errorBannerText: {
+    fontSize: 12,
+    color: theme.colors.error,
     fontWeight: '600',
-    color: '#BA1A1A',
     flex: 1,
   },
   formCard: {
-    width: '100%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: 'rgba(198, 154, 67, 0.3)',
+    borderRadius: 18,
     padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(198, 154, 67, 0.3)',
     shadowColor: '#102B4E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+    marginBottom: 16,
   },
   fieldGroup: {
     marginBottom: 14,
   },
-  label: {
-    fontSize: 12,
+  fieldLabel: {
+    fontSize: 12.5,
     fontWeight: '700',
     color: '#102B4E',
     marginBottom: 6,
   },
-  inputWrapper: {
+  inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FCF9F5',
-    borderWidth: 1.5,
-    borderColor: 'rgba(198, 154, 67, 0.4)',
+    backgroundColor: '#F6F3EF',
     borderRadius: 12,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
+    height: 50,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 43, 78, 0.08)',
+    gap: 8,
   },
-  inputIcon: {
-    marginRight: 8,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 10,
-    fontSize: 13.5,
-    fontWeight: '600',
-    color: '#102B4E',
-  },
-  phoneInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: 'rgba(198, 154, 67, 0.4)',
-    borderRadius: 12,
-    backgroundColor: '#FCF9F5',
-    overflow: 'hidden',
-  },
-  codeBox: {
+  flagBlock: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    borderRightWidth: 1,
-    borderRightColor: 'rgba(198, 154, 67, 0.3)',
-    backgroundColor: '#F8F5F1',
   },
-  flag: {
-    fontSize: 14,
+  flagEmoji: {
+    fontSize: 16,
   },
-  code: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#102B4E',
-  },
-  phoneInput: {
-    flex: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+  countryCode: {
     fontSize: 14,
     fontWeight: '700',
     color: '#102B4E',
-    letterSpacing: 1,
   },
-  pillsRow: {
-    gap: 6,
+  inputDivider: {
+    width: 1,
+    height: 22,
+    backgroundColor: '#D1D5DB',
   },
-  pill: {
-    paddingVertical: 7,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    backgroundColor: '#F8F5F1',
-    borderWidth: 1,
-    borderColor: 'rgba(198, 154, 67, 0.3)',
-  },
-  pillSelected: {
-    backgroundColor: '#102B4E',
-    borderColor: '#C69A43',
-  },
-  pillText: {
-    fontSize: 11,
+  textInput: {
+    flex: 1,
+    fontSize: 14,
     fontWeight: '600',
     color: '#102B4E',
   },
-  pillTextSelected: {
-    color: '#FFFFFF',
+  categoriesWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  categoryChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: '#F6F3EF',
+    borderWidth: 1,
+    borderColor: 'rgba(198, 154, 67, 0.2)',
+  },
+  categoryChipSelected: {
+    backgroundColor: '#FFFCF7',
+    borderColor: '#C69A43',
+    borderWidth: 1.5,
+  },
+  categoryIcon: {
+    fontSize: 14,
+  },
+  categoryText: {
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: '#44474E',
+  },
+  categoryTextSelected: {
+    color: '#102B4E',
     fontWeight: '800',
   },
-  submitBtn: {
+  primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
     backgroundColor: '#102B4E',
-    paddingVertical: 14,
+    paddingVertical: 15,
     borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#C69A43',
+    shadowColor: '#102B4E',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
     marginTop: 6,
   },
-  submitBtnText: {
+  primaryBtnText: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 14.5,
     fontWeight: '800',
   },
-  loginRow: {
+  loginLinkRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 18,
+    justifyContent: 'center',
+    paddingVertical: 8,
   },
   loginPrompt: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#65758B',
   },
   loginLink: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '800',
-    color: '#C69A43',
+    color: '#102B4E',
     textDecorationLine: 'underline',
   },
 });

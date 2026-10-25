@@ -11,6 +11,7 @@ interface HomeScreenProps {
   onNavigateToPurchase: () => void;
   onNavigateToStock: () => void;
   onNavigateToAttendance: () => void;
+  onSwitchToEntry?: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -19,6 +20,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onNavigateToPurchase,
   onNavigateToStock,
   onNavigateToAttendance,
+  onSwitchToEntry,
 }) => {
   const {
     store,
@@ -37,7 +39,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header onSwitchToEntry={onSwitchToEntry} />
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}

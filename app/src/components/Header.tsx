@@ -10,6 +10,7 @@ interface HeaderProps {
   showBack?: boolean;
   onBack?: () => void;
   rightBadge?: string;
+  onSwitchToEntry?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   showBack = false,
   onBack,
   rightBadge,
+  onSwitchToEntry,
 }) => {
   const { store, language, toggleLanguage, syncNow, isSyncing } = useApp();
   const [profileModalVisible, setProfileModalVisible] = useState(false);
@@ -176,6 +178,23 @@ export const Header: React.FC<HeaderProps> = ({
                 </>
               )}
             </TouchableOpacity>
+
+            {/* Switch to Grahak Opening Flow */}
+            {onSwitchToEntry && (
+              <TouchableOpacity
+                style={styles.switchFlowBtn}
+                onPress={() => {
+                  setProfileModalVisible(false);
+                  onSwitchToEntry();
+                }}
+                activeOpacity={0.8}
+              >
+                <MaterialIcons name="restart-alt" size={20} color={theme.colors.secondary} />
+                <Text style={styles.switchFlowBtnText}>
+                  {language === 'hi' ? 'ग्राहक वेलकम स्क्रीन पर जाएं (Grahak Flow)' : 'Switch to Grahak Welcome Screen'}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </Modal>
@@ -428,6 +447,23 @@ const styles = StyleSheet.create({
   syncBtnText: {
     color: '#FFF',
     fontSize: 15,
+    fontWeight: '700',
+  },
+  switchFlowBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 10,
+    paddingVertical: 12,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: '#F6F3EF',
+    borderWidth: 1,
+    borderColor: 'rgba(198, 154, 67, 0.3)',
+  },
+  switchFlowBtnText: {
+    color: theme.colors.primary,
+    fontSize: 13,
     fontWeight: '700',
   },
 });
